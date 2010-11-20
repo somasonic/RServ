@@ -1,0 +1,58 @@
+# Logfile created on Sat Nov 20 19:07:47 +0000 2010 by logger.rb/22285
+I, [2010-11-20T19:07:47.339620 #3622]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_start> for link::start.
+I, [2010-11-20T19:07:47.340163 #3622]  INFO -- : Calling #<Method: RServ::Link#on_link_start> for link::start.
+I, [2010-11-20T19:12:55.318328 #3647]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_start> for link::start.
+I, [2010-11-20T19:12:55.319226 #3647]  INFO -- : Calling #<Method: RServ::Link#on_link_start> for link::start.
+I, [2010-11-20T19:12:55.319588 #3647]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:12:55.319930 #3647]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:12:55.320756 #3647]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:12:55.320407 #3647]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.579176 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_start> for link::start.
+I, [2010-11-20T19:14:11.579739 #3652]  INFO -- : Calling #<Method: RServ::Link#on_link_start> for link::start.
+I, [2010-11-20T19:14:11.580065 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.580333 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.581105 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.580771 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.581917 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.620830 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.621058 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.621538 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.621325 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.621829 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.622712 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.622480 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.622162 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:14:11.623005 #3652]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.517664 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_start> for link::start.
+I, [2010-11-20T19:19:00.518353 #3707]  INFO -- : Calling #<Method: RServ::Link#on_link_start> for link::start.
+I, [2010-11-20T19:19:00.518630 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.518916 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.519611 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.519324 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.520490 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.559854 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.560029 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.560535 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.560298 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.560866 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.561873 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.561445 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.561139 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:19:00.562211 #3707]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:23:46.592800 #3720]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_start> for link::start.
+D, [2010-11-20T19:23:46.593699 #3720] DEBUG -- : --->| PASS fre3c0mhdd TS 6 00R
+I, [2010-11-20T19:23:46.593836 #3720]  INFO -- : Calling #<Method: RServ::Link#on_link_start> for link::start.
+D, [2010-11-20T19:23:46.594069 #3720] DEBUG -- : --->| CAPAB QS ENCAP SERVICES
+I, [2010-11-20T19:23:46.594530 #3720]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:23:46.595516 #3720]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2010-11-20T19:23:46.594998 #3720]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2010-11-20T19:23:46.595731 #3720] DEBUG -- : <---| :therealandy.com NOTICE * :*** Looking up your hostname...
+D, [2010-11-20T19:23:46.596168 #3720] DEBUG -- : --->| SERVER rserv.therealandy.com 0 Ruby Services
+I, [2010-11-20T19:23:46.596301 #3720]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2010-11-20T19:23:46.596648 #3720] DEBUG -- : <---| :therealandy.com NOTICE * :*** No Ident response
+D, [2010-11-20T19:23:46.596963 #3720] DEBUG -- : <---| :therealandy.com NOTICE * :*** Checking Ident
+I, [2010-11-20T19:23:46.598105 #3720]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2010-11-20T19:23:46.597651 #3720] DEBUG -- : <---| :therealandy.com NOTICE * :*** Couldn't look up your hostname
+W, [2010-11-20T19:23:46.598678 #3720]  WARN -- : Disconnected from 127.0.0.1:31415.
+D, [2010-11-20T19:23:46.598814 #3720] DEBUG -- : <---| ERROR :Closing Link: 127.0.0.1 (Incompatible TS version)
+I, [2010-11-20T19:23:46.599305 #3720]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_close> for link::close.
