@@ -6,7 +6,6 @@ module RServ::Protocols
 		def initialize
 			@name = String.new
 			@capab = Hash.new
-			@modules = Array.new
 			@link = nil
 
 			$event.add(self, :on_start, "link::start")
