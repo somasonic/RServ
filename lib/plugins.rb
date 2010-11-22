@@ -5,11 +5,13 @@
 #++
 module RServ
   class Plugin
+		
     @name == File.basename(__FILE__.split("/")[-1], '.rb')
-    def self.inherited(child)
-      @children ||= []
+    
+		def self.inherited(child)
+			@children ||= []
+			@instances ||= {}
       @children << child
-      @instances ||= {}
       @instances[child] = child.new
     end
 
@@ -26,11 +28,18 @@ module RServ
     end
 
     def self.load(f)
-      Thread.new { a = Kernel.load(f) }
-      fn = File.basename(f, '.rb')
-      klass = @children.find { |e| e.name.downcase == fn }
-      @instances[klass] = klass.new if klass
-    end
+			begin
+				$log.info "Attempting to load plugin #{f}."
+				Kernel.load(f)
+    	  fn = File.basename(f, '.rb')
+    		klass = @children.find { |e| e.name.downcase == fn }
+	  	  @instances[klass] = klass.new if klass
+				puts "instanced"
+				$log.info "Loaded plugin #{f}."
+			rescue => e
+				$log.error "Error loading plugin #{f}. Error: #{e}"
+			end
+		end
 
 
     def self.unload(c)
