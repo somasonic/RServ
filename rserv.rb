@@ -8,7 +8,7 @@ require 'lib/plugins'
 
 
 # Basic initialization: config, log, events
-$log = Logger.new(STDOUT)
+$log = Logger.new('log/rserv.log')
 $config = RServ::Config.new('conf/rserv.yaml')
 $event = RServ::Events.new # Global variables are easy
 
