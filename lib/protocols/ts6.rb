@@ -17,9 +17,10 @@ module RServ::Protocols
 
 		def on_start(link)
 			@link = link
-			send("PASS #{$config['link']['password']} TS 6 #{$config['link']['serverid']}") # PASS password TS ts-ver SID
-			send("CAPAB QS ENCAP SERVICES") # Services to identify as a service
-			send("SERVER #{$config['link']['name']} 0 #{$config['link']['description']}")
+			sleep 2
+			send("PASS #{$config['link']['password']} TS 6 :#{$config['link']['serverid']}") # PASS password TS ts-ver SID
+			send("CAPAB :QS ENCAP SERVICES") # Services to identify as a service
+			send("SERVER #{$config['link']['name']} 0 :#{$config['link']['description']}")
 		end		
 		
 		def on_output(line)
@@ -34,8 +35,17 @@ module RServ::Protocols
 		def on_input(line)
 			line.chomp!
 			$log.debug("<---| #{line}")
-			if line =~ /^PING :(\d{2}\w{1}) (\d{2}\w{1})?/
+			puts "<---| #{line}"
+			if line =~ /^PING :(\w+)/
 				send("PONG :#{$1}")
+			elsif line =~ /^SVINFO \d \d \d :(\d{10})$/
+				t = Time.now.to_i
+				if [t - 1, t, t + 1].include?($1.to_i)
+					send("SVINFO 6 6 0 :#{t}")
+				else
+					$log.fatal "Servers out of sync. Remote time: #{$1}, our time: #{t}. Exiting."
+					exit
+				end
 			end
 		end
 
@@ -43,6 +53,7 @@ module RServ::Protocols
 
 		def send(text)
 			$log.debug("--->| #{text}")
+			puts "--->| #{text}"
 			@link.send(text) if @link
 		end
 	end
