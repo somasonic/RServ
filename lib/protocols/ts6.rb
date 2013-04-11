@@ -16,6 +16,7 @@ module RServ::Protocols
 
 		def on_start(link)
 			@link = link
+      $log.info "Connected to #{$config['server']['addr']}, sending PASS, CAPAB and SERVER"
 			send("PASS #{$config['link']['password']} TS 6 :#{$config['link']['serverid']}") # PASS password TS ts-ver SID
 			send("CAPAB :QS ENCAP SAVE RSFNC SERVICES") # Services to identify as a service
 			send("SERVER #{$config['link']['name']} 0 :#{$config['link']['description']}")
@@ -27,13 +28,13 @@ module RServ::Protocols
 		
 		def on_close(link)
 			@link = nil
+      $log.info "Link closed, starting new link with #{$config['server']['addr']}:#{$config['server']['port']}"
 			RServ::Link.new($config['server']['addr'], $config['server']['port'])
 		end
 
 		def on_input(line)
 			line.chomp!
 			$log.debug("<---| #{line}")
-			puts "<---| #{line}"
 			if line =~ /^PING :(.*)$/
 				send("PONG :#{$1}")
 			elsif line =~ /^SVINFO \d \d \d :(\d{10})$/
@@ -51,7 +52,6 @@ module RServ::Protocols
 
 		def send(text)
 			$log.debug("--->| #{text}")
-			puts "--->| #{text}"
 			@link.send(text) if @link
 		end
 	end

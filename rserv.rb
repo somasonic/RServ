@@ -10,6 +10,7 @@ require 'lib/plugins'
 
 # Basic initialization: config, log, events
 $log = Logger.new('log/rserv.log')
+$log.info "Log initialised"
 $config = RServ::Config.new('conf/rserv.yaml')
 $event = RServ::Events.new # Global variables are easy
 
@@ -19,11 +20,11 @@ $event = RServ::Events.new # Global variables are easy
 
 proto = require "lib/protocols/#{$config['link']['protocol']}"
 unless proto
-  puts "Couldn't load protocol #{$config['link']['protocol']}. Exiting."
-  exit
+  $log.fatal "Couldn't load protocol #{$config['link']['protocol']}. Exiting."
 end
 
 # The link, this is basically an event-socket.
+$log.info "Attempting to initialise link..."
 RServ::Link.new($config['server']['addr'], $config['server']['port'], true)
 
 # Plugins. There is no need for a special loader
@@ -32,6 +33,7 @@ RServ::Link.new($config['server']['addr'], $config['server']['port'], true)
 $config['plugins'] ||= []
 $config['plugins'].each do |p| 
   Thread.new do 
+    $log.info "Loading plugin: #{p}"
     RServ::Plugin.load "plugins/#{p}.rb"
   end
 end
