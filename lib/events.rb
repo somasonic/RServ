@@ -51,12 +51,13 @@ module RServ
         end
       end
       Thread.new do
-        return unless event[0..4] == "cmd::"
-        cmd = event[4..-1].to_s[1..-1]
-        plugins = Plugin.list
-        plugins.each do |p|
-          if p.respond_to?("cmd_#{cmd}")
-            Thread.new { p.method("cmd_#{cmd}").call(*args) }
+        if event =~ /^cmd::(.*)$/
+          cmd = $1
+          plugins = Plugin.list
+          plugins.each do |p|
+            if p.respond_to?("cmd_#{cmd}")
+              Thread.new { p.method("cmd_#{cmd}").call(*args) }
+            end
           end
         end
       end
