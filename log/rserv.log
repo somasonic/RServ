@@ -56,3 +56,130 @@ D, [2010-11-20T19:23:46.597651 #3720] DEBUG -- : <---| :therealandy.com NOTICE *
 W, [2010-11-20T19:23:46.598678 #3720]  WARN -- : Disconnected from 127.0.0.1:31415.
 D, [2010-11-20T19:23:46.598814 #3720] DEBUG -- : <---| ERROR :Closing Link: 127.0.0.1 (Incompatible TS version)
 I, [2010-11-20T19:23:46.599305 #3720]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_close> for link::close.
+I, [2013-04-11T09:22:37.498570 #22061]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_start> for link::start.
+I, [2013-04-11T09:22:37.498891 #22061]  INFO -- : Calling #<Method: RServ::Link#on_link_start> for link::start.
+D, [2013-04-11T09:22:39.499004 #22061] DEBUG -- : --->| PASS monkey TS 6 :00R
+D, [2013-04-11T09:22:39.499426 #22061] DEBUG -- : --->| CAPAB :QS ENCAP EUID SAVE RSFNC SERVICES
+D, [2013-04-11T09:22:39.499547 #22061] DEBUG -- : --->| SERVER rserv.bot 0 :Ruby Services
+I, [2013-04-11T09:22:39.500094 #22061]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2013-04-11T09:22:39.500623 #22061]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2013-04-11T09:22:39.500802 #22061]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:22:39.501016 #22061] DEBUG -- : <---| :local.host NOTICE * :*** Looking up your hostname...
+I, [2013-04-11T09:22:39.501260 #22061]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:22:39.501466 #22061] DEBUG -- : <---| :local.host NOTICE * :*** Checking Ident
+I, [2013-04-11T09:22:39.501773 #22061]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:22:39.501920 #22061] DEBUG -- : <---| :local.host NOTICE * :*** No Ident response
+D, [2013-04-11T09:22:39.502116 #22061] DEBUG -- : <---| :local.host NOTICE * :*** Couldn't look up your hostname
+D, [2013-04-11T09:22:39.502489 #22061] DEBUG -- : <---| PASS monkey TS 6 :0BA
+I, [2013-04-11T09:22:39.541204 #22061]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2013-04-11T09:22:39.541338 #22061]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2013-04-11T09:22:39.541841 #22061]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2013-04-11T09:22:39.541967 #22061]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2013-04-11T09:22:39.542124 #22061]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:22:39.542266 #22061] DEBUG -- : <---| SERVER local.host 1 :test server
+D, [2013-04-11T09:22:39.542448 #22061] DEBUG -- : <---| CAPAB :BAN CHW CLUSTER ENCAP EOPMOD EUID EX IE KLN KNOCK MLOCK QS RSFNC SAVE SERVICES TB UNKLN
+D, [2013-04-11T09:22:39.542835 #22061] DEBUG -- : <---| :0BA EUID andy 1 1365686414 +ailoswz ~andy 127.0.0.1 127.0.0.1 0BAAAAAAB * * :Andrew
+D, [2013-04-11T09:22:39.543057 #22061] DEBUG -- : <---| PING :0BA
+D, [2013-04-11T09:22:39.542924 #22061] DEBUG -- : <---| SVINFO 6 6 0 :1365686559
+D, [2013-04-11T09:22:39.543932 #22061] DEBUG -- : --->| SVINFO 6 6 0 :1365686559
+D, [2013-04-11T09:22:39.544079 #22061] DEBUG -- : --->| PONG :0BA
+I, [2013-04-11T09:22:47.596010 #22061]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:22:47.596292 #22061] DEBUG -- : <---| :0BA SJOIN 1365686567 #sporks +nt :@0BAAAAAAB
+I, [2013-04-11T09:22:56.518406 #22061]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:22:56.518674 #22061] DEBUG -- : <---| :0BAAAAAAB QUIT :Killed (andy (<No reason given>))
+I, [2013-04-11T09:23:29.551150 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_start> for link::start.
+I, [2013-04-11T09:23:29.551362 #22131]  INFO -- : Calling #<Method: RServ::Link#on_link_start> for link::start.
+D, [2013-04-11T09:23:31.551714 #22131] DEBUG -- : --->| PASS monkey TS 6 :00R
+D, [2013-04-11T09:23:31.552166 #22131] DEBUG -- : --->| CAPAB :QS ENCAP SAVE RSFNC SERVICES
+D, [2013-04-11T09:23:31.552285 #22131] DEBUG -- : --->| SERVER rserv.bot 0 :Ruby Services
+I, [2013-04-11T09:23:31.552739 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:23:31.552957 #22131] DEBUG -- : <---| :local.host NOTICE * :*** Looking up your hostname...
+I, [2013-04-11T09:23:31.553427 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2013-04-11T09:23:31.553515 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:23:31.553867 #22131] DEBUG -- : <---| :local.host NOTICE * :*** Checking Ident
+D, [2013-04-11T09:23:31.554041 #22131] DEBUG -- : <---| :local.host NOTICE * :*** No Ident response
+I, [2013-04-11T09:23:31.554470 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:23:31.554706 #22131] DEBUG -- : <---| :local.host NOTICE * :*** Couldn't look up your hostname
+I, [2013-04-11T09:23:31.554862 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:23:31.554984 #22131] DEBUG -- : <---| PASS monkey TS 6 :0BA
+I, [2013-04-11T09:23:31.594123 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2013-04-11T09:23:31.594230 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:23:31.594612 #22131] DEBUG -- : <---| SERVER local.host 1 :test server
+I, [2013-04-11T09:23:31.594716 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:23:31.595022 #22131] DEBUG -- : <---| CAPAB :BAN CHW CLUSTER ENCAP EOPMOD EUID EX IE KLN KNOCK MLOCK QS RSFNC SAVE SERVICES TB UNKLN
+I, [2013-04-11T09:23:31.594889 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:23:31.595277 #22131] DEBUG -- : <---| PING :0BA
+D, [2013-04-11T09:23:31.595698 #22131] DEBUG -- : <---| SVINFO 6 6 0 :1365686611
+D, [2013-04-11T09:23:31.596033 #22131] DEBUG -- : --->| SVINFO 6 6 0 :1365686611
+D, [2013-04-11T09:23:31.596147 #22131] DEBUG -- : --->| PONG :0BA
+I, [2013-04-11T09:23:41.508301 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:23:41.508497 #22131] DEBUG -- : <---| :0BA UID andy 1 1365686621 +i ~andy 127.0.0.1 127.0.0.1 0BAAAAAAC :Andrew
+I, [2013-04-11T09:23:47.297807 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:23:47.298009 #22131] DEBUG -- : <---| :0BAAAAAAC MODE 0BAAAAAAC :+aloswz
+I, [2013-04-11T09:24:11.033022 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:11.033295 #22131] DEBUG -- : <---| :0BAAAAAAC MODE 0BAAAAAAC :-alosz
+I, [2013-04-11T09:24:15.593311 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:15.593690 #22131] DEBUG -- : <---| :0BAAAAAAC MODE 0BAAAAAAC :+alosz
+I, [2013-04-11T09:24:20.144856 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:20.145232 #22131] DEBUG -- : <---| :0BA SJOIN 1365686660 #a +nt :@0BAAAAAAC
+I, [2013-04-11T09:24:21.226563 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:21.227003 #22131] DEBUG -- : <---| :0BAAAAAAC TOPIC #a :a
+I, [2013-04-11T09:24:23.593731 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:23.594101 #22131] DEBUG -- : <---| :0BAAAAAAC TOPIC #a :a
+I, [2013-04-11T09:24:26.094163 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:26.094443 #22131] DEBUG -- : <---| :0BAAAAAAC TOPIC #a :a
+I, [2013-04-11T09:24:28.595785 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:28.596231 #22131] DEBUG -- : <---| :0BAAAAAAC TOPIC #a :adas
+I, [2013-04-11T09:24:31.098067 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:31.098449 #22131] DEBUG -- : <---| :0BAAAAAAC TOPIC #a :adasadsf
+I, [2013-04-11T09:24:33.598651 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:33.598948 #22131] DEBUG -- : <---| :0BAAAAAAC TOPIC #a :adasadsff
+I, [2013-04-11T09:24:36.099735 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:36.100035 #22131] DEBUG -- : <---| :0BAAAAAAC TOPIC #a :adasadsffasdf
+I, [2013-04-11T09:24:38.600652 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:38.600981 #22131] DEBUG -- : <---| :0BAAAAAAC TOPIC #a :adasadsffasdfd
+I, [2013-04-11T09:24:39.784581 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:39.784809 #22131] DEBUG -- : <---| :0BAAAAAAC QUIT :Quit: Reconnecting
+I, [2013-04-11T09:24:39.787846 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:39.788034 #22131] DEBUG -- : <---| :0BA UID andy 1 1365686679 +i ~andy 127.0.0.1 127.0.0.1 0BAAAAAAD :Andrew
+I, [2013-04-11T09:24:39.827289 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:24:39.827611 #22131] DEBUG -- : <---| :0BA SJOIN 1365686679 #a +nt :@0BAAAAAAD
+I, [2013-04-11T09:25:24.087795 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:25:24.088020 #22131] DEBUG -- : <---| :0BAAAAAAD QUIT :Client Quit
+I, [2013-04-11T09:25:43.047710 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:25:43.048059 #22131] DEBUG -- : <---| PING :local.host
+D, [2013-04-11T09:25:43.048228 #22131] DEBUG -- : --->| PONG :local
+I, [2013-04-11T09:28:03.047695 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:28:03.047960 #22131] DEBUG -- : <---| PING :local.host
+D, [2013-04-11T09:28:03.048098 #22131] DEBUG -- : --->| PONG :local
+I, [2013-04-11T09:30:23.047775 #22131]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:30:23.048048 #22131] DEBUG -- : <---| PING :local.host
+D, [2013-04-11T09:30:23.048208 #22131] DEBUG -- : --->| PONG :local
+I, [2013-04-11T09:31:16.546552 #22461]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_start> for link::start.
+I, [2013-04-11T09:31:16.546757 #22461]  INFO -- : Calling #<Method: RServ::Link#on_link_start> for link::start.
+D, [2013-04-11T09:31:16.546838 #22461] DEBUG -- : --->| PASS monkey TS 6 :00R
+D, [2013-04-11T09:31:16.547477 #22461] DEBUG -- : --->| CAPAB :QS ENCAP SAVE RSFNC SERVICES
+I, [2013-04-11T09:31:16.547684 #22461]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:31:16.547905 #22461] DEBUG -- : <---| :local.host NOTICE * :*** Looking up your hostname...
+I, [2013-04-11T09:31:16.548427 #22461]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2013-04-11T09:31:16.548551 #22461]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:31:16.548754 #22461] DEBUG -- : <---| :local.host NOTICE * :*** Checking Ident
+D, [2013-04-11T09:31:16.548825 #22461] DEBUG -- : --->| SERVER rserv.bot 0 :Ruby Services
+I, [2013-04-11T09:31:16.549149 #22461]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:31:16.549290 #22461] DEBUG -- : <---| :local.host NOTICE * :*** No Ident response
+D, [2013-04-11T09:31:16.549666 #22461] DEBUG -- : <---| :local.host NOTICE * :*** Couldn't look up your hostname
+I, [2013-04-11T09:31:16.588067 #22461]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:31:16.588198 #22461] DEBUG -- : <---| PASS monkey TS 6 :0BA
+I, [2013-04-11T09:31:16.628302 #22461]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2013-04-11T09:31:16.628437 #22461]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2013-04-11T09:31:16.628710 #22461]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+I, [2013-04-11T09:31:16.628850 #22461]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:31:16.629049 #22461] DEBUG -- : <---| SERVER local.host 1 :test server
+D, [2013-04-11T09:31:16.629268 #22461] DEBUG -- : <---| CAPAB :BAN CHW CLUSTER ENCAP EOPMOD EUID EX IE KLN KNOCK MLOCK QS RSFNC SAVE SERVICES TB UNKLN
+D, [2013-04-11T09:31:16.629454 #22461] DEBUG -- : <---| SVINFO 6 6 0 :1365687076
+D, [2013-04-11T09:31:16.629607 #22461] DEBUG -- : <---| PING :0BA
+D, [2013-04-11T09:31:16.630270 #22461] DEBUG -- : --->| SVINFO 6 6 0 :1365687076
+D, [2013-04-11T09:31:16.630501 #22461] DEBUG -- : --->| PONG :0BA
+I, [2013-04-11T09:33:23.047767 #22461]  INFO -- : Calling #<Method: RServ::Protocols::TS6#on_input> for link::input.
+D, [2013-04-11T09:33:23.048014 #22461] DEBUG -- : <---| PING :local.host
+D, [2013-04-11T09:33:23.048159 #22461] DEBUG -- : --->| PONG :local.host

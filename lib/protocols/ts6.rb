@@ -16,9 +16,8 @@ module RServ::Protocols
 
 		def on_start(link)
 			@link = link
-			sleep 2
 			send("PASS #{$config['link']['password']} TS 6 :#{$config['link']['serverid']}") # PASS password TS ts-ver SID
-			send("CAPAB :QS ENCAP SERVICES") # Services to identify as a service
+			send("CAPAB :QS ENCAP SAVE RSFNC SERVICES") # Services to identify as a service
 			send("SERVER #{$config['link']['name']} 0 :#{$config['link']['description']}")
 		end		
 		
@@ -35,7 +34,7 @@ module RServ::Protocols
 			line.chomp!
 			$log.debug("<---| #{line}")
 			puts "<---| #{line}"
-			if line =~ /^PING :(\w+)/
+			if line =~ /^PING :(.*)$/
 				send("PONG :#{$1}")
 			elsif line =~ /^SVINFO \d \d \d :(\d{10})$/
 				t = Time.now.to_i
