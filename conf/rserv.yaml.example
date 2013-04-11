@@ -1,14 +1,10 @@
 plugins:
-  - dev
-control: 
-  name: rserv
-  channel: "#services"
 server: 
-  port: 31415
+  port: 6667
   addr: 127.0.0.1
 link: 
-  name: rserv.therealandy.com
+  name: rserv.irc.net
   serverid: 00R
   description: Ruby Services
   protocol: ts6
-  password: password-here
+  password: send-password-here
