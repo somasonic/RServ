@@ -6,11 +6,16 @@ require 'lib/config'
 require 'lib/events'
 require 'lib/link'
 require 'lib/plugins'
+require 'lib/timer'
 
 # Basic initialization: config, log, events
 $log = Logger.new('log/rserv.log')
 $log.level = Logger::INFO
-$log.info "Log initialised"
+$log.info "---------------------"
+$log.info "RServ session started"
+$log.info "---------------------"
+$log.info ""
+
 $config = RServ::Config.new('etc/rserv.yaml')
 $event = RServ::Events.new # Global variables are easy
 
