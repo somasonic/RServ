@@ -9,14 +9,22 @@ require 'lib/plugins'
 
 # Basic initialization: config, log, events
 $log = Logger.new('log/rserv.log')
+$log.level = Logger::INFO
 $log.info "Log initialised"
 $config = RServ::Config.new('etc/rserv.yaml')
 $event = RServ::Events.new # Global variables are easy
 
 
 # Make a PID file
-pid = $$
-
+begin
+  $log.info "Writing PID to #{$config['pidfile']}"
+  
+  pidfile = File.open($config['pidfile'], 'w')
+  pidfile.puts $$
+  pidfile.close
+rescue
+  $log.warn "Could not write PID file"
+end
 
 # Get the protocol loaded. Protocol support at
 # current is kinda bad, but the basic concept
