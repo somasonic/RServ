@@ -28,8 +28,8 @@ module RServ::Protocols
 		
 		def on_close(link)
 			@link = nil
-      $log.info "Link closed, starting new link with #{$config['server']['addr']}:#{$config['server']['port']}"
-			RServ::Link.new($config['server']['addr'], $config['server']['port'])
+      $log.info "Link closed, starting new link with #{$config['server']['addr']}:#{$config['server']['port']}..."
+			RServ::Link.new($config['server']['addr'], $config['server']['port'], true)
 		end
 
 		def on_input(line)
