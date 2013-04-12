@@ -8,3 +8,4 @@ link:
   description: Ruby Services
   protocol: ts6
   password: send-password-here
+pidfile: etc/rserv.pid

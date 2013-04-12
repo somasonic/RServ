@@ -7,12 +7,16 @@ require 'lib/events'
 require 'lib/link'
 require 'lib/plugins'
 
-
 # Basic initialization: config, log, events
 $log = Logger.new('log/rserv.log')
 $log.info "Log initialised"
-$config = RServ::Config.new('conf/rserv.yaml')
+$config = RServ::Config.new('etc/rserv.yaml')
 $event = RServ::Events.new # Global variables are easy
+
+
+# Make a PID file
+pid = $$
+
 
 # Get the protocol loaded. Protocol support at
 # current is kinda bad, but the basic concept
