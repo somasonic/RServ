@@ -7,7 +7,7 @@ module RServ
   # based on it to the parser.
   class Link
     attr_reader :connected
-    def initialize(server, port, do_start = false)
+    def initialize(server, port, do_start = true)
       @connected = false
       @buffer = []
       @socket = nil
