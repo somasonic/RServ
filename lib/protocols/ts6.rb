@@ -20,7 +20,7 @@ module RServ::Protocols
 
 		def on_start(link)
 			@link = link
-      sleep 3
+      sleep 1
       $log.info "Connected to #{$config['server']['addr']}, sending PASS, CAPAB and SERVER"
 			send("PASS #{$config['link']['password']} TS 6 :#{$config['link']['serverid']}") # PASS password TS ts-ver SID
 			send("CAPAB :QS ENCAP SAVE RSFNC SERVICES") # Services to identify as a service
@@ -33,8 +33,10 @@ module RServ::Protocols
 		
 		def on_close(link)
 			@link, @remote_sid, @established, @last_pong = nil, nil, false, 0
-      $log.fatal "Link closed. Quitting."
-      return
+      $log.info "Link closed."
+      $log.info "Restarting..."
+      exec('/usr/bin/env', 'ruby', File.expand_path("../../../rserv.rb", __FILE__))
+      exit
     end
 
 		def on_input(line)
