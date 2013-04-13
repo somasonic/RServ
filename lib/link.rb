@@ -7,7 +7,7 @@ module RServ
   # based on it to the parser.
   class Link
     attr_reader :connected
-    def initialize(server, port, do_start = true)
+    def initialize(server, port, do_start = false)
       @connected = false
       @buffer = []
       @socket = nil
@@ -50,20 +50,18 @@ module RServ
     private
 
     def main_loop
-      Thread.new do
-        while @connected
-          begin
-            x = @socket.gets
-            raise "Disconnected" if x.nil?
-            $event.send("link::input", x)
-          rescue => boom
-            $log.warn "Disconnected from #{@server}:#{@port}."
-            @connected = false
-            @socket.close
-            @socket = nil
-            @buffer.clear
-            $event.send("link::close", self)
-          end
+      while @connected
+        begin
+          x = @socket.gets
+          raise "Disconnected" if x.nil?
+          $event.send("link::input", x)
+        rescue => boom
+          $log.warn "Disconnected from #{@server}:#{@port}."
+          @connected = false
+          @socket.close
+          @socket = nil
+          @buffer.clear
+          $event.send("link::close", self)
         end
       end
     end

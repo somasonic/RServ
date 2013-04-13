@@ -8,6 +8,7 @@ module RServ::Protocols
 			@link = nil #socket
       @established = false
       @remote_sid = nil
+      @remote_name = "unknown.ircserver"
       @last_pong = 0
       
             
@@ -19,6 +20,7 @@ module RServ::Protocols
 
 		def on_start(link)
 			@link = link
+      sleep 3
       $log.info "Connected to #{$config['server']['addr']}, sending PASS, CAPAB and SERVER"
 			send("PASS #{$config['link']['password']} TS 6 :#{$config['link']['serverid']}") # PASS password TS ts-ver SID
 			send("CAPAB :QS ENCAP SAVE RSFNC SERVICES") # Services to identify as a service
@@ -31,47 +33,36 @@ module RServ::Protocols
 		
 		def on_close(link)
 			@link, @remote_sid, @established, @last_pong = nil, nil, false, 0
-      $log.info "Link closed, starting new link with #{$config['server']['addr']}:#{$config['server']['port']} in 2 seconds..."
-      Thread.new do
-        sleep 2
-		    RServ::Link.new($config['server']['addr'], $config['server']['port'], true)
-      end
-		end
+      $log.fatal "Link closed. Quitting."
+      return
+    end
 
 		def on_input(line)
 			line.chomp!
+      sid = $config['link']['serverid']
+      name = $config['link']['name']
 			$log.debug("<---| #{line}")
       if @established
         
-        # process commands after the link is established
-        if line =~ /^PING :(\S+)$/
-		      send("PONG :#{$1}")
-        elsif line =~ /^PONG :(\S+)$/
-          # this ping system is a load of crap, oh well
-          if @last_pong == 0
-            @last_pong = Time.now.to_i
-          else
-            diff = Time.now.to_i - @last_pong
-            if diff > 300
-              $log.fatal "Exiting due to ping timeout: 300sec."
-              return
-            else
-              @last_pong = Time.now.to_i
-            end
-          end
-          sleep 300
-          send("PING :#{$config['link']['name']}")
-        elsif line =~ /^:(\w{3}) (\w+) (.*)$/
-          handle_input($1, $2)
-        else
-          unhandled_input(line)
+        if line =~ /^:(\w{3}) PING (\S+\.\w+) :(\w{3})$/
+          send(":#{sid} PONG #{name} :#{$1}")
+          $log.info "Ponging #{$1}"
+        elsif line =~ /^SQUIT (\w{3}) :(.*)$/
+          $log.info "SQUIT received for our SID: SQUIT #{$1} (#{$2})"
         end
+        
+        #if line =~ /^:(\w{3}) (\w+) (.*)$/
+        #  handle_input($1, $2)
+        #else
+        #  unhandled_input(line)
+        #end
   
       else
         
         #establishing the link
         if line =~ /^PASS (\S+) TS 6 :(\w{3})$/ # todo: make match accept password to config
           @remote_sid = $2
+          $log.info "Received PASS"
         elsif line =~ /^PING :(\S+)$/
           if @remote_sid == nil
             $log.fatal "Received SVINFO but have got no SID recorded. Exiting."
@@ -79,11 +70,19 @@ module RServ::Protocols
           end
 		      send("PONG :#{$1}")
           send("PING :#{$config['link']['serverid']}")
-          $log.info("Link established with #{@remote_sid}")
-          $event.send("link::established", self)
-          @established = true
-	      elsif line =~ /^SERVER/
+        elsif line =~ /^:(\w{3}) PING (\S+\.\w+) :(\w{3})$/
+          @remote_name = $2 if $1 == @remote_sid
+          send(":#{sid} PONG #{name} :#{$1}")
+          $log.info "Received burst PING from SID #{$1}, ponging.."
+        elsif line =~ /^SERVER/
+          $log.info "Received SERVER, sending SVINFO"
           send("SVINFO 6 6 0 :#{Time.now.to_i}")
+        elsif line =~ /^:(\w{3}) PONG (\S+\.\w+) :(\w{3})$/
+          if $1 == @remote_sid and $3 == sid
+            @established = true
+            $event.send("server::connected")
+            $log.info "Server connection established to #{$2} (#{$1})!"
+          end
         end
       end
     end
