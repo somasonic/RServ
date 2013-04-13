@@ -61,7 +61,7 @@ module RServ::Protocols
           end
           sleep 300
           send("PING :#{$config['link']['name']}")
-        elsif line =~ /^:#{@remote_sid} (\w+) (.*)$/
+        elsif line =~ /^:(\w{3}) (\w+) (.*)$/
           handle_input($1, $2)
         else
           unhandled_input(line)
@@ -73,27 +73,19 @@ module RServ::Protocols
         if line =~ /^PASS (\S+) TS 6 :(\w{3})$/ # todo: make match accept password to config
           @remote_sid = $2
         elsif line =~ /^PING :(\S+)$/
+          if @remote_sid == nil
+            $log.fatal "Received SVINFO but have got no SID recorded. Exiting."
+            return
+          end
 		      send("PONG :#{$1}")
-	      elsif line =~ /^SVINFO \d \d \d :(\d{10})$/
-	        t = Time.now.to_i
-	        if [t - 1, t, t + 1].include?($1.to_i) # allow +/- one second out of sync
-	          send("SVINFO 6 6 0 :#{t}")
-            send("PING :#{$config['link']['serverid']}")
-            if @remote_sid == nil
-              $log.fatal "Received SVINFO but have got no SID recorded. Exiting."
-              return
-            end
-            $log.info("Link established with #{@remote_sid}")
-            $event.send("link::established", self)
-            @established = true
-          else
-					  $log.fatal "Servers out of sync. Remote time: #{$1}, our time: #{t}. Exiting."
-		        return
-				  end
-          
+          send("PING :#{$config['link']['serverid']}")
+          $log.info("Link established with #{@remote_sid}")
+          $event.send("link::established", self)
+          @established = true
+	      elsif line =~ /^SERVER/
+          send("SVINFO 6 6 0 :#{Time.now.to_i}")
         end
-        
-	    end
+      end
     end
 
 		private
@@ -102,6 +94,18 @@ module RServ::Protocols
 			$log.debug("--->| #{text}")
 			@link.send(text) if @link
 		end
+    
+    def handle_input(cmd, params)
+      if cmd == "PING"
+        if params =~ /^(\S+) :(\w{3})$/
+          send(":#{$config['link']['serverid']} PONG #{$config['link']['name']} :#{$2}")
+        end
+      end
+    end
+    
+    def unhandled_input(line)
+      $log.info "UNHANDLED INPUT: #{line}"
+    end
     
 	end
 end
