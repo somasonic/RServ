@@ -9,8 +9,8 @@ require 'lib/plugins'
 require 'lib/timer'
 
 # Basic initialization: config, log, events
-$log = Logger.new('log/rserv.log')
-$log.level = Logger::INFO
+$log = Logger.new(STDOUT)
+$log.level = Logger::DEBUG
 $log.info "---------------------"
 $log.info "RServ session started"
 $log.info "---------------------"
@@ -28,7 +28,7 @@ begin
   pidfile.puts $$
   pidfile.close
 rescue
-  $log.warn "Could not write PID file"
+  $log.error "Could not write PID file"
 end
 
 # Get the protocol loaded. Protocol support at
