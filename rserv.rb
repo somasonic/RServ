@@ -6,7 +6,6 @@ require 'lib/config'
 require 'lib/events'
 require 'lib/link'
 require 'lib/plugins'
-require 'lib/timer'
 
 # Basic initialization: config, log, events
 $log = Logger.new(STDOUT)
