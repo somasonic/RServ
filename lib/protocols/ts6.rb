@@ -31,9 +31,9 @@ module RServ::Protocols
 		
 		def on_close(link)
 			@link, @remote_sid, @established, @last_pong = nil, nil, false, 0
-      $log.info "Link closed, starting new link with #{$config['server']['addr']}:#{$config['server']['port']} in 10 seconds..."
+      $log.info "Link closed, starting new link with #{$config['server']['addr']}:#{$config['server']['port']} in 2 seconds..."
       Thread.new do
-        sleep 10
+        sleep 2
 		    RServ::Link.new($config['server']['addr'], $config['server']['port'], true)
       end
 		end
