@@ -8,9 +8,8 @@ module RServ::Protocols
 			@link = nil #socket
       @established = false
       @remote_sid = nil
-      @remote_name = "unknown.ircserver"
-      @last_pong = 0
-      @to_pong = Array.new
+      #@remote_name = "unknown.ircserver"
+      @to_pong = Array.new #array used to collect servers to pong on burst. currently a hack.
             
 			$event.add(self, :on_start, "link::start")
       $event.add(self, :on_input, "link::input")
@@ -34,7 +33,7 @@ module RServ::Protocols
 		def on_close(link)
       $log.info "Link closed."
       $log.info "Restarting..."
-      exec('/usr/bin/env', 'ruby', File.expand_path("../../../rserv.rb", __FILE__))
+      exec('/usr/bin/env', 'ruby', File.expand_path("../../../rserv.rb", __FILE__)) # just re-execute and quit, no cleanup necessary.
       exit
     end
 
@@ -45,8 +44,8 @@ module RServ::Protocols
 			$log.debug("<---| #{line}")
       if @established
         
-        if line =~ /^:(\w{3}) PING (\S+\.\w+) :(\w{3})$/
-          send(":#{sid} PONG #{name} :#{$1}")
+        if line =~ /^PING :.*$/
+          send(":#{sid} PONG #{name} :#{@remote_sid}")
           $log.info "Ponging #{$1}"
         elsif line =~ /^SQUIT (\w{3}) :(.*)$/
           $log.info "SQUIT received for our SID: SQUIT #{$1} (#{$2})"
@@ -64,21 +63,28 @@ module RServ::Protocols
         if line =~ /^PASS (\S+) TS 6 :(\w{3})$/ # todo: make match accept password to config
           @remote_sid = $2
           $log.info "Received PASS"
-        elsif line =~ /^PING :(\S+)$/
-          
+        elsif line =~ /^PING :(\S+)$/  
           if @remote_sid == nil
             $log.fatal "Received PING but have got no SID recorded. Exiting."
             return
           end
-          Thread.new do
-            send("SVINFO 6 6 0 :#{Time.now.to_i}")
-            send("PING :#{$config['link']['serverid']}")		      
-            @to_pong.each do
-              |srv|
-              send(":#{sid} PONG #{name} :#{srv}")
-            end
+          send("SVINFO 6 6 0 :#{Time.now.to_i}")
+          send(":#{sid} UID RServ 0 0 +Zo rserv rserv.interlinked.me 127.0.0.1 #{sid}SRV000 :Ruby Services")
+          channels = $config['channels']
+          channels.each do
+            |chan|
+            send(":#{sid} SJOIN #{Time.now.to_i} #{chan} +nt :@#{sid}SRV000")
           end
-          
+          sleep 0.2
+          send("PING :#{$config['link']['serverid']}")		      
+          @to_pong.each do
+            |srv|
+            send(":#{sid} PONG #{name} :#{srv}")
+          end
+          channels.each do
+            |chan|
+            send(":#{sid} TMODE 1 #{chan} +o RServ")
+          end
         elsif line =~ /^:(\w{3}) PING (\S+\.\w+) :(\w{3})$/
           @to_pong << $1
         elsif line =~ /^:(\w{3}) PONG (\S+\.\w+) :(\w{3})$/
