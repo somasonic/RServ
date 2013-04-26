@@ -73,7 +73,7 @@ module RServ::Protocols
           channels = $config['channels']
           channels.each do
             |chan|
-            send(":#{sid} SJOIN #{Time.now.to_i} #{chan} +nt :@#{sid}SRV000")
+            send(":#{sid} SJOIN #{Time.now.to_i} ##{chan} +nt :#{sid}SRV000")
           end
           sleep 0.2
           send("PING :#{$config['link']['serverid']}")		      
@@ -83,7 +83,7 @@ module RServ::Protocols
           end
           channels.each do
             |chan|
-            send(":#{sid} TMODE 1 #{chan} +o RServ")
+            send(":#{sid} TMODE 1 ##{chan} +o RServ")
           end
         elsif line =~ /^:(\w{3}) PING (\S+\.\w+) :(\w{3})$/
           @to_pong << $1
