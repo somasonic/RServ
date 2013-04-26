@@ -10,7 +10,7 @@ module RServ::Protocols
       @remote_sid = nil
       @remote_name = "unknown.ircserver"
       @last_pong = 0
-      
+      @to_pong = Array.new
             
 			$event.add(self, :on_start, "link::start")
       $event.add(self, :on_input, "link::input")
@@ -32,7 +32,6 @@ module RServ::Protocols
 		end
 		
 		def on_close(link)
-			@link, @remote_sid, @established, @last_pong = nil, nil, false, 0
       $log.info "Link closed."
       $log.info "Restarting..."
       exec('/usr/bin/env', 'ruby', File.expand_path("../../../rserv.rb", __FILE__))
@@ -66,19 +65,22 @@ module RServ::Protocols
           @remote_sid = $2
           $log.info "Received PASS"
         elsif line =~ /^PING :(\S+)$/
+          
           if @remote_sid == nil
-            $log.fatal "Received SVINFO but have got no SID recorded. Exiting."
+            $log.fatal "Received PING but have got no SID recorded. Exiting."
             return
           end
-		      send("PONG :#{$1}")
-          send("PING :#{$config['link']['serverid']}")
+          Thread.new do
+            send("SVINFO 6 6 0 :#{Time.now.to_i}")
+            send("PING :#{$config['link']['serverid']}")		      
+            @to_pong.each do
+              |srv|
+              send(":#{sid} PONG #{name} :#{srv}")
+            end
+          end
+          
         elsif line =~ /^:(\w{3}) PING (\S+\.\w+) :(\w{3})$/
-          @remote_name = $2 if $1 == @remote_sid
-          send(":#{sid} PONG #{name} :#{$1}")
-          $log.info "Received burst PING from SID #{$1}, ponging.."
-        elsif line =~ /^SERVER/
-          $log.info "Received SERVER, sending SVINFO"
-          send("SVINFO 6 6 0 :#{Time.now.to_i}")
+          @to_pong << $1
         elsif line =~ /^:(\w{3}) PONG (\S+\.\w+) :(\w{3})$/
           if $1 == @remote_sid and $3 == sid
             @established = true
