@@ -57,7 +57,7 @@ RServ::Link.new(Configru.server.addr, Configru.server.port, true)
 # since they auto-register and it's simpler and
 # easier to do it this way.
 Configru.plugins.each do |p| 
-  break if p == "none" # for nice config
+  break if p == "none" # nice config
   Thread.new do 
     $log.info "Loading plugin: #{p}"
     RServ::Plugin.load "plugins/#{p}.rb"
