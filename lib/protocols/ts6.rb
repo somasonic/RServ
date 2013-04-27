@@ -99,7 +99,7 @@ module RServ::Protocols
         elsif line =~ /^:(\w{3}) UID (\S+) (\d{1,2}) (\d{10}) \+([a-zA-Z]*) (\S+) (\S+) (\S+) ([0-9]\w{2}[A-Z][A-Z0-9]{5}) :(.*)$/
           #uid
           user = RServ::IRC::User.new($2, $9, $3, $5, $6, $7, $8, $10)
-          puts "New user #{user.uid} on #{user.sid}. Host: #{user.nick}!#{user.username}@#{user.hostname}  (#{user.ip})| Modes: +#{user.mode}"
+          puts "New user #{user.uid} on #{user.sid}. Host: #{user.nick}!#{user.username}@#{user.hostname} (#{user.ip}) | Modes: +#{user.mode}"
           @users[user.uid] = user
         elsif line =~ /^:(\w{3}) SID (\S+) (\d{1,2}) ([0-9][0-9A-Z]{2}) :(.*)$/
           server = RServ::IRC::Server.new($4, $2, $3, $5)
