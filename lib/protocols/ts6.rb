@@ -20,10 +20,10 @@ module RServ::Protocols
 		def on_start(link)
 			@link = link
       sleep 1
-      $log.info "Connected to #{$config['server']['addr']}, sending PASS, CAPAB and SERVER"
-			send("PASS #{$config['link']['password']} TS 6 :#{$config['link']['serverid']}") # PASS password TS ts-ver SID
+      $log.info "Connected to #{Configru.server.addr}, sending PASS, CAPAB and SERVER"
+			send("PASS #{Configru.link.password} TS 6 :#{Configru.link.serverid}") # PASS password TS ts-ver SID
 			send("CAPAB :QS ENCAP SAVE RSFNC SERVICES") # Services to identify as a service
-			send("SERVER #{$config['link']['name']} 0 :#{$config['link']['description']}")              
+			send("SERVER #{Configru.link.name} 0 :#{Configru.link.description}")              
     end
       		
 		def on_output(line)
@@ -39,8 +39,8 @@ module RServ::Protocols
 
 		def on_input(line)
 			line.chomp!
-      sid = $config['link']['serverid']
-      name = $config['link']['name']
+      sid = Configru.link.serverid
+      name = Configru.link.name
 			$log.debug("<---| #{line}")
       if @established
         
@@ -70,18 +70,17 @@ module RServ::Protocols
           end
           send("SVINFO 6 6 0 :#{Time.now.to_i}")
           send(":#{sid} UID RServ 0 0 +Zo rserv rserv.interlinked.me 127.0.0.1 #{sid}SRV000 :Ruby Services")
-          channels = $config['channels']
-          channels.each do
+          Configru.channels.each do
             |chan|
             send(":#{sid} SJOIN #{Time.now.to_i} ##{chan} +nt :#{sid}SRV000")
           end
           sleep 0.2
-          send("PING :#{$config['link']['serverid']}")		      
+          send("PING :#{sid}")		      
           @to_pong.each do
             |srv|
             send(":#{sid} PONG #{name} :#{srv}")
           end
-          channels.each do
+          Configru.channels.each do
             |chan|
             send(":#{sid} TMODE 1 ##{chan} +o RServ")
           end
@@ -105,11 +104,7 @@ module RServ::Protocols
 		end
     
     def handle_input(cmd, params)
-      if cmd == "PING"
-        if params =~ /^(\S+) :(\w{3})$/
-          send(":#{$config['link']['serverid']} PONG #{$config['link']['name']} :#{$2}")
-        end
-      end
+
     end
     
     def unhandled_input(line)

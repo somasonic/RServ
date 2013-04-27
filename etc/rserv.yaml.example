@@ -1,13 +1,13 @@
-plugins:
-channels:
- - opers
-server: 
+server:
+  addr: upstream.irc.net
   port: 6667
-  addr: 127.0.0.1
 link: 
   name: rserv.irc.net
-  serverid: 00R
+  serverid: 0RS
   description: Ruby Services
   protocol: ts6
-  password: send-password-here
-pidfile: etc/rserv.pid
+  password: password-here
+channels:
+  - opers
+plugins:
+  - none  
