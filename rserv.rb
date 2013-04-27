@@ -27,8 +27,8 @@ Configru.load('etc/rserv.yaml') do
     option :serverid, String, '0RS'
     option :description, String, 'Ruby Services'
     option :protocol, String, 'ts6'
-    option :recv-password, String, 'password-here'
-    option :send-password, String, 'password-here'
+    option :recvpassword, String, 'password-here'
+    option :sendpassword, String, 'password-here'
   end
   option_array :channels, String, ['opers']
   option_array :plugins, String, ['none']

@@ -26,7 +26,7 @@ module RServ::Protocols
 			@link = link
       sleep 1
       $log.info "Connected to #{Configru.server.addr}, sending PASS, CAPAB and SERVER"
-			send("PASS #{Configru.link.password} TS 6 :#{Configru.link.serverid}") # PASS password TS ts-ver SID
+			send("PASS #{Configru.link.sendpassword} TS 6 :#{Configru.link.serverid}") # PASS password TS ts-ver SID
 			send("CAPAB :QS ENCAP SAVE RSFNC SERVICES") # Services to identify as a service
 			send("SERVER #{Configru.link.name} 0 :#{Configru.link.description}")              
     end
@@ -61,7 +61,9 @@ module RServ::Protocols
         #establishing the link
         if line =~ /^PASS (\S+) TS 6 :(\w{3})$/ # todo: make match accept password to config
           @remote_sid = $2
-          unless Configru.link.recv-password == $1
+          if Configru.link.recvpassword == $1
+            $log.info "Password received and matched."
+          else
             $log.fatal "Received conflicting link password, #{$1} received from upstream SID #{$2}. Exiting."
             exit
           end

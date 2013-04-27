@@ -6,7 +6,8 @@ link:
   serverid: 0RS
   description: Ruby Services
   protocol: ts6
-  password: password-here
+  sendpassword: password-here
+  recvpassword: password-here
 channels:
   - opers
 plugins:
