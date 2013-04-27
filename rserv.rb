@@ -27,7 +27,8 @@ Configru.load('etc/rserv.yaml') do
     option :serverid, String, '0RS'
     option :description, String, 'Ruby Services'
     option :protocol, String, 'ts6'
-    option :password, String, 'password-here'
+    option :recv-password, String, 'password-here'
+    option :send-password, String, 'password-here'
   end
   option_array :channels, String, ['opers']
   option_array :plugins, String, ['none']
@@ -51,7 +52,7 @@ end
 
 # The link, this is basically an event-socket.
 $log.info "Attempting to initialise link..."
-RServ::Link.new(Configru.server.addr, Configru.server.port, true)
+$link = RServ::Link.new(Configru.server.addr, Configru.server.port, true)
 
 # Plugins. There is no need for a special loader
 # since they auto-register and it's simpler and

@@ -1,15 +1,20 @@
 require 'lib/command'
 
+require 'lib/irc/user'
+require 'lib/irc/server'
+
 module RServ::Protocols
 	class TS6
-		attr_reader :name, :established
+		attr_reader :name, :established, :servers, :users
 		def initialize
 			@name = String.new
 			@link = nil #socket
       @established = false
       @remote_sid = nil
-      #@remote_name = "unknown.ircserver"
       @to_pong = Array.new #array used to collect servers to pong on burst. currently a hack.
+      
+      @servers = Hash.new
+      @users = Hash.new
             
 			$event.add(self, :on_start, "link::start")
       $event.add(self, :on_input, "link::input")
@@ -50,23 +55,20 @@ module RServ::Protocols
         elsif line =~ /^SQUIT (\w{3}) :(.*)$/
           $log.info "SQUIT received for our SID: SQUIT #{$1} (#{$2})"
         end
-        
-        #if line =~ /^:(\w{3}) (\w+) (.*)$/
-        #  handle_input($1, $2)
-        #else
-        #  unhandled_input(line)
-        #end
   
       else
         
         #establishing the link
         if line =~ /^PASS (\S+) TS 6 :(\w{3})$/ # todo: make match accept password to config
           @remote_sid = $2
-          $log.info "Received PASS"
+          unless Configru.link.recv-password == $1
+            $log.fatal "Received conflicting link password, #{$1} received from upstream SID #{$2}. Exiting."
+            exit
+          end
         elsif line =~ /^PING :(\S+)$/  
           if @remote_sid == nil
             $log.fatal "Received PING but have got no SID recorded. Exiting."
-            return
+            exit
           end
           send("SVINFO 6 6 0 :#{Time.now.to_i}")
           send(":#{sid} UID RServ 0 0 +Zo rserv rserv.interlinked.me 127.0.0.1 #{sid}SRV000 :Ruby Services")
@@ -102,14 +104,6 @@ module RServ::Protocols
 			$log.debug("--->| #{text}")
 			@link.send(text) if @link
 		end
-    
-    def handle_input(cmd, params)
-
-    end
-    
-    def unhandled_input(line)
-      $log.info "UNHANDLED INPUT: #{line}"
-    end
     
 	end
 end
