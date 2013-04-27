@@ -72,30 +72,39 @@ module RServ::Protocols
             $log.fatal "Received PING but have got no SID recorded. Exiting."
             exit
           end
+          # send SVINFO and introduce RServ bot
           send("SVINFO 6 6 0 :#{Time.now.to_i}")
           send(":#{sid} UID RServ 0 0 +Zo rserv rserv.interlinked.me 127.0.0.1 #{sid}SRV000 :Ruby Services")
-          Configru.channels.each do
+          Configru.channels.each do # join channels 
             |chan|
             send(":#{sid} SJOIN #{Time.now.to_i} ##{chan} +nt :#{sid}SRV000")
           end
-          sleep 0.2
-          send("PING :#{sid}")		      
-          @to_pong.each do
+          send("PING :#{sid}") # ping upstream
+          @to_pong.each do # ping other servers
             |srv|
             send(":#{sid} PONG #{name} :#{srv}")
           end
-          Configru.channels.each do
+          Configru.channels.each do # op ourselves
             |chan|
             send(":#{sid} TMODE 1 ##{chan} +o RServ")
           end
         elsif line =~ /^:(\w{3}) PING (\S+\.\w+) :(\w{3})$/
-          @to_pong << $1
+          @to_pong << $1 #hack
         elsif line =~ /^:(\w{3}) PONG (\S+\.\w+) :(\w{3})$/
-          if $1 == @remote_sid and $3 == sid
+          if $1 == @remote_sid and $3 == sid # from our upstream only
             @established = true
             $event.send("server::connected")
             $log.info "Server connection established to #{$2} (#{$1})!"
           end
+        elsif line =~ /^:(\w{3}) UID (\S+) (\d{1,2}) (\d{10}) \+([a-zA-Z]*) (\S+) (\S+) (\S+) ([0-9]\w{2}[A-Z][A-Z0-9]{5}) :(.*)$/
+          #uid
+          user = RServ::IRC::User.new($2, $9, $3, $5, $6, $7, $8, $10)
+          puts "New user #{user.uid} on #{user.sid}. Host: #{user.nick}!#{user.username}@#{user.hostname}  (#{user.ip})| Modes: +#{user.modes}"
+          @users[user.uid] = user
+        elsif line =~ /^:(\w{3}) SID (\S+) (\d{1,2}) ([0-9][0-9A-Z]{2}) :(.*)$/
+          server = RServ::IRC::Server.new($4, $2, $3, $5)
+          puts "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
+          @servers[server.sid] = server
         end
       end
     end
