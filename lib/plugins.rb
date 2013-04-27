@@ -15,18 +15,6 @@ module RServ
       @instances[child] = child.new
     end
 
-    def send(*args)
-      $event.send("proto::out", *args)
-    end
-
-    def nick(*args)
-      @instances["nick"].make(*args)
-    end
-
-    def event(*args)
-      $event.add(*args)
-    end
-
     def self.load(f)
 			begin
 				$log.info "Attempting to load plugin #{f}."
@@ -53,6 +41,20 @@ module RServ
       a = Array.new
       @instances.each_value {|x| a.push x}
       a
+    end
+    
+    private
+    
+    def send(*args)
+      $event.send("proto::out", *args)
+    end
+
+    def nick(*args)
+      @instances["nick"].make(*args)
+    end
+
+    def event(*args)
+      $event.add(*args)
     end
   end
 end
