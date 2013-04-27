@@ -34,7 +34,6 @@ module RServ
     	  fn = File.basename(f, '.rb')
     		klass = @children.find { |e| e.name.downcase == fn }
 	  	  @instances[klass] = klass.new if klass
-				puts "instanced"
 				$log.info "Loaded plugin #{f}."
 			rescue => e
 				$log.error "Error loading plugin #{f}. Error: #{e}"
