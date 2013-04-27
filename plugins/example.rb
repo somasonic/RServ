@@ -7,4 +7,10 @@ class Example < RServ::Plugin
     # code here will be executed upon link establishment
     # use send() to send raw text to the protocol
   end
+  
+  def on_input(raw_input)
+    #
+    # raw socket input
+    #
+  end
 end
