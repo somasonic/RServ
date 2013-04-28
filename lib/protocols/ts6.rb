@@ -5,7 +5,7 @@ require 'lib/irc/server'
 
 module RServ::Protocols
 	class TS6
-		attr_reader :name, :established, :servers, :users
+		attr_reader :name, :established, :remote_sid
 		def initialize
 			@name = String.new
 			@link = nil #socket
@@ -21,6 +21,14 @@ module RServ::Protocols
       $event.add(self, :on_close, "link::close")
       $event.add(self, :on_output, "proto::out")
 		end
+    
+    def get_uid(uid)
+      @users[uid]
+    end
+    
+    def get_sid(sid)
+      @servers[sid]
+    end
 
 		def on_start(link)
 			@link = link
@@ -142,6 +150,14 @@ module RServ::Protocols
       elsif line =~ /^:(\w{9}) QUIT :(.*)$/
         $log.info "User #{@users[$1].nick} quit (#{$2})"
         @users.delete $1
+      elsif line =~ /^:(\w{9}) ENCAP * REALHOST (.*)$/
+        @users[$1].realhost = $2
+        $log.info "Realhost for #{$1} (#{@users[$1]}) is #{@users[$1].realhost}."
+      elsif line =~ /^:(\w{9}) ENCAP * LOGIN (.*)$/
+        @users[$1].account = $2
+        $log.info "#{@users[$1]} logged in as #{@users[$1].account}."
+      elsif line =~ /^:(\w{9}) ENCAP * CERTFP (.*)$/
+        #do nothing
       elsif
         $log.info "Unhandled user input: #{line}"
       end
@@ -159,7 +175,7 @@ module RServ::Protocols
         server = RServ::IRC::Server.new($4, $2, $3, $5)
         $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
         @servers[server.sid] = server
-        send(":#{sid} PING #{name} :#{server.sid}")
+        send(":#{sid} PING #{name} :#{server.sid}")        
       elsif
         $log.info "Unhandled server input: #{line}"
       end
