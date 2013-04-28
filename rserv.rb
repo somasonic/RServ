@@ -9,8 +9,9 @@ require 'lib/link'
 require 'lib/plugins'
 
 # Basic initialization: config, log, events
-$log = Logger.new('logs/rserv.log')
-$log.level = Logger::INFO
+#$log = Logger.new('logs/rserv.log')
+$log = Logger.new(STDOUT)
+$log.level = Logger::DEBUG
 $log.info "---------------------"
 $log.info "RServ session started"
 $log.info "---------------------"
@@ -51,7 +52,7 @@ end
 
 # The link, this is basically an event-socket.
 $log.info "Attempting to initialise link..."
-$link = RServ::Link.new(Configru.server.addr, Configru.server.port, true)
+RServ::Link.new(Configru.server.addr, Configru.server.port, true)
 
 # Plugins. There is no need for a special loader
 # since they auto-register and it's simpler and
