@@ -103,9 +103,14 @@ module RServ::Protocols
           Configru.channels.each do # op ourselves
             |chan|
             send(":#{sid} TMODE 1 ##{chan} +o RServ")
-          end
+          end          
+        elsif line =~ /^SERVER :(\S+) 0 :(.*)$/
+          server = RServ::IRC::Server.new(@remote_sid, $1, 0, $2)
+          @remote = server
+          @servers[@remote_sid] = @remote
+          $log.info "Got SERVER from upstream #{@remote} (#{@remote.sid}) [#{@remote.hostname}]"
         elsif line =~ /^:(\w{3}) PONG (\S+\.\w+) :(\w{3})$/
-          if $1 == @remote_sid and $3 == sid # from our upstream only
+          if $1 == @remote.sid and $3 == sid # from our upstream only
             @established = true
             $event.send("server::connected")
             $log.info "Server connection established to #{$2} (#{$1})!"
@@ -118,7 +123,6 @@ module RServ::Protocols
         elsif line =~ /^:(\w{3}) SID (\S+) (\d{1,2}) ([0-9][0-9A-Z]{2}) :(.*)$/
           server = RServ::IRC::Server.new($4, $2, $3, $5)
           $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
-          @remote = server if server.sid == @remote_sid
           @servers[server.sid] = server
         end
       end
@@ -169,8 +173,8 @@ module RServ::Protocols
       
       if line =~ /^:(\w{3}) UID (\S+) (\d{1,2}) (\d{10}) \+([a-zA-Z]*) (\S+) (\S+) (\S+) ([0-9]\w{2}[A-Z][A-Z0-9]{5}) :(.*)$/
         user = RServ::IRC::User.new($2, $9, $3, $5, $6, $7, $8, $10)
-        $log.info "New user #{user.uid} on #{user.sid} (#{@servers[$1].hostname}). Host: #{user.nick}!#{user.username}@#{user.hostname} (#{user.ip}) | Modes: +#{user.mode}"
         @users[user.uid] = user
+        $log.info "New user #{user.uid} on #{user.sid} (#{@servers[$1].hostname}). Host: #{user.nick}!#{user.username}@#{user.hostname} (#{user.ip}) | Modes: +#{user.mode}"
       elsif line =~ /^:(\w{3}) SID (\S+) (\d{1,2}) ([0-9][0-9A-Z]{2}) :(.*)$/
         server = RServ::IRC::Server.new($4, $2, $3, $5)
         $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
