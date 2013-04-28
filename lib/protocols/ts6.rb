@@ -176,7 +176,7 @@ module RServ::Protocols
         $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
         @servers[server.sid] = server
         send(":#{sid} PING #{name} :#{server.sid}")        
-      elsif
+      else
         $log.info "Unhandled server input: #{line}"
       end
     end
