@@ -41,7 +41,7 @@ module RServ
             if obj.respond_to?(meth)
               begin
                 $log.debug("Calling #{obj.method(meth)} for #{event}.")
-                Thread.new { obj.method(meth).call(*args) }
+                obj.method(meth).call(*args)
               rescue => boom
                 $log.error("Failed to call #{obj}::#{meth} for an event:\r\n#{boom}")
                 del [obj, meth, wants]
