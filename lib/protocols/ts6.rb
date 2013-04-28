@@ -191,8 +191,10 @@ module RServ::Protocols
         server = RServ::IRC::Server.new($4, $2, $3, $5)
         $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
         @servers[server.sid] = server
-        $event.send("server::connected", user)
-        send(":#{sid} PING #{name} :#{server.sid}")        
+        $event.send("server::sjoin", server)
+        send(":#{sid} PING #{name} :#{server.sid}")
+      elsif line =~ /^:(\w{3}) PING (\S+) :(.*)$/
+        send(":#{sid} PONG #{name} :#{$1}")        
       else
         $log.info "Unhandled server input: #{line}"
       end
