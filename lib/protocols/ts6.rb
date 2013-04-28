@@ -107,10 +107,10 @@ module RServ::Protocols
         elsif line =~ /^SERVER :(\S+) 0 :(.*)$/
           server = RServ::IRC::Server.new(@remote_sid, $1, 0, $2)
           @remote = server
-          @servers[@remote_sid] = @remote
+          @servers[@remote_sid] = server
           $log.info "Got SERVER from upstream #{@remote} (#{@remote.sid}) [#{@remote.hostname}]"
         elsif line =~ /^:(\w{3}) PONG (\S+\.\w+) :(\w{3})$/
-          if $1 == @remote.sid and $3 == sid # from our upstream only
+          if $1 == @remote_sid and $3 == sid # from our upstream only
             @established = true
             $event.send("server::connected")
             $log.info "Server connection established to #{$2} (#{$1})!"
