@@ -29,7 +29,7 @@ module RServ
     def on_link_start(link)
       if link == self
         @connected = true
-        main_loop
+        Thread.new { main_loop }
         @buffer.each {|b| send(b)}
         @buffer.clear
       else
