@@ -8,8 +8,9 @@ module RServ::IRC
       @name, @ts, @mode = name, ts, mode
       
       @users, @ops, @voiced = parse_users(users)
-      
-      $log.info "New channel with #{@users.size} users (#{@ops.size} ops and #{@voiced.size} voiced). Userlist: #{@users.join(" ,")}."
+      eng_users = Array.new
+      @users.map {|u| eng_users << $link.get_uid(u)}
+      $log.info "New channel with #{@users.size} users (#{@ops.size} ops and #{@voiced.size} voiced). Userlist: #{eng_users.join(", ")}."
     end
     
     def to_s
@@ -47,12 +48,8 @@ module RServ::IRC
         second_bit = user[1]
         clean_user = user.gsub(/[\@\+]/, '')
         users << clean_user
-        if first_bit == "@" or second_bit == "@"
-          ops << clean_user
-          $log.info "#{$link.get_uid(clean_user)} has op on #{@name}."
-        elsif first_bit == "+" or second_bit == "+"
-          voiced << clean_user
-          $log.info "#{$link.get_uid(clean_user)} has voice on #{@name}."
+        ops << clean_user if first_bit == "@" or second_bit == "@"
+        voiced << clean_user if first_bit == "+" or second_bit == "+"
         end
       end
       
