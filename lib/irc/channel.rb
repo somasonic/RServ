@@ -50,7 +50,6 @@ module RServ::IRC
         users << clean_user
         ops << clean_user if first_bit == "@" or second_bit == "@"
         voiced << clean_user if first_bit == "+" or second_bit == "+"
-        end
       end
       
       return [users, ops, voiced]
