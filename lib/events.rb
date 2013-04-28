@@ -42,7 +42,8 @@ module RServ
               begin
                 $log.debug("Calling #{obj.method(meth)} for #{event}.")
                 obj.method(meth).call(*args)
-              rescue => boom
+              rescue => *boom
+                puts boom
                 $log.error("Failed to call #{obj}::#{meth} (with args: #{args.join(";")}) for #{event}:\r\n#{boom}")
                 del [obj, meth, wants]
               end
