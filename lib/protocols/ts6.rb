@@ -2,6 +2,7 @@ require 'lib/command'
 
 require 'lib/irc/user'
 require 'lib/irc/server'
+require 'lib/irc/channel'
 
 module RServ::Protocols
 	class TS6
@@ -21,6 +22,8 @@ module RServ::Protocols
       $event.add(self, :on_input, "link::input")
       $event.add(self, :on_close, "link::close")
       $event.add(self, :on_output, "proto::out")
+      
+      $link = self
 		end
     
     def get_uid(uid)
@@ -125,6 +128,9 @@ module RServ::Protocols
           server = RServ::IRC::Server.new($4, $2, $3, $5)
           $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
           @servers[server.sid] = server
+        elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (\S+) (\+[A-Za-z]+) :(.*)$/
+          chan = RServ::IRC::Channel.new($3, $2, $4, $5)
+          @channels[chan.name] = chan
         end
       end
     end
