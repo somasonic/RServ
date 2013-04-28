@@ -7,6 +7,10 @@ module RServ::IRC
       @sid, @hostname, @hops, @gecos = sid, hostname, hops, gecos
     end
     
+    def to_s
+      @hostname
+    end
+    
   end
   
 end
