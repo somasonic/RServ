@@ -150,13 +150,13 @@ module RServ::Protocols
       elsif line =~ /^:(\w{9}) QUIT :(.*)$/
         $log.info "User #{@users[$1].nick} quit (#{$2})"
         @users.delete $1
-      elsif line =~ /^:(\w{9}) ENCAP * REALHOST (.*)$/
+      elsif line =~ /^:(\w{9}) ENCAP \* REALHOST (.*)$/
         @users[$1].realhost = $2
         $log.info "Realhost for #{$1} (#{@users[$1]}) is #{@users[$1].realhost}."
-      elsif line =~ /^:(\w{9}) ENCAP * LOGIN (.*)$/
+      elsif line =~ /^:(\w{9}) ENCAP \* LOGIN (.*)$/
         @users[$1].account = $2
         $log.info "#{@users[$1]} logged in as #{@users[$1].account}."
-      elsif line =~ /^:(\w{9}) ENCAP * CERTFP (.*)$/
+      elsif line =~ /^:(\w{9}) ENCAP \* CERTFP (.*)$/
         #do nothing
       elsif
         $log.info "Unhandled user input: #{line}"
