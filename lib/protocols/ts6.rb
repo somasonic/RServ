@@ -104,7 +104,7 @@ module RServ::Protocols
             |chan|
             send(":#{sid} TMODE 1 ##{chan} +o RServ")
           end          
-        elsif line =~ /^SERVER :(\S+) 0 :(.*)$/
+        elsif line =~ /^SERVER (\S+) 0 :(.*)$/
           server = RServ::IRC::Server.new(@remote_sid, $1, 0, $2)
           @remote = server
           @servers[@remote_sid] = server
