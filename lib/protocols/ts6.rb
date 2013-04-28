@@ -15,6 +15,7 @@ module RServ::Protocols
       
       @servers = Hash.new
       @users = Hash.new
+      @channels = Hash.new
             
 			$event.add(self, :on_start, "link::start")
       $event.add(self, :on_input, "link::input")
