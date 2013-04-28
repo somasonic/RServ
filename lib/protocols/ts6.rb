@@ -141,25 +141,29 @@ module RServ::Protocols
       name = Configru.link.name
       
       if line =~ /^:(\w{9}) AWAY$/
-        $log.debug "#{$1} AWAY: #{@users[$1].away}"
+        $event.send("user::away", @users[$1])
         $log.info "User #{$1} (#{@users[$1]}) is no longer away."
         @users[$1].away = false
       elsif line =~ /^:(\w{9}) AWAY :(.*)$/
         $log.info "User #{$1} (#{@users[$1].nick}) is away (#{$2})."
         @users[$1].away = true      
+        $event.send("user::back", @users[$1])
       elsif line =~ /^:(\w{9}) NICK (\S+) :(\d+)$/
         uid = $1
         oldnick = @users[uid].nick
         @users[uid].nick = $2
+        $event.send("user::nick", @users[uid])
         $log.info "Nick change for #{$1}: #{oldnick} -> #{@users[uid].nick}"
       elsif line =~ /^:(\w{9}) QUIT :(.*)$/
         $log.info "User #{@users[$1].nick} quit (#{$2})"
+        $event.send("user::quit", @users[$1])
         @users.delete $1
       elsif line =~ /^:(\w{9}) ENCAP \S{1} REALHOST (.*)$/
         @users[$1].realhost = $2
         $log.info "Realhost for #{$1} (#{@users[$1]}) is #{@users[$1].realhost}."
       elsif line =~ /^:(\w{9}) ENCAP \S{1} LOGIN (.*)$/
         @users[$1].account = $2
+        $event.send("user::login", @users[$1])
         $log.info "#{@users[$1]} logged in as #{@users[$1].account}."
       elsif line =~ /^:(\w{9}) ENCAP \S{1} CERTFP (.*)$/
         #do nothing
@@ -175,11 +179,13 @@ module RServ::Protocols
       if line =~ /^:(\w{3}) UID (\S+) (\d{1,2}) (\d{10}) \+([a-zA-Z]*) (\S+) (\S+) (\S+) ([0-9]\w{2}[A-Z][A-Z0-9]{5}) :(.*)$/
         user = RServ::IRC::User.new($2, $9, $3, $5, $6, $7, $8, $10)
         @users[user.uid] = user
+        $event.send("user::connected", user)
         $log.info "New user #{user.uid} on #{user.sid} (#{@servers[$1].hostname}). Host: #{user.nick}!#{user.username}@#{user.hostname} (#{user.ip}) | Modes: +#{user.mode}"
       elsif line =~ /^:(\w{3}) SID (\S+) (\d{1,2}) ([0-9][0-9A-Z]{2}) :(.*)$/
         server = RServ::IRC::Server.new($4, $2, $3, $5)
         $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
         @servers[server.sid] = server
+        $event.send("server::connected", user)
         send(":#{sid} PING #{name} :#{server.sid}")        
       else
         $log.info "Unhandled server input: #{line}"
