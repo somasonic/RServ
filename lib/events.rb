@@ -32,7 +32,6 @@ module RServ
     # Sends an event. It's failsafe, and logs to the errorlog
     # if an error occurs when calling a method. Uses threads.
     def send(event, *args)
-      Thread.new do
         @events.each do |e|
           wants = e[2]
           if wants.downcase == event.downcase
@@ -50,8 +49,6 @@ module RServ
             end
           end
         end
-      end
-      Thread.new do
         if event =~ /^cmd::(.*)$/
           cmd = $1
           plugins = Plugin.list
@@ -60,7 +57,6 @@ module RServ
               Thread.new { p.method("cmd_#{cmd}").call(*args) }
             end
           end
-        end
       end
     end
   end
