@@ -113,7 +113,7 @@ module RServ::Protocols
           @remote = server
           @servers[@remote_sid] = server
           $log.info "Got SERVER from upstream #{@remote} (#{@remote.sid}) [#{@remote.hostname}]"
-        elsif line =~ /^:(\w{3}) PONG (\S+\.\w+) :(\w{3})$/
+        elsif line =~ /^:(\w{3}) PONG (\S+) :(\w{3})$/
           if $1 == @remote_sid and $3 == sid # from our upstream only
             @established = true
             $event.send("server::connected")
