@@ -210,13 +210,6 @@ module RServ::Protocols
         else
           @channels.delete($2)
         end
-      elsif line =~ /^:(\w{9}) PRIVMSG #main :eval (.*)$/i
-        begin
-        res = eval($2)
-        send(":0RSSRV000 PRIVMSG #main :#{res}")
-      rescue => e
-        send(":0RSSRV000 PRIVMSG #main :#{e}")
-      end
       else
         $log.info "Unhandled user input: #{line}"
       end
