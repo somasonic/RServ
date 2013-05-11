@@ -129,7 +129,7 @@ module RServ::Protocols
           $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
           @servers[server.sid] = server
         elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (\S+) (\+[A-Za-z]+) :(.*)$/
-          chan = RServ::IRC::Channel.new($3, $2, $4, $5)
+          chan = RServ::IRC::Channel.new($3, $2.to_i, $4, $5)
           @channels[chan.name] = chan
         end
       end
@@ -164,6 +164,12 @@ module RServ::Protocols
         $log.info "User #{@users[$1].nick} quit (#{$2})"
         $event.send("user::quit", @users[$1])
         @users.delete $1
+        chans = @channels
+        chans.each do
+          |chan|
+          chan.part($1)
+        end
+        @channels = chans
       elsif line =~ /^:(\w{9}) ENCAP \S{1} REALHOST (.*)$/
         @users[$1].realhost = $2
         $log.info "Realhost for #{$1} (#{@users[$1]}) is #{@users[$1].realhost}."
@@ -173,6 +179,44 @@ module RServ::Protocols
         $log.info "#{@users[$1]} logged in as #{@users[$1].account}."
       elsif line =~ /^:(\w{9}) ENCAP \S{1} CERTFP (.*)$/
         #do nothing
+      elsif line =~ /^:(\w{9}) JOIN (\d+) (#\w+) (\+[a-zA-Z]*)$/
+        chan = @channels[$3]
+        chan.join($1)
+        if $2.to_i < chan.ts
+          chan.ts = $2
+          chan.mode = $4
+          $log.info "New TS for #{chan}: #{chan.ts}. New modes: #{chan.mode}."
+        end
+        nick = @users[$1].nick
+        $log.info("#{nick} joined #{chan}.")
+        @channels[$3] = chan 
+      elsif line =~ /^:(\w{9}) KICK (#\w+) (\w{9}) :(.*)$/
+        chan = @channels[$2]
+        chan.part($3)
+        nick = @users[$3].nick
+        $log.info("#{nick} kicked from #{chan} by #{@users[$1].nick} (#{$4})")
+        if chan.users.size > 0
+          @channels[$2] = chan
+        else
+          @channels.delete($2)
+        end
+      elsif line =~ /^:(\w{9}) PART (#\w+)/
+        chan = @channels[$2]
+        chan.part($1)
+        nick = @users[$1].nick
+        $log.info("#{nick} parted #{chan}")
+        if chan.users.size > 0
+          @channels[$2] = chan
+        else
+          @channels.delete($2)
+        end
+      elsif line =~ /^:(\w{9}) PRIVMSG #main :eval (.*)$/i
+        begin
+        res = eval($2)
+        send(":0RSSRV000 PRIVMSG #main :#{res}")
+      rescue => e
+        send(":0RSSRV000 PRIVMSG #main :#{e}")
+      end
       else
         $log.info "Unhandled user input: #{line}"
       end
@@ -191,8 +235,16 @@ module RServ::Protocols
         server = RServ::IRC::Server.new($4, $2, $3, $5)
         $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
         @servers[server.sid] = server
-        $event.send("server::sjoin", server)
+        $event.send("server::sid", server)
         send(":#{sid} PING #{name} :#{server.sid}")
+      elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (\S+) (\+[A-Za-z]+) :(.*)$/
+        chan = RServ::IRC::Channel.new($3, $2.to_i, $4, $5)
+        if @channels.has_key?(chan.name)
+          #panic!
+          $log.fatal "Channels out of sync, dying"
+          exit
+        end
+        @channels[chan.name] = chan
       elsif line =~ /^:(\w{3}) PING (\S+) :(.*)$/
         send(":#{sid} PONG #{name} :#{$1}")        
       else

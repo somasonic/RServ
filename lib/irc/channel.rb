@@ -33,6 +33,28 @@ module RServ::IRC
       @users << user
     end
     
+    def voice(user)
+      @voiced << user if @users.include?(user)
+    end
+    
+    def devoice(user)
+      @voiced.delete user
+    end
+    
+    def deop(user)
+      @ops.delete user
+    end
+    
+    def op(user)
+      @ops << user if @users.include?(user)
+    end 
+    
+    def part(user)
+      @users.delete user
+      @voiced.delete user
+      @ops.delete user
+    end
+    
     private
         
     def parse_users(user_str)
