@@ -128,7 +128,7 @@ module RServ::Protocols
           server = RServ::IRC::Server.new($4, $2, $3, $5)
           $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
           @servers[server.sid] = server
-        elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (\S+) (\+[A-Za-z]+) :(.*)$/
+        elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (\S+) (\+[A-Za-z]+) .*:(.*)$/
           chan = RServ::IRC::Channel.new($3, $2.to_i, $4, $5)
           @channels[chan.name] = chan
         end
@@ -201,12 +201,12 @@ module RServ::Protocols
           @channels.delete($2)
         end
       elsif line =~ /^:(\w{9}) PART (#\w+)/
-        chan = @channels[$2]
+        chan = @channels[$2.downcase]
         chan.part($1)
         nick = @users[$1].nick
         $log.info("#{nick} parted #{chan}")
         if chan.users.size > 0
-          @channels[$2] = chan
+          @channels[$2.downcase] = chan
         else
           @channels.delete($2)
         end
@@ -230,7 +230,7 @@ module RServ::Protocols
         @servers[server.sid] = server
         $event.send("server::sid", server)
         send(":#{sid} PING #{name} :#{server.sid}")
-      elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (\S+) (\+[A-Za-z]+) :(.*)$/
+      elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (\S+) (\+[A-Za-z]+) .*:(.*)$/
         chan = RServ::IRC::Channel.new($3, $2.to_i, $4, $5)
         if @channels.has_key?(chan.name)
           #panic!
