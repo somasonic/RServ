@@ -299,12 +299,19 @@ module RServ::Protocols
       
       raw_users.each do
         |user|
-        first_bit = user[0]
-        second_bit = user[1]
-        clean_user = user.gsub(/[\@\+]/, '')
-        users << clean_user
-        ops << clean_user if first_bit == "@" or second_bit == "@"
-        voiced << clean_user if first_bit == "+" or second_bit == "+"
+        if user =~ /^@\+(.*)$/
+          ops << $1
+          voiced << $1
+          users << $1
+        elsif user =~ /^\+(.*)$/
+          voiced << $1
+          users << $1
+        elsif user =~ /^@(.*)$/
+          ops << $1
+          users << $1
+        else
+          users << $1
+        end
       end
       
       return [users, ops, voiced]
