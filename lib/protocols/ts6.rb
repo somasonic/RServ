@@ -75,20 +75,24 @@ module RServ::Protocols
         
         #establishing the link
         if line =~ /^:[0-9A-Z]{9}/
-          user_input(line)
-        elsif line =~ /^PASS (\S+) TS 6 :(\w{3})$/ # todo: make match accept password to config
+          user_input(line) #this isn't burst specific
+          
+        elsif line =~ /^PASS (\S+) TS 6 :(\w{3})$/ 
           @remote_sid = $2
+  
           if Configru.link.recvpassword == $1
             $log.info "Password received and matched."
           else
             $log.fatal "Received incorrect link password from upstream SID #{$2}. Exiting."
             exit
           end
+          
         elsif line =~ /^PING :(\S+)$/  
           if @remote_sid == nil
             $log.fatal "Received PING but have got no SID recorded. Exiting."
             exit
           end
+          
           # send SVINFO and introduce RServ bot
           send("SVINFO 6 6 0 :#{Time.now.to_i}")
           send(":#{sid} UID RServ 0 0 +Zo rserv rserv.interlinked.me 0 #{sid}SRV000 :Ruby Services")
@@ -106,30 +110,35 @@ module RServ::Protocols
           Configru.channels.each do # op ourselves
             |chan|
             send(":#{sid} TMODE 1 ##{chan} +o RServ")
-          end          
+          end  
+                  
         elsif line =~ /^SERVER (\S+) 1 :(.*)$/
           server = RServ::IRC::Server.new(@remote_sid, $1, 1, $2)
           @remote = server
           @servers[@remote_sid] = server
           $log.info "Got SERVER from upstream #{@remote} (#{@remote.sid}) [#{@remote.hostname}]"
+          
         elsif line =~ /^:(\w{3}) PONG (\S+) :(\w{3})$/
           if $1 == @remote_sid and $3 == sid # from our upstream only
             @established = true
             $event.send("server::connected")
             $log.info "Server connection established to #{$2} (#{$1})!"
           end
+          
         elsif line =~ /^:(\w{3}) UID (\S+) (\d{1,2}) (\d{10}) \+([a-zA-Z]*) (\S+) (\S+) (\S+) ([0-9]\w{2}[A-Z][A-Z0-9]{5}) :(.*)$/
-          #uid
           user = RServ::IRC::User.new($2, $9, $3, $5, $6, $7, $8, $10)
           @users[user.uid] = user
           $log.info "New user #{user.uid} on #{user.sid}. Host: #{user.nick}!#{user.username}@#{user.hostname} (#{user.ip}) | Modes: +#{user.mode}"
+          
         elsif line =~ /^:(\w{3}) SID (\S+) (\d{1,2}) ([0-9][0-9A-Z]{2}) :(.*)$/
           server = RServ::IRC::Server.new($4, $2, $3, $5)
           $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
           @servers[server.sid] = server
+          
         elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (#\w+) (\+.*) :(.*)$/
           chan = RServ::IRC::Channel.new($3, $2.to_i, $4, $5)
           @channels[chan.name] = chan
+          
         end
       end
     end
