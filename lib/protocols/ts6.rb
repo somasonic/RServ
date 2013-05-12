@@ -186,7 +186,8 @@ module RServ::Protocols
         #do nothing, prevent unhandled message
         
       elsif line =~ /^:(\w{9}) JOIN (\d+) (#\w+) (\+.*)$/
-        chan = @channels[$3].join($1)
+        chan = @channels[$3]
+        chan.join($3)
         
         if $2.to_i < chan.ts
           chan.ts = $2
@@ -208,7 +209,8 @@ module RServ::Protocols
         end
         
       elsif line =~ /^:(\w{9}) PART (#\w+)/
-        chan = @channels[$2].part($1)
+        chan = @channels[$2]
+        chan.part($1)
         $log.info("#{@users[$1]} parted #{chan}.")
         
         if chan.users.size > 0
