@@ -67,7 +67,6 @@ module RServ::Protocols
           server_input(line)
         elsif line =~ /^PING :.*$/
           send(":#{sid} PONG #{name} :#{@remote_sid}")
-          $log.info "Ponging #{$1}"
         elsif line =~ /^SQUIT (\w{3}) :(.*)$/
           $log.info "SQUIT received for our SID: SQUIT #{$1} (#{$2})"
         end
