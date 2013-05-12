@@ -8,9 +8,7 @@ module RServ::IRC
       @name, @ts, @mode = name, ts, mode
       
       @users, @ops, @voiced = users
-      eng_users = Array.new
-      @users.map {|u| eng_users << $link.get_uid(u)}
-      $log.info "New channel #{@name} with #{@users.size} users (#{@ops.size} ops and #{@voiced.size} voiced). Modes: #{@mode}. Userlist: #{eng_users.join(", ")}."
+      $log.info "New channel #{@name} with #{@users.size} users (#{@ops.size} ops and #{@voiced.size} voiced). Modes: #{@mode}. Userlist: #{@users.join(", ")}."
     end
     
     def to_s

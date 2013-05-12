@@ -127,8 +127,22 @@ module RServ::Protocols
           @servers[server.sid] = server
           
         elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (#\w+) (\+.*) :(.*)$/
-          chan = RServ::IRC::Channel.new($3, $2.to_i, $4, parse_users($5))
-          @channels[chan.name] = chan
+          if @channels.has_key?($3)
+            users, ops, voiced = parse_users($5)
+            
+            users.each do 
+              |u|
+              @users[u.nick].join(@channels[$3])
+              @channels[$3].join(u)
+              $log.info("#{u} joined #{@channels[$3]} in burst.")
+            end
+            
+            ops.each {|o| @channels[$3].op(o) }
+            voiced.each {|v| @channels[$3].voice(v) }
+          else
+            chan = RServ::IRC::Channel.new($3, $2.to_i, $4, parse_users($5))
+            @channels[chan.name] = chan
+          end
           
         end
       end
@@ -246,9 +260,23 @@ module RServ::Protocols
         $event.send("server::sid", server)
         send(":#{sid} PING #{name} :#{server.sid}")
      
-      elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (\S+) (\+.*) :(.*)$/
-        #the channel object logs its own creation
-        @channels[$3] = RServ::IRC::Channel.new($3, $2.to_i, $4, $5)
+      elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (#\w+) (\+.*) :(.*)$/
+        if @channels.has_key?($3)
+          users, ops, voiced = parse_users($5)
+          
+          users.each do 
+            |u|
+            @users[u.nick].join(@channels[$3])
+            @channels[$3].join(u)
+            $log.info("#{u} joined #{@channels[$3]} in burst.")
+          end
+          
+          ops.each {|o| @channels[$3].op(o) }
+          voiced.each {|v| @channels[$3].voice(v) }
+        else
+          chan = RServ::IRC::Channel.new($3, $2.to_i, $4, parse_users($5))
+          @channels[chan.name] = chan
+        end
      
       elsif line =~ /^:(\w{3}) PING (\S+) :(.*)$/
         #this is only called when a remote server pings (i.e. not from the server we connect to)
