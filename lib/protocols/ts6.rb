@@ -126,9 +126,26 @@ module RServ::Protocols
           @servers[server.sid] = server
           
         elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (#\w+) (\+.*) :(.*)$/
-          chan = RServ::IRC::Channel.new($3, $2.to_i, $4, $5)
-          @channels[chan.name] = chan
-          
+          if @channels.has_key?($3)
+            users, ops, voiced = parse_users($5)
+            
+            users.each {|u| @channels[$3].join(u) }
+            ops.each {|o| @channels[$3].op(o) }
+            voiced.each {|v| @channels[$3].voice(v) }
+            
+            eng_users = Array.new
+            users.each {|u| eng_users << @users[u].nick }
+            
+            $log.info "SJOIN to #{chan} (#{users.size} ops and #{voiced.size} voiced).  New users: #{eng_users.join(", ")}."  
+            if $2.to_i < @channels[$3].ts
+              @channels[$3].ts = $2.to_i
+              @channels[$3].mode = $4
+              $log.info "New TS for #{$3}: #{$2.ts}. New modes: #{$4}."
+            end
+          else
+            chan = RServ::IRC::Channel.new($3, $2.to_i, $4, parse_users($5))
+            @channels[chan.name] = chan
+          end
         end
       end
     end
@@ -189,7 +206,7 @@ module RServ::Protocols
         chan.join($3)
         
         if $2.to_i < chan.ts
-          chan.ts = $2
+          chan.ts = $2.to_i
           chan.mode = $4
           $log.info "New TS for #{chan}: #{chan.ts}. New modes: #{chan.mode}."
         end
@@ -241,9 +258,27 @@ module RServ::Protocols
         $event.send("server::sid", server)
         send(":#{sid} PING #{name} :#{server.sid}")
      
-      elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (\S+) (\+.*) :(.*)$/
-        #the channel object logs its own creation
-        @channels[$3] = RServ::IRC::Channel.new($3, $2.to_i, $4, $5)
+      elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (#\w+) (\+.*) :(.*)$/
+        if @channels.has_key?($3)
+          users, ops, voiced = parse_users($5)
+          
+          users.each {|u| @channels[$3].join(u) }
+          ops.each {|o| @channels[$3].op(o) }
+          voiced.each {|v| @channels[$3].voice(v) }
+          
+          eng_users = Array.new
+          users.each {|u| eng_users << @users[u].nick }
+          
+          $log.info "SJOIN to #{chan} (#{users.size} ops and #{voiced.size} voiced).  New users: #{eng_users.join(", ")}."  
+          if $2.to_i < @channels[$3].ts
+            @channels[$3].ts = $2.to_i
+            @channels[$3].mode = $4
+            $log.info "New TS for #{$3}: #{$2.ts}. New modes: #{$4}."
+          end
+        else
+          chan = RServ::IRC::Channel.new($3, $2.to_i, $4, parse_users($5))
+          @channels[chan.name] = chan
+        end
      
       elsif line =~ /^:(\w{3}) PING (\S+) :(.*)$/
         #this is only called when a remote server pings (i.e. not from the server we connect to)
@@ -253,6 +288,26 @@ module RServ::Protocols
         $log.info "Unhandled server input: #{line}"
       end
       
+    end
+        
+    def parse_users(user_str)
+      raw_users = user_str.split(" ")
+      
+      users = Array.new
+      ops = Array.new
+      voiced = Array.new
+      
+      raw_users.each do
+        |user|
+        first_bit = user[0]
+        second_bit = user[1]
+        clean_user = user.gsub(/[\@\+]/, '')
+        users << clean_user
+        ops << clean_user if first_bit == "@" or second_bit == "@"
+        voiced << clean_user if first_bit == "+" or second_bit == "+"
+      end
+      
+      return [users, ops, voiced]
     end
     
 	end
