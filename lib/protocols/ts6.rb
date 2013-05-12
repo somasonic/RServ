@@ -94,25 +94,14 @@ module RServ::Protocols
             exit
           end
           
-          # send SVINFO and introduce RServ bot
           send("SVINFO 6 6 0 :#{Time.now.to_i}")
-          send(":#{sid} UID RServ 0 0 +Zo rserv rserv.interlinked.me 0 #{sid}SRV000 :Ruby Services")
-          Configru.channels.each do # join channels 
-            |chan|
-            send(":#{sid} SJOIN #{Time.now.to_i} ##{chan} +nt :#{sid}SRV000")
-          end
           send("PING :#{sid}") # ping upstream
 
           @servers.each do  #pong each server
             |remotesid, obj|
             send(":#{sid} PONG #{name} :#{remotesid}")
           end
-          
-          Configru.channels.each do # op ourselves
-            |chan|
-            send(":#{sid} TMODE 1 ##{chan} +o RServ")
-          end  
-                  
+                            
         elsif line =~ /^SERVER (\S+) 1 :(.*)$/
           server = RServ::IRC::Server.new(@remote_sid, $1, 1, $2)
           @remote = server
