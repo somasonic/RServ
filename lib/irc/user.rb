@@ -13,7 +13,17 @@ module RServ::IRC
       
       @away = false 
       
+      @channels = Array.new
+      
       @sid = uid[0..2]
+    end
+    
+    def join(channel)
+      @channels << channel
+    end
+    
+    def part(channel)
+      @channels.delete channel
     end
     
     def to_s
