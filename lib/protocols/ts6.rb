@@ -228,7 +228,8 @@ module RServ::Protocols
       name = Configru.link.name
       
       if line =~ /^:(\w{3}) UID (\S+) (\d{1,2}) (\d{10}) \+([a-zA-Z]*) (\S+) (\S+) (\S+) ([0-9]\w{2}[A-Z][A-Z0-9]{5}) :(.*)$/
-        @users[$2] = RServ::IRC::User.new($2, $9, $3, $5, $6, $7, $8, $10)
+        user = RServ::IRC::User.new($2, $9, $3, $5, $6, $7, $8, $10)
+        @users[user.nick] = user
         $event.send("user::connected", @users[$2])
         $log.info "New user #{user.uid} on #{user.sid} (#{@servers[$1].hostname}). Host: #{user.nick}!#{user.username}@#{user.hostname} (#{user.ip}) | Modes: +#{user.mode}."
   
