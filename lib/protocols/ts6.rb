@@ -310,7 +310,7 @@ module RServ::Protocols
           ops << $1
           users << $1
         else
-          users << $1
+          users << user
         end
       end
       
