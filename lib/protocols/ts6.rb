@@ -169,7 +169,7 @@ module RServ::Protocols
         
         old_nick = @users[$1]
         @users[$1].nick = $2
-        $event.send("user::nick", @users[uid], old_nick)
+        $event.send("user::nick", @users[$1], old_nick)
       
       elsif line =~ /^:(\w{9}) QUIT :(.*)$/
         $log.info "User #{@users[$1].nick} quit (#{$2})."
