@@ -169,7 +169,7 @@ module RServ::Protocols
         
         # remove user from any channels they were in
         @channels.each do
-          |chan|
+          |name, chan|
           chan.part($1)
         end
         
