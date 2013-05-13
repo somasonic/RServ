@@ -224,6 +224,10 @@ module RServ::Protocols
           @channels.delete($2)
         end
         
+      elsif line =~ /^:(\w{9}) TOPIC (#\w+) :(.*)$/
+        @channels[$2].topic = $3
+        $log.info("New topic for #{@channels[$2]} set by #{@users[$1]}: #{$3}")
+        
       elsif line =~ /^:(\w{9}) PART (#\w+)/
         chan = @channels[$2]
         chan.part($1)
