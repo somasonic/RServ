@@ -17,40 +17,67 @@ module RServ::IRC
     
     @@base_id = 1
     
-    attr_reader :nick, :user, :host, :modes, :uid
+    attr_reader :nick, :user, :host, :modes, :uid, :gecos, :channels
   
-    def initialize(nick, user, host, gecos, modes)
+    def initialize(nick, user, host, gecos, modes, channels = Array.new)
       @nick = nick
       @user = user
       @host = host
       @modes = modes
       @gecos = gecos
       
+      @channels = channels
+      
       @uid = Configru.link.serverid + "SR" + ("%04d" % @@base_id)
       @@base_id += 0
       
       $event.add(self, :on_kill, "user::kill")
       $event.add(self, :on_burst, "server::burst")
-      $event.add(self, :on_whois, "user::whois")
+      $event.add(self, :on_connect, "server::connected")
+      
+      on_burst if $link.established
+      on_connect if $link.established
     end
     
     def to_s
       @nick
     end
-    
-    def on_whois(arg1, arg2, arg3)
-      #pass
-    end
-    
+        
     def on_kill(murderer, murdered)
       if murdered == @uid
         $log.info "PsuedoClient #{@nick} killed (#{$link.get_uid(murderer)}). Reconnecting."
-        send(":#{Configru.link.serverid} UID #{@nick} 0 0 +#{@modes} #{@user} #{@host} 0 #{@uid} :#{@gecos}")
+        on_burst
+        on_connect
       end
     end
 
     def on_burst
       send(":#{Configru.link.serverid} UID #{@nick} 0 0 +#{@modes} #{@user} #{@host} 0 #{@uid} :#{@gecos}")
+    end
+    
+    def on_connect
+      Configru.channels.each do
+        |chan|
+        join("##{chan}")
+      end
+    end
+    
+    def quit(msg = "Service shutting down..")
+      send(":#{@uid} QUIT :#{msg}")
+      @channels.each do
+        |chan|
+        $link.channels[chan].part(@uid)
+      end
+    end
+    
+    def part(channel, msg = "Leaving channel..")
+      send(":#{@uid} PART #{channel} :#{msg}")
+    end
+    
+    def join(channel)
+      send(":#{@uid} JOIN #{Time.now.to_i} #{channel} +")
+      @channels << channel
+      $link.channels[channel].join(@uid)
     end
     
     private

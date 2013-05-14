@@ -20,6 +20,8 @@ require 'lib/irc/channel'
 module RServ::Protocols
 	class TS6
 		attr_reader :name, :established, :remote_sid
+    
+    attr_accessor :users, :channels, :servers
 		def initialize
 			@name = String.new
 			@link = nil #socket
@@ -49,7 +51,6 @@ module RServ::Protocols
 
 		def on_start(link)
 			@link = link
-      sleep 1
       $log.info "Connected to #{Configru.server.addr}, sending PASS, CAPAB and SERVER"
 			send("PASS #{Configru.link.sendpassword} TS 6 :#{Configru.link.serverid}") # PASS password TS ts-ver SID
 			send("CAPAB :QS ENCAP SAVE RSFNC SERVICES") # Services to identify as a service
