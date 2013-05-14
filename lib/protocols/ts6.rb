@@ -230,14 +230,20 @@ module RServ::Protocols
         @channels[$3] = chan 
         
       elsif line =~ /^:(\w{9}) KICK (#\w+) (\w{9}) :(.*)$/
-        chan = @channels[$2]
-        chan.part($3)
-        $log.info("#{@users[$3]} kicked from #{chan} by #{@users[$1].nick} (#{$4})")
-        
-        if chan.users.size > 0
-          @channels[$2] = chan
+        #check if it is relevant
+        if $3[0..2] == Configru.link.serverid
+          $event.send("user::kick", $2, $3, $1)
+          $log.info("#{$3} kicked from #{chan} by #{@users[$1].nick} (#{$4}). Rejoining...")
         else
-          @channels.delete($2)
+          chan = @channels[$2]
+          chan.part($3)
+          $log.info("#{@users[$3]} kicked from #{chan} by #{@users[$1].nick} (#{$4})")
+        
+          if chan.users.size > 0
+            @channels[$2] = chan
+          else
+            @channels.delete($2)
+          end
         end
         
       elsif line =~ /^:(\w{9}) TOPIC (#\w+) :(.*)$/

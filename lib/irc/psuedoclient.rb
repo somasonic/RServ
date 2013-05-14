@@ -34,6 +34,7 @@ module RServ::IRC
       $event.add(self, :on_kill, "user::kill")
       $event.add(self, :on_burst, "server::burst")
       $event.add(self, :on_connect, "server::connected")
+      $event.add(self, :on_kick, "user::kick")
       
       on_burst if $link.established
       on_connect if $link.established
@@ -50,7 +51,13 @@ module RServ::IRC
         on_connect
       end
     end
-
+    
+    def on_kick(chan, uid, why)
+      return unless uid == @uid #don't rejoin unless it's us being kicked
+      part(chan)
+      join(chan)
+    end
+    
     def on_burst
       send(":#{Configru.link.serverid} UID #{@nick} 0 0 +#{@modes} #{@user} #{@host} 0 #{@uid} :#{@gecos}")
     end
