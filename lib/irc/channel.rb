@@ -2,12 +2,14 @@ module RServ::IRC
   
   class Channel
     attr_reader :name
-    attr_accessor :ts, :mode, :users, :ops, :voiced
+    attr_accessor :ts, :mode, :users, :ops, :voiced, :topic
     
     def initialize(name, ts, mode, users)
       @name, @ts, @mode = name, ts, mode
       
       @users, @ops, @voiced = users
+
+      @topic = nil
       
       eng_users = Array.new
       @users.map {|u| eng_users << $link.get_uid(u)}
