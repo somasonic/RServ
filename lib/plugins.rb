@@ -18,10 +18,10 @@ module RServ
     @name == File.basename(__FILE__.split("/")[-1], '.rb')
     
 		def self.inherited(child)
-			@@children ||= []
-			@@instances ||= {}
-      @@children << child
-      @@instances[child] = child.new
+			@children ||= []
+			@instances ||= {}
+      @children << child
+      @instances[child] = child.new
     end
 
     def self.load(f)
@@ -30,7 +30,7 @@ module RServ
 				Kernel.load(f)
     	  fn = File.basename(f, '.rb')
     		klass = @children.find { |e| e.name.downcase == fn }
-	  	  @@instances[klass] = klass.new if klass
+	  	  @instances[klass] = klass.new if klass
 				$log.info "Loaded plugin #{f}."
 			rescue => e
 				$log.error "Error loading plugin #{f}. Error: #{e}"
@@ -39,16 +39,16 @@ module RServ
 
 
     def self.unload(c)
-      klass = if c.kind_of? Class then c else @@children.find { |e| e.name.downcase == c } end
+      klass = if c.kind_of? Class then c else @children.find { |e| e.name.downcase == c } end
       $event.unregister(klass)
       Object.send :remove_const, klass.name.intern
-      @@children.delete klass
-      @@instances.delete klass
+      @children.delete klass
+      @instances.delete klass
     end
 
     def self.list
       a = Array.new
-      @@instances.each_value {|x| a << x; puts "adding x to list"}
+      @instances.each_value {|x| a << x; puts "adding x to list"}
       a
     end
     
@@ -59,7 +59,7 @@ module RServ
     end
 
     def nick(*args)
-      @@instances["nick"].make(*args)
+      @instances["nick"].make(*args)
     end
 
     def event(*args)
