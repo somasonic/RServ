@@ -15,20 +15,9 @@ module RServ::IRC
   
   class PsuedoClient
     
-    attr_reader :nick, :user, :host, :modes
-    attr_accessor :base_id
+    @@base_id = 1
     
-    self.base_id = 0
-    
-    class << self
-      attr_accessor :uid
-    end
-    
-    def self.inherited(sub)
-      super
-      sub.uid = Configru.link.serverid + ("%03d" % self.base_id)
-      self.base_id += 1
-    end
+    attr_reader :nick, :user, :host, :modes, :uid
   
     def initialize(nick, user, host, gecos, modes)
       @nick = nick
@@ -37,8 +26,11 @@ module RServ::IRC
       @modes = modes
       @gecos = gecos
       
+      @uid = Configru.link.serverid + "SR" + ("%04d" % @@base_id)
+      @@base_id += 0
+      
       $event.add(self, :on_kill, "user::kill")
-      $event.add(self, :on_connect, "server::connected")
+      $event.add(self, :on_burst, "server::burst")
       $event.add(self, :on_whois, "user::whois")
     end
     
@@ -50,11 +42,14 @@ module RServ::IRC
       #pass
     end
     
-    def on_kill
-      send(":#{Configru.link.serverid} UID #{@nick} 0 0 +#{@modes} #{@user} #{@host} 0 #{@uid} :#{@gecos}")
+    def on_kill(murderer, murdered)
+      if murdered == @uid
+        $log.info "PsuedoClient #{@nick} killed (#{$link.get_uid(murderer)}). Reconnecting."
+        send(":#{Configru.link.serverid} UID #{@nick} 0 0 +#{@modes} #{@user} #{@host} 0 #{@uid} :#{@gecos}")
+      end
     end
 
-    def on_connect
+    def on_burst
       send(":#{Configru.link.serverid} UID #{@nick} 0 0 +#{@modes} #{@user} #{@host} 0 #{@uid} :#{@gecos}")
     end
     

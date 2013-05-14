@@ -120,6 +120,7 @@ module RServ::Protocols
           @remote = server
           @servers[@remote_sid] = server
           $log.info "Got SERVER from upstream #{@remote} (#{@remote.sid}) [#{@remote.hostname}]"
+          $event.send("server::burst")
           
         elsif line =~ /^:(\w{3}) PONG (\S+) :(\w{3})$/
           if $1 == @remote_sid and $3 == sid # from our upstream only
@@ -252,6 +253,9 @@ module RServ::Protocols
         else
           @channels.delete($2)
         end
+        
+      elsif line =~ /^:(\w{9}) KILL (\w{9}) :(.*)$/
+        $event.send("user::kill", $1, $2)
         
       elsif line =~ /^:(\w{9}) WHOIS (\S+) (\S+)$/
         $event.send("user::whois", $1, $2, $3)
