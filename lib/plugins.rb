@@ -48,7 +48,7 @@ module RServ
 
     def self.list
       a = Array.new
-      @instances.each_value {|x| a << x; puts "adding x to list"}
+      @instances.each_value {|x| a.push x}
       a
     end
     
