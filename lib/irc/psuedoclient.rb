@@ -54,8 +54,7 @@ module RServ::IRC
     
     def on_kick(chan, uid, why)
       return unless uid == @uid #don't rejoin unless it's us being kicked
-      part(chan)
-      join(chan)
+      send(":#{@uid} JOIN #{Time.now.to_i} #{channel} +")
     end
     
     def on_burst
