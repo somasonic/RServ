@@ -47,6 +47,7 @@ module RServ::IRC
     end
     
     def on_whois(arg1, arg2, arg3)
+      #pass
     end
     
     def on_kill
