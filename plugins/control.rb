@@ -17,4 +17,25 @@ class Control < RServ::Plugin
   def initialize
     @control = RServ::IRC::PsuedoClient.new("RServ", "rserv", "rserv.interlinked.me", "Ruby Services", "Zo")
   end  
+  
+  def cmd_privmsg(cmd)
+    target = cmd.params.split(" ")[0]
+    message = cmd.params.sub(/^\w+ :(.*)$/, '\1')
+    
+    if $link.users[cmd.uid].host == "bnc-im/admin/andy"
+      if target == "#opers" or target == "RServ"
+        command = message.split(" ")[0..1].join(" ")
+        if command == "RServ: eval"
+          params = message.split(" ")[2..-1].join(" ")
+          @control.privmsg(target, "Evaling ruby code...")
+          begin
+            result = exec(params)
+          rescue => e
+            result = e
+          end
+          @control.privmsg(target, "Result: #{result}")
+        end
+      end
+    end
+  end
 end

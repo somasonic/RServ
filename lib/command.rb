@@ -20,9 +20,13 @@ module RServ
   class Command
     attr_reader :command, :prefix, :params
     alias :to_s :command
+    alias :origin :prefix
+    alias :uid :prefix
+    alias :sid :prefix
+    
     def initialize(command, params, prefix = nil)
-      @command = command.downcase
-      @prefix = prefix.downcase
+      @command = command
+      @prefix = prefix
       @params = params
     end
   end

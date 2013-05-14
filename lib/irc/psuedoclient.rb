@@ -86,6 +86,23 @@ module RServ::IRC
       $link.channels[channel].join(@uid)
     end
     
+    def privmsg(target, msg)
+      send(":#{@uid} PRIVMSG #{target} :#{msg}")
+      $log.info "#{@nick} privmsging #{target}: #{msg}"
+    end
+    
+    def kill(target, reason)
+      if $link.users.has_key?(target)
+        $link.users.delete target
+        $log.info "Sending KILL for #{target} from #{@nick}."
+        send(":#{@uid} KILL #{target} :#{@nick}!#{@user}@#{@host} (#{@reason})")
+      else
+        $log.error "Received kill for #{target} but I do not have a record of that UID."
+      end
+    end
+    
+    def 
+    
     private
     
     def send(args)
