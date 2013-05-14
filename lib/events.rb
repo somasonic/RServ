@@ -43,7 +43,7 @@ module RServ
     end
 
     # Sends an event. It's failsafe, and logs to the errorlog
-    # if an error occurs when calling a method. Uses threads.
+    # if an error occurs when calling a method. 
     def send(event, *args)
         @events.each do |e|
           wants = e[2]
@@ -52,7 +52,7 @@ module RServ
             meth = e[1]
             if obj.respond_to?(meth)
               begin
-                #$log.debug("Calling #{obj.method(meth)} for #{event}.")
+                $log.debug("Calling #{obj.method(meth)} for #{event}.")
                 obj.method(meth).call(*args)
               rescue => boom
                 $log.error("Failed to call #{obj}::#{meth} (with args: #{args.join(";")}) for #{event} #{boom.message}")
