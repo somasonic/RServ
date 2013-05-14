@@ -253,6 +253,9 @@ module RServ::Protocols
           @channels.delete($2)
         end
         
+      elsif line =~ /^:(\w{9}) WHOIS (\S+) (\S+)$/
+        $event.send("user::whois", $1, $2, $3)
+        
       else
         $log.info "Unhandled user input: #{line}"
       end
