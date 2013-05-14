@@ -233,7 +233,7 @@ module RServ::Protocols
         #check if it is relevant
         if $3[0..2] == Configru.link.serverid
           $event.send("user::kick", $2, $3, $1)
-          $log.info("#{$3} kicked from #{chan} by #{@users[$1].nick} (#{$4}). Rejoining...")
+          $log.info("#{$3} kicked from #{$2} by #{@users[$1].nick} (#{$4}). Rejoining...")
         else
           chan = @channels[$2]
           chan.part($3)
