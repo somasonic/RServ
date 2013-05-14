@@ -13,8 +13,8 @@
 
 require 'lib/irc/psuedoclient'
 
-class Example < RServ::Plugin
+class Control < RServ::Plugin
   def initialize
-    client = RServ::IRC::PsuedoClient.new("RServ", "rserv", "rserv.interlinked.me", "Ruby Services", "+Zo")
+    @control = RServ::IRC::PsuedoClient.new("RServ", "rserv", "rserv.interlinked.me", "Ruby Services", "Zo")
   end  
 end
