@@ -23,13 +23,14 @@ require 'lib/link'
 require 'lib/plugins'
 
 # Basic initialization: config, log, events
-$log = Logger.new('logs/rserv.log')
+$log = Logger.new(STDOUT)
 $log.level = Logger::INFO
 $log.info "---------------------"
 $log.info "RServ session started"
 $log.info "---------------------"
 $log.info ""
 
+# Config
 Configru.load('etc/rserv.yaml') do
   option_group :server do
     option :addr, String, 'upstream.irc.net'
@@ -46,26 +47,16 @@ Configru.load('etc/rserv.yaml') do
   option_array :channels, String, ['opers']
   option_array :plugins, String, ['none']
 end
-$event = RServ::Events.new # Global variables are easy
 
+# Initialise event handler
+# Global variables are easy
+$event = RServ::Events.new 
 
-# TODO
-#
-# Make a PID file
-#
-
-# Get the protocol loaded. Protocol support at
-# current is kinda bad, but the basic concept
-# is there.
-
+# Get the protocol loaded.
 proto = require "lib/protocols/#{Configru.link.protocol}"
 unless proto
   $log.fatal "Couldn't load protocol #{Configru.link.protocol}. Exiting."
 end
-
-# The link, this is basically an event-socket.
-$log.info "Attempting to initialise link..."
-RServ::Link.new(Configru.server.addr, Configru.server.port, true)
 
 # Plugins. There is no need for a special loader
 # since they auto-register and it's simpler and
@@ -77,6 +68,10 @@ Configru.plugins.each do |p|
     RServ::Plugin.load "plugins/#{p}.rb"
   end
 end
+
+# The link, this is basically an event-socket.
+$log.info "Attempting to initialise link..."
+RServ::Link.new(Configru.server.addr, Configru.server.port, true)
 
 # Keep on truckin'
 loop { sleep 3600 }
