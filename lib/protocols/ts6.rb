@@ -271,15 +271,12 @@ module RServ::Protocols
         $log.info "Unhandled user input: #{line}"
       end
       
-      if line =~ /^:(\w{9}) (\w+) (.*)$/
-        $event.send("cmd::#{$2}", RServ::Command.new($2, $3, $1))
-      end
     end
   
     def server_input(line)
       sid = Configru.link.serverid
       name = Configru.link.name
-            
+      
       if line =~ /^:(\w{3}) UID (\S+) (\d{1,2}) (\d{10}) \+([a-zA-Z]*) (\S+) (\S+) (\S+) ([0-9]\w{2}[A-Z][A-Z0-9]{5}) :(.*)$/
         user = RServ::IRC::User.new($2, $9, $3, $5, $6, $7, $8, $10)
         @users[user.uid] = user
