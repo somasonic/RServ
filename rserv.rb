@@ -43,6 +43,7 @@ Configru.load('etc/rserv.yaml') do
     option :protocol, String, 'ts6'
     option :recvpassword, String, 'password-here'
     option :sendpassword, String, 'password-here'
+    option :ssl, String, 'false'
   end
   option_array :channels, String, ['opers']
   option_array :plugins, String, ['none']

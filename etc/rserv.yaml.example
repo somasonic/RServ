@@ -8,6 +8,7 @@ link:
   protocol: ts6
   sendpassword: password-here
   recvpassword: password-here
+  ssl: false
 channels:
   - opers
 plugins:

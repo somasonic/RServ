@@ -35,7 +35,17 @@ module RServ
 
     def start
       return @socket if @connected
+      
       @socket = TCPSocket.new(@server, @port)
+      if Configru.link.ssl =~ /true/i
+        require 'openssl'
+        context = OpenSSL::SSL::SSLContext.new
+        context.verify_mode = OpenSSL::SSL::VERIFY_NONE
+        @socket = OpenSSL::SSL::SSLSocket.new(@socket, context)
+        @socket.sync_close = true
+        @socket.connect
+      end
+      
       $event.send("link::start", self)
     end
 
