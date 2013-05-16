@@ -140,7 +140,7 @@ module RServ::Protocols
           $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
           @servers[server.sid] = server
           
-        elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (#\w+) (\+.*) :(.*)$/
+        elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (#\w*) (\+.*) :(.*)$/
           if @channels.has_key?($3)
             users, ops, voiced = parse_users($5)
             
@@ -216,7 +216,7 @@ module RServ::Protocols
       elsif line =~ /^:(\w{9}) ENCAP \S{1} CERTFP (.*)$/
         #do nothing, prevent unhandled message
         
-      elsif line =~ /^:(\w{9}) JOIN (\d+) (#\w+) (\+.*)$/
+      elsif line =~ /^:(\w{9}) JOIN (\d+) (#\w*) (\+.*)$/
         chan = @channels[$3]
         chan.join($3)
         
@@ -229,7 +229,7 @@ module RServ::Protocols
         $log.info("#{@users[$1]} joined #{chan}.")
         @channels[$3] = chan 
         
-      elsif line =~ /^:(\w{9}) KICK (#\w+) (\w{9}) :(.*)$/
+      elsif line =~ /^:(\w{9}) KICK (#\w*) (\w{9}) :(.*)$/
         #check if it is relevant
         if $3[0..2] == Configru.link.serverid
           $event.send("user::kick", $2, $3, $1)
@@ -246,11 +246,11 @@ module RServ::Protocols
           end
         end
         
-      elsif line =~ /^:(\w{9}) TOPIC (#\w+) :(.*)$/
+      elsif line =~ /^:(\w{9}) TOPIC (#\w*) :(.*)$/
         @channels[$2].topic = $3
         $log.info("New topic for #{@channels[$2]} set by #{@users[$1]}: #{$3}")
         
-      elsif line =~ /^:(\w{9}) PART (#\w+)/
+      elsif line =~ /^:(\w{9}) PART (#\w*)/
         chan = @channels[$2]
         chan.part($1)
         $log.info("#{@users[$1]} parted #{chan}.")
@@ -290,7 +290,7 @@ module RServ::Protocols
         $event.send("server::sid", server)
         send(":#{sid} PING #{name} :#{server.sid}")
      
-      elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (#\w+) (\+.*) :(.*)$/
+      elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (#\w*) (\+.*) :(.*)$/
         if @channels.has_key?($3)
           users, ops, voiced = parse_users($5)
           
