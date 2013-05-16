@@ -1,6 +1,7 @@
 server:
   addr: upstream.irc.net
-  port: 6667
+  port: 6697
+  ssl: yes
 link: 
   name: rserv.irc.net
   serverid: 0RS
@@ -8,7 +9,6 @@ link:
   protocol: ts6
   sendpassword: password-here
   recvpassword: password-here
-  ssl: false
 channels:
   - opers
 plugins:

@@ -37,7 +37,7 @@ module RServ
       return @socket if @connected
       
       @socket = TCPSocket.new(@server, @port)
-      if Configru.link.ssl =~ /true/i
+      if Configru.server.ssl == true
         require 'openssl'
         context = OpenSSL::SSL::SSLContext.new
         context.verify_mode = OpenSSL::SSL::VERIFY_NONE

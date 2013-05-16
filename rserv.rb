@@ -30,11 +30,18 @@ $log.info "RServ session started"
 $log.info "---------------------"
 $log.info ""
 
+
+# This is a hack to allow for some weird bug in configru
+module Boolean; end
+class TrueClass; include Boolean; end
+class FalseClass; include Boolean; end
+
 # Config
 Configru.load('etc/rserv.yaml') do
   option_group :server do
     option :addr, String, 'upstream.irc.net'
-    option :port, Fixnum, 6667
+    option :port, Fixnum, 6697
+    option :ssl, Boolean, 'yes'
   end
   option_group :link do
     option :name, String, 'rserv.irc.net'
@@ -43,7 +50,6 @@ Configru.load('etc/rserv.yaml') do
     option :protocol, String, 'ts6'
     option :recvpassword, String, 'password-here'
     option :sendpassword, String, 'password-here'
-    option :ssl, String, 'false'
   end
   option_array :channels, String, ['opers']
   option_array :plugins, String, ['none']
