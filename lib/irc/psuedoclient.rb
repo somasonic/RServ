@@ -29,7 +29,7 @@ module RServ::IRC
       @channels = channels
       
       @uid = Configru.link.serverid + "SR" + ("%04d" % @@base_id)
-      @@base_id += 0
+      @@base_id += 1
       
       $event.add(self, :on_kill, "user::kill")
       $event.add(self, :on_burst, "server::burst")
