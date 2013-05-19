@@ -38,7 +38,7 @@ module RServ::IRC
     end
     
     def has_voice?(user)
-      @voice.include?(user)
+      @voiced.include?(user)
     end
     
     def part(user)
