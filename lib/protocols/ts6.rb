@@ -83,7 +83,8 @@ module RServ::Protocols
         elsif line =~ /^PING :.*$/
           send(":#{sid} PONG #{name} :#{@remote_sid}")
         elsif line =~ /^SQUIT (\w{3}) :(.*)$/
-          $log.info "SQUIT received for our SID: SQUIT #{$1} (#{$2})"
+          $log.info "SQUIT received #{$1} (#{$2})"
+          handle_squit($1)
         end
   
       else
@@ -324,7 +325,28 @@ module RServ::Protocols
       end
       
     end
+    
+    def handle_squit(sid)
+      if sid == Configru.link.serverid
+        $log.fatal "SQUIT received for our SID."
+        return
+      end
+      
+      @servers.delete(sid)
+      users = @users.select {|uid,user| user.sid == sid}
+      users.each do
+        |uid, user|
+        $event.send("user::quit", user, "*.net *.split")
+        @users.delete uid
         
+        # remove user from any channels they were in
+        @channels.each do
+          |name, chan|
+          chan.part(uid)
+        end
+      end
+    end 
+      
     def parse_users(user_str)
       raw_users = user_str.split(" ")
       
