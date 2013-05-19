@@ -205,16 +205,16 @@ module RServ::Protocols
           chan.part($1)
         end
         
-      elsif line =~ /^:(\w{9}) ENCAP \S{1} REALHOST (.*)$/
+      elsif line =~ /^:(\w{9}) ENCAP \S{1,3} REALHOST (.*)$/
         @users[$1].realhost = $2
         $log.debug "Realhost for #{$1} (#{@users[$1]}) is #{@users[$1].realhost}."
         
-      elsif line =~ /^:(\w{9}) ENCAP \S{1} LOGIN (.*)$/
+      elsif line =~ /^:(\w{9}) ENCAP \S{1,3} LOGIN (.*)$/
         @users[$1].account = $2
         $event.send("user::login", @users[$1])
         $log.info "#{@users[$1]} logged in as #{@users[$1].account}."
         
-      elsif line =~ /^:(\w{9}) ENCAP \S{1} CERTFP (.*)$/
+      elsif line =~ /^:(\w{9}) ENCAP \S{1,3} CERTFP (.*)$/
         #do nothing, prevent unhandled message
         
       elsif line =~ /^:(\w{9}) JOIN (\d+) (#\w*) (\+.*)$/
@@ -311,10 +311,10 @@ module RServ::Protocols
             @channels[$3].mode = $4
             $log.info "New TS for #{$3}: #{$2.ts}. New modes: #{$4}."
           end
-        elsif line =~ /^:(\w{3}) ENCAP \* SU (\w{9}) :(\w+)$/
+        elsif line =~ /^:(\w{3}) ENCAP \S{1,3} SU (\w{9}) :(\w+)$/
           @users[$2].account = $3
           $log.info "#{@users[$2]} logged in as #{$3}"
-        elsif line =~ /^:(\w{3}) ENCAP \* CHGHOST (\w{9}) :(.*)$/
+        elsif line =~ /^:(\w{3}) ENCAP \S{1,3} CHGHOST (\w{9}) :(.*)$/
           @users[$2].hostname = $3
           $log.info "New host for #{@users[$2]}: #{$3}"
         else
