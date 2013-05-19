@@ -264,6 +264,9 @@ module RServ::Protocols
       elsif line =~ /^:(\w{9}) KILL (\w{9}) :(.*)$/
         $event.send("user::kill", $1, $2)
         
+      elsif line =~ /^:(\w{9}) MODE (\w{9}) :(.*)$/
+        @users[$2].do_mode($3)
+        
       elsif line =~ /^:(\w{9}) WHOIS (\S+) (\S+)$/
         $event.send("user::whois", $1, $2, $3)
         

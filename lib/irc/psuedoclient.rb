@@ -33,11 +33,9 @@ module RServ::IRC
       
       $event.add(self, :on_kill, "user::kill")
       $event.add(self, :on_burst, "server::burst")
-      $event.add(self, :on_connect, "server::connected")
       $event.add(self, :on_kick, "user::kick")
       
       on_burst if $link.established
-      on_connect if $link.established
     end
     
     def to_s
@@ -60,14 +58,7 @@ module RServ::IRC
     def on_burst
       send(":#{Configru.link.serverid} UID #{@nick} 0 0 +#{@modes} #{@user} #{@host} 0 #{@uid} :#{@gecos}")
     end
-    
-    def on_connect
-      Configru.channels.each do
-        |chan|
-        join("##{chan}")
-      end
-    end
-    
+        
     def quit(msg = "Service shutting down..")
       send(":#{@uid} QUIT :#{msg}")
       @channels.each do
@@ -81,9 +72,13 @@ module RServ::IRC
     end
     
     def join(channel)
-      send(":#{@uid} JOIN #{Time.now.to_i} #{channel} +")
+      send(":#{@uid} JOIN #{Time.now.to_i} #{channel} +") 
       @channels << channel
       $link.channels[channel].join(@uid)
+    end
+    
+    def privmsg(target, msg)
+      send(":#{@uid} PRIVMSG #{target} :#{msg}")
     end
     
     private

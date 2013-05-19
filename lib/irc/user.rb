@@ -33,6 +33,10 @@ module RServ::IRC
       @nick
     end
     
+    def oper?
+      @mode.include?("o")
+    end
+    
     def hostmask
       "#{@nick}!#{@username}@#{@hostname}"
     end
@@ -40,6 +44,22 @@ module RServ::IRC
     def away=(away = true)
       raise TypeError, 'Away status must be boolean' unless away == true or away == false
       @away = away
+    end
+    
+    def do_mode(changestr)
+      splitmode = @mode.split("")
+      if changestr =~ /\+([a-zA-Z]+)/
+        plus_split = $1.split("")
+        plus_split.each {|m| splitmode << m}
+      end
+      
+      if changestr =~ /-([a-zA-Z]+)/
+        minus_split = $1.split("")
+        minus_split.each {|m| splitmode.delete(m) }
+      end
+      
+      @mode = splitmode.join("")
+      $log.info "Mode for #{@nick}: #{changestr}. New modes: #{@mode}"
     end
     
   end

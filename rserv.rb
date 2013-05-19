@@ -24,7 +24,7 @@ require 'lib/plugins'
 
 # Basic initialization: config, log, events
 $log = Logger.new(STDOUT)
-$log.level = Logger::INFO
+$log.level = Logger::DEBUG
 $log.info "---------------------"
 $log.info "RServ session started"
 $log.info "---------------------"
@@ -70,10 +70,8 @@ end
 # easier to do it this way.
 Configru.plugins.each do |p| 
   break if p == "none" # nice config
-  Thread.new do 
-    $log.info "Loading plugin: #{p}"
-    RServ::Plugin.load "plugins/#{p}.rb"
-  end
+  $log.info "Loading plugin: #{p}"
+  RServ::Plugin.load "plugins/#{p}.rb"
 end
 
 # The link, this is basically an event-socket.
