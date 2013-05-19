@@ -270,9 +270,6 @@ module RServ::Protocols
         
       elsif line =~ /^:(\w{9}) WHOIS (\S+) (\S+)$/
         $event.send("user::whois", $1, $2, $3)
-        
-      else
-        $log.info "Unhandled user input: #{line}"
       end
       
     end
@@ -311,6 +308,12 @@ module RServ::Protocols
             @channels[$3].mode = $4
             $log.info "New TS for #{$3}: #{$2.ts}. New modes: #{$4}."
           end
+        elsif line =~ /^:(\w{3}) ENCAP * SU (\w{9}) :(\w+)$/
+          @users[$2].account = $3
+          $log.info "#{@users[$2]} logged in as #{$3}"
+        elsif line =~ /^:(\w{3}) ENCAP * CHGHOST (\w{9}) :(.*)$/
+          @users[$2].hostname = $3
+          $log.info "New host for #{@users[$2]}: #{$3}"
         else
           chan = RServ::IRC::Channel.new($3, $2.to_i, $4, parse_users($5))
           @channels[chan.name] = chan
@@ -319,9 +322,6 @@ module RServ::Protocols
       elsif line =~ /^:(\w{3}) PING (\S+) :(.*)$/
         #this is only called when a remote server pings (i.e. not from the server we connect to)
         send(":#{sid} PONG #{name} :#{$1}")        
-      
-      else
-        $log.info "Unhandled server input: #{line}"
       end
       
     end
