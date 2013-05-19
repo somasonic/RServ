@@ -42,6 +42,7 @@ Configru.load('etc/rserv.yaml') do
     option :addr, String, 'upstream.irc.net'
     option :port, Fixnum, 6697
     option :ssl, Boolean, 'yes'
+    option :reconnectdelay, Fixnum, 30
   end
   option_group :link do
     option :name, String, 'rserv.irc.net'

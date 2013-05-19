@@ -64,7 +64,7 @@ module RServ::Protocols
 		def on_close(link)
       $log.info "Link closed."
       $log.info "Restarting in 20 seconds..."
-      sleep 20
+      sleep Configru.server.reconnectdelay
       exec('/usr/bin/env', 'ruby', File.expand_path("../../../rserv.rb", __FILE__)) # just re-execute and quit, no cleanup necessary.
       exit
     end

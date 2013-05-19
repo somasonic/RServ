@@ -2,6 +2,7 @@ server:
   addr: upstream.irc.net
   port: 6697
   ssl: yes
+  reconnectdelay: 30
 link: 
   name: rserv.irc.net
   serverid: 0RS
