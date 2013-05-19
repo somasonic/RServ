@@ -305,7 +305,7 @@ module RServ::Protocols
           eng_users = Array.new
           users.each {|u| eng_users << @users[u].nick }
           
-          $log.info "SJOIN to #{chan} (#{users.size} ops and #{voiced.size} voiced).  New users: #{eng_users.join(", ")}."  
+          $log.info "SJOIN to #{$3} (#{users.size} ops and #{voiced.size} voiced).  New users: #{eng_users.join(", ")}."  
           if $2.to_i < @channels[$3].ts
             @channels[$3].ts = $2.to_i
             @channels[$3].mode = $4
