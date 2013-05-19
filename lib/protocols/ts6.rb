@@ -165,12 +165,12 @@ module RServ::Protocols
       end
     end
 
-		private
-
 		def send(text)
 			$log.debug("--->| #{text}")
 			@link.send(text) if @link
 		end
+    
+    private
     
     def user_input(line)
       sid = Configru.link.serverid
