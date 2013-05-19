@@ -270,6 +270,9 @@ module RServ::Protocols
         
       elsif line =~ /^:(\w{9}) WHOIS (\S+) (\S+)$/
         $event.send("user::whois", $1, $2, $3)
+      elsif line =~ /^:(\w{9}) ENCAP \* CERTFP :(.*)$/
+        @users[$1].certfp = $2
+        $log.info "Certificate fingerprint for #{@users[$1]}: #{$2}"
       end
       
     end
@@ -308,10 +311,10 @@ module RServ::Protocols
             @channels[$3].mode = $4
             $log.info "New TS for #{$3}: #{$2.ts}. New modes: #{$4}."
           end
-        elsif line =~ /^:(\w{3}) ENCAP * SU (\w{9}) :(\w+)$/
+        elsif line =~ /^:(\w{3}) ENCAP \* SU (\w{9}) :(\w+)$/
           @users[$2].account = $3
           $log.info "#{@users[$2]} logged in as #{$3}"
-        elsif line =~ /^:(\w{3}) ENCAP * CHGHOST (\w{9}) :(.*)$/
+        elsif line =~ /^:(\w{3}) ENCAP \* CHGHOST (\w{9}) :(.*)$/
           @users[$2].hostname = $3
           $log.info "New host for #{@users[$2]}: #{$3}"
         else

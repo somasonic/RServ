@@ -16,7 +16,7 @@ module RServ::IRC
   class User
     
     attr_reader :sid, :uid, :hops, :away, :away_reason
-    attr_accessor :nick, :mode, :username, :hostname, :ip, :gecos, :account, :realhost
+    attr_accessor :nick, :mode, :username, :hostname, :ip, :gecos, :account, :realhost, :certfp
   
     def initialize(nick, uid, hops, mode, username, hostname, ip, gecos)
       @nick, @uid, @hops, @mode = nick, uid, hops, mode
@@ -25,6 +25,8 @@ module RServ::IRC
       @account, @realhost = nil, nil
       
       @away = false 
+      
+      @certfp = nil
       
       @sid = uid[0..2]
     end
