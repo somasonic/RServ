@@ -85,6 +85,10 @@ module RServ::IRC
       send(":#{@uid} NOTICE #{target} :#{msg}")
     end
     
+    def encap(target, command)
+      send(":#{@uid} ENCAP #{target} #{command}")
+    end
+    
     
     private
     
