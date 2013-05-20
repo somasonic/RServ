@@ -214,14 +214,10 @@ module RServ::Protocols
         $event.send("user::login", @users[$1])
         $log.info "#{@users[$1]} logged in as #{@users[$1].account}."
         
-      elsif line =~ /^:(\w{9}) ENCAP \S{1,3} CERTFP (.*)$/
+      elsif line =~ /^:(\w{9}) ENCAP \S{1,3} CERTFP :(.*)$/
         @users[$1].certfp = $2
         $log.info "Certificate fingerprint for #{@users[$1]}: #{$2}"
-        
-      elsif line =~ /^:(\w{9}) ENCAP \S{1,3} CERTFP (.*)$/
-        @users[$1].certfp = $2
-        $log.info "Certificate fingerprint for #{@users[$1]}: #{$2}"
-        
+                
       elsif line =~ /^:(\w{9}) JOIN (\d+) (#\w*) (\+.*)$/
         chan = @channels[$3]
         chan.join($3)
