@@ -215,7 +215,12 @@ module RServ::Protocols
         $log.info "#{@users[$1]} logged in as #{@users[$1].account}."
         
       elsif line =~ /^:(\w{9}) ENCAP \S{1,3} CERTFP (.*)$/
-        #do nothing, prevent unhandled message
+        @users[$1].certfp = $2
+        $log.info "Certificate fingerprint for #{@users[$1]}: #{$2}"
+        
+      elsif line =~ /^:(\w{9}) ENCAP \S{1,3} CERTFP (.*)$/
+        @users[$1].certfp = $2
+        $log.info "Certificate fingerprint for #{@users[$1]}: #{$2}"
         
       elsif line =~ /^:(\w{9}) JOIN (\d+) (#\w*) (\+.*)$/
         chan = @channels[$3]
@@ -270,9 +275,6 @@ module RServ::Protocols
         
       elsif line =~ /^:(\w{9}) WHOIS (\S+) (\S+)$/
         $event.send("user::whois", $1, $2, $3)
-      elsif line =~ /^:(\w{9}) ENCAP \* CERTFP :(.*)$/
-        @users[$1].certfp = $2
-        $log.info "Certificate fingerprint for #{@users[$1]}: #{$2}"
       end
       
     end
@@ -311,16 +313,18 @@ module RServ::Protocols
             @channels[$3].mode = $4
             $log.info "New TS for #{$3}: #{$2.ts}. New modes: #{$4}."
           end
-        elsif line =~ /^:(\w{3}) ENCAP \S{1,3} SU (\w{9}) :(\w+)$/
-          @users[$2].account = $3
-          $log.info "#{@users[$2]} logged in as #{$3}"
-        elsif line =~ /^:(\w{3}) ENCAP \S{1,3} CHGHOST (\w{9}) :(.*)$/
-          @users[$2].hostname = $3
-          $log.info "New host for #{@users[$2]}: #{$3}"
         else
           chan = RServ::IRC::Channel.new($3, $2.to_i, $4, parse_users($5))
           @channels[chan.name] = chan
         end
+        
+      elsif line =~ /^:(\w{3}) ENCAP \S{1,3} SU (\w{9}) :(\w+)$/
+        @users[$2].account = $3
+        $log.info "#{@users[$2]} logged in as #{$3}"
+        
+      elsif line =~ /^:(\w{3}) ENCAP \S{1,3} CHGHOST (\w{9}) :(.*)$/
+        @users[$2].hostname = $3
+        $log.info "New host for #{@users[$2]}: #{$3}"
      
       elsif line =~ /^:(\w{3}) PING (\S+) :(.*)$/
         #this is only called when a remote server pings (i.e. not from the server we connect to)

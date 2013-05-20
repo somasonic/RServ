@@ -24,7 +24,7 @@ require 'lib/plugins'
 
 # Basic initialization: config, log, events
 $log = Logger.new(STDOUT)
-$log.level = Logger::DEBUG
+$log.level = Logger::INFO
 $log.info "---------------------"
 $log.info "RServ session started"
 $log.info "---------------------"
