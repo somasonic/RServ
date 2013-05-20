@@ -18,7 +18,7 @@ module RServ::IRC
     attr_accessor :ts, :mode, :users, :ops, :voiced, :topic
     
     def initialize(name, ts, mode, users)
-      @name, @ts, @mode = name, ts, mode
+      @name, @ts, @mode = name, ts.to_i, mode
       
       @users, @ops, @voiced = users
 
