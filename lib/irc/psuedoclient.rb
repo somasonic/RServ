@@ -46,7 +46,7 @@ module RServ::IRC
       if murdered == @uid
         $log.info "PsuedoClient #{@nick} killed (#{$link.get_uid(murderer)}). Reconnecting."
         on_burst
-        on_connect
+        @channels.each {|c| join(c) }
       end
     end
     
