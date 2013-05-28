@@ -73,6 +73,7 @@ module RServ::IRC
     
     def join(channel)
       send(":#{@uid} JOIN #{Time.now.to_i} #{channel} +") 
+      tmode(channel, "+o #{@uid}")
       @channels << channel
       $link.channels[channel].join(@uid)
     end
@@ -94,8 +95,12 @@ module RServ::IRC
       $link.users.delete target if $link.users.has_key?(target)
     end
     
+    def remove(chan, target, msg = "No reason given")
+      send(":#{@uid} REMOVE #{chan} #{target} :#{msg}")
+    end
+    
     def tmode(channel, modestr)
-      send(":#{@uid} TMODE #{Time.now.to_i} #{channel} #{modestr}")
+      send(":#{@uid} TMODE #{$link.channels[channel].ts} #{channel} #{modestr}")
     end
     
     private
