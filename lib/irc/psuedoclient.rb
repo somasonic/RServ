@@ -89,6 +89,10 @@ module RServ::IRC
       send(":#{@uid} ENCAP #{target} #{command}")
     end
     
+    def kill(target, msg)
+      send(":#{@uid} KILL #{target} :#{Configru.link.name} (#{msg})")
+      $link.users.delete target if $link.users.has_key?(target)
+    end
     
     private
     
