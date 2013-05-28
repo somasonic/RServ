@@ -53,7 +53,7 @@ module RServ::Protocols
 			@link = link
       $log.info "Connected to #{Configru.server.addr}, sending PASS, CAPAB and SERVER"
 			send("PASS #{Configru.link.sendpassword} TS 6 :#{Configru.link.serverid}") # PASS password TS ts-ver SID
-			send("CAPAB :QS ENCAP SAVE RSFNC SERVICES") # Services to identify as a service
+			send("CAPAB :QS ENCAP SAVE RSFNC SERVICES REMOVE") # Services to identify as a service
 			send("SERVER #{Configru.link.name} 0 :#{Configru.link.description}")              
     end
       		

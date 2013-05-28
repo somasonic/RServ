@@ -92,11 +92,18 @@ module RServ::IRC
     
     def kill(target, msg)
       send(":#{@uid} KILL #{target} :#{Configru.link.name} (#{msg})")
+      $event.send("link::input", ":#{@uid} KILL #{target} :#{Configru.link.name} (#{msg})")
       $link.users.delete target if $link.users.has_key?(target)
     end
     
-    def remove(chan, target, msg = "No reason given")
+    def remove(chan, target, msg = "Goodbye")
       send(":#{@uid} REMOVE #{chan} #{target} :#{msg}")
+      $event.send("link::input", ":#{@uid} KICK #{chan} #{target} :#{msg}")
+    end
+    
+    def kick(chan, target, msg = "Goodbye")
+      send(":#{@uid} KICK #{chan} #{target} :#{msg}")
+      $event.send("link::input", ":#{@uid} KICK #{chan} #{target} :#{msg}")
     end
     
     def tmode(channel, modestr)
