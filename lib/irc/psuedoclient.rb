@@ -94,6 +94,10 @@ module RServ::IRC
       $link.users.delete target if $link.users.has_key?(target)
     end
     
+    def tmode(channel, modestr)
+      send(":#{@uid} TMODE #{Time.now.to_i} #{channel} #{modestr}")
+    end
+    
     private
     
     def send(args)
