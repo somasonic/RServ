@@ -1,6 +1,0 @@
-- [ ] Channel mode tracking
-- [ ] Channel op/voice tracking
-- [ ] User mode tracking
-- [ ] IRC operator tracking
-- [ ] PsuedoClient class
-- [ ] Documentation on IRC events
