@@ -14,6 +14,7 @@
 class Example < RServ::Plugin
   def initialize
     $event.add(self, :on_start, "server::connected")
+    $event.add(self, :on_start, "link::input")
   end
   
   def on_start
