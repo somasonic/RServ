@@ -40,7 +40,7 @@ module RServ
 
     def self.unload(c)
       klass = if c.kind_of? Class then c else @children.find { |e| e.name.downcase == c } end
-      $event.send("plugin::unload", klass)
+      klass.method("unload").call
       $event.unregister(klass)
       Object.send :remove_const, klass.name.intern
       @children.delete klass
@@ -53,18 +53,30 @@ module RServ
       a
     end
     
+    def unload
+      @clients.each do {|c| c.quit("Service unloaded") }
+    end
+    
     private
     
     def send(*args)
       $event.send("proto::out", *args)
     end
-
-    def nick(*args)
-      @instances["nick"].make(*args)
-    end
-
+    
     def event(*args)
       $event.add(*args)
     end
+    
+    class << self
+      
+      @clients = Array.new
+      def new_psuedoclient(*args)
+        new_c = RServ::IRC::PsuedoClient.new(*args)
+        @clients << new_c
+        new_c
+      end
+      
+    end
+    
   end
 end
