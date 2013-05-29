@@ -24,12 +24,12 @@ require 'lib/plugins'
 
 # Basic initialization: config, log, events
 $log = Logger.new('logs/rserv.log')
-$log.level = Logger::DEBUG
+$log.level = Logger::INFO ##DONT CHANGE
 $log.info "---------------------"
 $log.info "RServ session started"
 $log.info "---------------------"
 $log.info ""
-
+$log.level = Logger::ERROR #set loglevel here
 
 # This is a hack to allow for some weird bug in configru
 module Boolean; end
