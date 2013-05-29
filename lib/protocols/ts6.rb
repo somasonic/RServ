@@ -335,6 +335,8 @@ module RServ::Protocols
         return
       end
       
+      $event.send("server::squit", @servers[sid])
+      
       @servers.delete(sid)
       users = @users.select {|uid,user| user.sid == sid}
       users.each do

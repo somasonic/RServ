@@ -24,6 +24,10 @@ module RServ::IRC
       @hostname
     end
     
+    def shortname
+      @hostname.split(".")[0]
+    end
+    
   end
   
 end
