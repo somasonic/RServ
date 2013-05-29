@@ -40,6 +40,7 @@ module RServ
 
     def self.unload(c)
       klass = if c.kind_of? Class then c else @children.find { |e| e.name.downcase == c } end
+      $event.send("plugin::unload", klass)
       $event.unregister(klass)
       Object.send :remove_const, klass.name.intern
       @children.delete klass
