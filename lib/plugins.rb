@@ -12,10 +12,18 @@
 #LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 #DEALINGS IN THE SOFTWARE.
 
+require 'lib/irc/psuedoclient'
+
 module RServ
   class Plugin
 		
     @name == File.basename(__FILE__.split("/")[-1], '.rb')
+    
+    attr_accessor :clients
+    
+    def initialize
+      @clients = Array.new
+    end
     
 		def self.inherited(child)
 			@children ||= []
@@ -33,14 +41,19 @@ module RServ
 	  	  @instances[klass] = klass.new if klass
 				$log.info "Loaded plugin #{f}."
 			rescue => e
-				$log.error "Error loading plugin #{f}. Error: #{e}"
+				$log.error "Error loading plugin #{f}. Error: #{e}\n#{e.backtrace.join("\n")}"
 			end
 		end
 
 
     def self.unload(c)
-      klass = if c.kind_of? Class then c else @children.find { |e| e.name.downcase == c } end
-      klass.method("unload").call
+      klass = nil
+      if c.kind_of? Class 
+        klass = c
+      else 
+        klass = @children.find { |e| e.name.downcase == c }
+      end
+      klass.on_unload if klass.respond_to?("on_unload")
       $event.unregister(klass)
       Object.send :remove_const, klass.name.intern
       @children.delete klass
@@ -53,8 +66,8 @@ module RServ
       a
     end
     
-    def unload
-      @clients.each do {|c| c.quit("Service unloaded") }
+    def on_unload
+      @clients.each {|c| c.quit("Service unloaded") }
     end
     
     private
@@ -65,17 +78,13 @@ module RServ
     
     def event(*args)
       $event.add(*args)
-    end
-    
-    class << self
-      
-      @clients = Array.new
-      def new_psuedoclient(*args)
-        new_c = RServ::IRC::PsuedoClient.new(*args)
-        @clients << new_c
-        new_c
-      end
-      
+    end  
+
+    def new_psuedoclient(*args)
+      new_c = RServ::IRC::PsuedoClient.new(*args)
+      @clients = Array.new unless @clients
+      @clients << new_c
+      new_c
     end
     
   end
