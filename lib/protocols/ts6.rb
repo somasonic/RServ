@@ -239,7 +239,6 @@ module RServ::Protocols
         else
           chan = @channels[$2]
           chan.part($3)
-          $log.info("#{@users[$3]} kicked from #{chan} by #{@users[$1].nick} (#{$4})")
         
           if chan.users.size > 0
             @channels[$2] = chan
