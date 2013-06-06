@@ -15,7 +15,7 @@ module RServ::IRC
   
   class Channel
     attr_reader :name
-    attr_accessor :ts, :mode, :users, :ops, :voiced, :topic
+    attr_accessor :mode, :users, :ops, :voiced, :topic
     
     def initialize(name, ts, mode, users)
       @name, @ts, @mode = name, ts.to_i, mode
@@ -31,6 +31,14 @@ module RServ::IRC
     
     def to_s
       @name
+    end
+    
+    def ts
+      @ts.to_i
+    end
+    
+    def ts=(new_ts)
+      @ts = new_ts.to_i
     end
     
     def has_op?(user)
