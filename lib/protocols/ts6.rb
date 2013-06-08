@@ -306,7 +306,7 @@ module RServ::Protocols
           if $2.to_i < @channels[$3].ts
             @channels[$3].ts = $2.to_i
             @channels[$3].mode = $4
-            $log.info "New TS for #{$3}: #{$2.ts}. New modes: #{$4}."
+            $log.info "New TS for #{$3}: #{$2}. New modes: #{$4}."
           end
         else
           chan = RServ::IRC::Channel.new($3, $2.to_i, $4, parse_users($5))
