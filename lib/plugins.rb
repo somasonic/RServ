@@ -17,33 +17,33 @@ require 'lib/irc/psuedoclient'
 module RServ
   class Plugin
 		
-    @name == File.basename(__FILE__.split("/")[-1], '.rb')
+    @name = File.basename(__FILE__.split("/")[-1], '.rb')
     
-    attr_accessor :clients
+    attr_accessor :clients, :name
     
     def initialize
       @clients = Array.new
     end
     
-		def self.inherited(child)
-			@children ||= []
-			@instances ||= {}
+    def self.inherited(child)
+      @children ||= []
+      @instances ||= {}
       @children << child
       @instances[child] = child.new
     end
 
     def self.load(f)
-			begin
-				$log.info "Attempting to load plugin #{f}."
-				Kernel.load(f)
-    	  fn = File.basename(f, '.rb')
-    		klass = @children.find { |e| e.name.downcase == fn }
-	  	  @instances[klass] = klass.new if klass
-				$log.info "Loaded plugin #{f}."
-			rescue => e
-				$log.error "Error loading plugin #{f}. Error: #{e}\n#{e.backtrace.join("\n")}"
-			end
-		end
+      begin
+        $log.info "Attempting to load plugin #{f}."
+        Kernel.load(f)
+        fn = File.basename(f, '.rb')
+        klass = @children.find { |e| e.name.downcase == fn }
+        @instances[klass] = klass.new if klass
+        $log.info "Loaded plugin #{f}."
+      rescue => e
+        $log.error "Error loading plugin #{f}. Error: #{e}\n#{e.backtrace.join("\n")}"
+      end
+    end
 
 
     def self.unload(c)
