@@ -41,6 +41,7 @@ module RServ
         $log.info "Loaded plugin #{f}."
       rescue => e
         $log.error "Error loading plugin #{f}. Error: #{e}\n#{e.backtrace.join("\n")}"
+        raise LoadError
       end
     end
     
