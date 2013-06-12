@@ -76,6 +76,5 @@ module RServ
     def send(*args)
       $event.send("proto::out", *args)
     end
-    
   end
 end
