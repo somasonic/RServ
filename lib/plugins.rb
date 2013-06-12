@@ -37,7 +37,7 @@ module RServ
         fn = File.basename(f, '.rb')
         klass = @children.find { |e| e.name.downcase == fn }
         @instances[klass.to_s] = klass.new
-        @instances[klass.to_s].on_connect if $link.established
+        @instances[klass.to_s].on_connect if $protocol.established
         $log.info "Loaded plugin #{f}."
       rescue => e
         $log.error "Error loading plugin #{f}. Error: #{e}\n#{e.backtrace.join("\n")}"
@@ -77,13 +77,6 @@ module RServ
     def event(*args)
       $event.add(*args)
     end  
-
-    def new_psuedoclient(*args)
-      new_c = RServ::IRC::PsuedoClient.new(*args)
-      @clients = Array.new unless @clients
-      @clients << new_c
-      new_c
-    end
     
   end
 end
