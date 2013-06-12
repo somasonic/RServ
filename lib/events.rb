@@ -65,11 +65,16 @@ module RServ
         if event =~ /^cmd::(.*)$/
           cmd = $1
           plugins = Plugin.list
-          plugins.each do |p|
+          clients = IRC::PsuedoClient.list
+          
+          objects = plugins + clients
+          
+          objects.each do |p|
             if p.respond_to?("cmd_#{cmd}")
               Thread.new { p.method("cmd_#{cmd}").call(*args) }
             end
           end
+                    
       end
     end
   end

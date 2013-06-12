@@ -16,15 +16,20 @@ module RServ::IRC
   class PsuedoClient
     
     @@base_id = 1
+    @@instances = Array.new
     
     attr_reader :nick, :user, :host, :modes, :uid, :gecos, :channels
   
     def initialize(nick, user, host, gecos, modes, channels = Array.new)
+      @@instances << self
+      
       @nick = nick
       @user = user
       @host = host
       @modes = modes
       @gecos = gecos
+      
+      @whois_str = "is a Network Service"
       
       @channels = channels
       
@@ -34,36 +39,43 @@ module RServ::IRC
       $event.add(self, :on_kill, "user::kill")
       $event.add(self, :on_burst, "server::burst")
       $event.add(self, :on_kick, "user::kick")
+      $event.add(self, :join_channels, "server::connected")
       
-      on_burst if $link.established
+      if $protocol.established
+        on_burst
+        join_channels
+      end
+    end
+    
+    def self.list
+      @@instances
     end
     
     def to_s
       @nick
     end
-        
-    def on_kill(murderer, murdered)
-      if murdered == @uid
-        $log.info "PsuedoClient #{@nick} killed (#{$link.get_uid(murderer)}). Reconnecting."
-        on_burst
-        @channels.each {|c| join(c) }
+    
+    # irc methods
+    
+#   TODO nick changing 
+#   def nick=(newnick)
+#     @nick = newnick
+#   end
+    
+    def join_channels(op = true)
+      return if @channels.size == 0
+      @channels.each do
+        |channel|
+        send(":#{@uid} JOIN #{Time.now.to_i} #{channel} +") 
+        tmode(channel, "+o #{@uid}") if op
       end
-    end
-    
-    def on_kick(chan, uid, why)
-      return unless uid == @uid #don't rejoin unless it's us being kicked
-      send(":#{@uid} JOIN #{Time.now.to_i} #{chan} +")
-    end
-    
-    def on_burst
-      send(":#{Configru.link.serverid} UID #{@nick} 0 0 +#{@modes} #{@user} #{@host} 0 #{@uid} :#{@gecos}")
     end
         
     def quit(msg = "Service shutting down..")
       send(":#{@uid} QUIT :#{msg}")
       @channels.each do
         |chan|
-        $link.channels[chan].part(@uid)
+        $protocol.channels[chan].part(@uid)
       end
     end
     
@@ -71,11 +83,11 @@ module RServ::IRC
       send(":#{@uid} PART #{channel} :#{msg}")
     end
     
-    def join(channel)
+    def join(channel, op = true)
       send(":#{@uid} JOIN #{Time.now.to_i} #{channel} +") 
-      tmode(channel, "+o #{@uid}")
+      tmode(channel, "+o #{@uid}") if op
       @channels << channel
-      $link.channels[channel].join(@uid)
+      $protocol.channels[channel].join(@uid)
     end
     
     def privmsg(target, msg)
@@ -93,7 +105,7 @@ module RServ::IRC
     def kill(target, msg)
       send(":#{@uid} KILL #{target} :#{Configru.link.name} (#{msg})")
       $event.send("link::input", ":#{@uid} KILL #{target} :#{Configru.link.name} (#{msg})")
-      $link.users.delete target if $link.users.has_key?(target)
+      $link.users.delete target if $protocol.users.has_key?(target)
     end
     
     def remove(chan, target, msg = "Goodbye")
@@ -103,17 +115,43 @@ module RServ::IRC
     
     def kick(chan, target, msg = "Goodbye")
       send(":#{@uid} KICK #{chan} #{target} :#{msg}")
-      $event.send("link::input", ":#{@uid} KICK #{chan} #{target} :#{msg}")
     end
     
     def tmode(channel, modestr)
-      send(":#{@uid} TMODE #{$link.channels[channel].ts} #{channel} #{modestr}")
+      send(":#{@uid} TMODE #{$protocol.channels[channel].ts} #{channel} #{modestr}")
+    end
+    
+    # on_ and cmd_ methods
+    
+    def cmd_kill(c)
+      if c.params[0] == @uid
+        $log.info "PsuedoClient #{@nick} killed (#{$protocol.get_uid(c.origin)}). Reconnecting."
+        on_burst
+        join_channels
+      end
+    end
+    
+    def cmd_whois(c)
+      return unless c.params[0].downcase == @nick.downcase
+      $protocol.send_numeric(c.origin, 311, "#{@nick} #{@user} #{@host} * :#{@gecos}")
+      $protocol.send_numeric(c.origin, 312, "#{@nick} #{$protocol.servername} :#{Configru.link.description}")
+      $protocol.send_numeric(c.origin, 313, "#{@nick} :#{@whois_str}")
+      $protocol.send_numeric(c.origin, 318, "#{@nick.downcase} :End of /WHOIS list")
+    end
+
+    def cmd_kick(c)
+      return unless c.params[1] == @uid #don't rejoin unless it's us being kicked
+      join(c.params[0])
+    end
+    
+    def on_burst
+      send(":#{Configru.link.serverid} UID #{@nick} 0 0 +#{@modes} #{@user} #{@host} 0 #{@uid} :#{@gecos}")
     end
     
     private
     
-    def send(args)
-      $event.send("proto::out", *args)
+    def send(text)
+      $protocol.send_raw(text)
     end
     
   end

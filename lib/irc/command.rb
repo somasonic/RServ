@@ -11,19 +11,24 @@
 #LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 #DEALINGS IN THE SOFTWARE.
 
-module RServ
+module RServ::IRC
   
   # Command class. Has three attributes:
   #   * command => the command (e.g. privmsg)
-  #   * prefix => bit before (e.g. a hostmask)
+  #   * origin => bit before (e.g. a hostmask)
   #   * params => bits after in an array
   class Command
-    attr_reader :command, :prefix, :params
+    attr_reader :command, :origin, :params
     alias :to_s :command
-    def initialize(command, params, prefix = nil)
+    
+    def initialize(command, params, origin)
       @command = command.downcase
-      @prefix = prefix.downcase
+      @origin = origin
       @params = params
+      
+      @params = @params.split(" ") if params.class == String
+      
+      $event.send("cmd::#{command}", self)
     end
   end
 end

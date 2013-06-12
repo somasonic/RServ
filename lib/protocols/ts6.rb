@@ -11,25 +11,25 @@
 #LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
 #DEALINGS IN THE SOFTWARE.
 
-require 'lib/command'
-
+require 'lib/irc/command'
 require 'lib/irc/user'
 require 'lib/irc/server'
 require 'lib/irc/channel'
 
 module RServ::Protocols
 	class TS6
-		attr_reader :name, :established, :remote_sid
     
+		attr_reader :name, :sid, :established, :remote_sid
     attr_accessor :users, :channels, :servers
+    
 		def initialize
-			@name = String.new
-			@link = nil #socket
-      @established = false
-      @remote_sid = nil
-      @remote = nil
+			@name = Configru.link.name
+			@sid = Configru.link.serverid
+      @link = nil #socket
+      @established = false #whether the burst has ended
+      @remote = nil # remote RServ::IRC::Server object
       
-      @servers = Hash.new
+      @servers = Hash.new 
       @users = Hash.new
       @channels = Hash.new
             
@@ -38,6 +38,7 @@ module RServ::Protocols
       $event.add(self, :on_close, "link::close")
       $event.add(self, :on_output, "proto::out")
       
+      $protocol = self
       $link = self
 		end
     
@@ -48,7 +49,15 @@ module RServ::Protocols
     def get_sid(sid)
       @servers[sid]
     end
-
+    
+    def send_numeric(target, numeric, text)
+      send(":#{@sid} #{numeric.to_s} #{target} #{text}")
+    end
+    
+    def send_raw(text)
+      send(text)
+    end
+    
 		def on_start(link)
 			@link = link
       $log.info "Connected to #{Configru.server.addr}, sending PASS, CAPAB and SERVER"
@@ -166,13 +175,13 @@ module RServ::Protocols
       end
     end
 
+    private
+
 		def send(text)
 			$log.debug("--->| #{text}")
 			@link.send(text) if @link
 		end
-    
-    private
-    
+
     def user_input(line)
       sid = Configru.link.serverid
       name = Configru.link.name
@@ -192,11 +201,10 @@ module RServ::Protocols
         
         old_nick = @users[$1]
         @users[$1].nick = $2
-        $event.send("user::nick", @users[$1], old_nick)
+        RServ::IRC::Command.new("nick", [$2], $1)
       
       elsif line =~ /^:(\w{9}) QUIT :(.*)$/
         $log.info "User #{@users[$1].nick} quit (#{$2})."
-        $event.send("user::quit", @users[$1], $2)
         @users.delete $1
         
         # remove user from any channels they were in
@@ -204,10 +212,12 @@ module RServ::Protocols
           |name, chan|
           chan.part($1)
         end
+        RServ::IRC::Command.new("quit", [$1], $2)
         
       elsif line =~ /^:(\w{9}) ENCAP \S{1,3} REALHOST (.*)$/
         @users[$1].realhost = $2
         $log.debug "Realhost for #{$1} (#{@users[$1]}) is #{@users[$1].realhost}."
+        $event.send("user::realhost", @users[$1], $2)
         
       elsif line =~ /^:(\w{9}) ENCAP \S{1,3} LOGIN (.*)$/
         @users[$1].account = $2
@@ -217,6 +227,7 @@ module RServ::Protocols
       elsif line =~ /^:(\w{9}) ENCAP \S{1,3} CERTFP :(.*)$/
         @users[$1].certfp = $2
         $log.info "Certificate fingerprint for #{@users[$1]}: #{$2}"
+        $event.send("user::certfp", @users[$1], $2)
                 
       elsif line =~ /^:(\w{9}) JOIN (\d+) (#\w*) (\+.*)$/
         chan = @channels[$3]
@@ -228,13 +239,14 @@ module RServ::Protocols
           $log.info "New TS for #{chan}: #{chan.ts}. New modes: #{chan.mode}."
         end
 
+        RServ::IRC::Command.new("join", [$2], $1)
         $log.info("#{@users[$1]} joined #{chan}.")
         @channels[$3] = chan 
         
       elsif line =~ /^:(\w{9}) KICK (#\w*) (\w{9}) :(.*)$/
         #check if it is relevant
         if $3[0..2] == Configru.link.serverid
-          $event.send("user::kick", $2, $3, $1)
+          RServ::IRC::Command.new("kick", [$2, $3, $4], $1)
           $log.info("#{$3} kicked from #{$2} by #{@users[$1].nick} (#{$4}). Rejoining...")
         else
           chan = @channels[$2]
@@ -245,6 +257,7 @@ module RServ::Protocols
           else
             @channels.delete($2)
           end
+          RServ::IRC::Command.new("kick", [$2, $3, $4], $1)
         end
         
       elsif line =~ /^:(\w{9}) TOPIC (#\w*) :(.*)$/
@@ -261,15 +274,21 @@ module RServ::Protocols
         else
           @channels.delete($2)
         end
+        RServ::IRC::Command.new("part", [$2], $1)
         
       elsif line =~ /^:(\w{9}) KILL (\w{9}) :(.*)$/
-        $event.send("user::kill", $1, $2)
+        RServ::IRC::Command.new("kill", [$2, $3], $1)
         
       elsif line =~ /^:(\w{9}) MODE (\w{9}) :(.*)$/
         @users[$2].do_mode($3)
+        RServ::IRC::Command.new("mode", [$2, $3], $1)
         
       elsif line =~ /^:(\w{9}) WHOIS (\S+) (\S+)$/
-        $event.send("user::whois", $1, $2, $3)
+        RServ::IRC::Command.new("whois", [$3], $1)
+        
+      elsif line =~ /^:(\w{9}) WHOIS (\S+)$/
+        RServ::IRC::Command.new("whois", [$2], $1)
+        
       end
       
     end
