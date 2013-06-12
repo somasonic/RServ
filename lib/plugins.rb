@@ -49,7 +49,6 @@ module RServ
         klass = @instances[c]
       else
         return
-        # todo exception
       end
       klass.on_unload if klass.respond_to?("on_unload")
       $event.unregister(klass)
