@@ -37,7 +37,7 @@ module RServ
         fn = File.basename(f, '.rb')
         klass = @children.find { |e| e.name.downcase == fn }
         @instances[klass.to_s] = klass.new
-        @instances[klass.to_s].on_connect if $protocol.established
+        @instances[klass.to_s].on_connect if $protocol.established and @instances[klass.to_s].respond_to?("on_connect")
         $log.info "Loaded plugin #{f}."
       rescue => e
         $log.error "Error loading plugin #{f}. Error: #{e}\n#{e.backtrace.join("\n")}"
@@ -62,10 +62,6 @@ module RServ
       a = Array.new
       @instances.each_value {|x| a.push x}
       a
-    end
-    
-    def on_unload
-      @clients.each {|c| c.quit("Service unloaded") }
     end
     
     private
