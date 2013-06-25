@@ -64,7 +64,7 @@ module RServ
             rescue => boom
               $log.error("Failed to call #{obj}::#{meth} (with args: #{args.join(";")}) for #{event} #{boom.message}")
               $log.error(boom.backtrace.inspect.join("\r\n"))
-              del [obj, meth, wants]
+              del [obj, meth, wants] unless obj == $protocol # we don't want to stop responding to everything
             end
           end
         end
