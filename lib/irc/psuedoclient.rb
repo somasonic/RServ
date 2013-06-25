@@ -140,7 +140,7 @@ module RServ::IRC
     def cmd_whois(c)
       return unless c.params[0].downcase == @nick.downcase
       $protocol.send_numeric(c.origin, 311, "#{@nick} #{@user} #{@host} * :#{@gecos}")
-      $protocol.send_numeric(c.origin, 312, "#{@nick} #{$protocol.servername} :#{Configru.link.description}")
+      $protocol.send_numeric(c.origin, 312, "#{@nick} #{Configru.link.name} :#{Configru.link.description}")
       $protocol.send_numeric(c.origin, 313, "#{@nick} :#{@whois_str}")
       $protocol.send_numeric(c.origin, 318, "#{@nick.downcase} :End of /WHOIS list")
     end
