@@ -289,11 +289,8 @@ module RServ::Protocols
         @users[$2].do_mode($3)
         RServ::IRC::Command.new("mode", [$2, $3], $1)
         
-      elsif line =~ /^:(\w{9}) WHOIS (\S+) (\S+)$/
+      elsif line =~ /^:(\w{9}) WHOIS (\S+) :(\S+)$/
         RServ::IRC::Command.new("whois", [$3], $1)
-        
-      elsif line =~ /^:(\w{9}) WHOIS (\S+)$/
-        RServ::IRC::Command.new("whois", [$2], $1)
         
       end
       
