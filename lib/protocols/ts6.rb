@@ -313,7 +313,7 @@ module RServ::Protocols
         $event.send("server::sid", server)
         send(":#{sid} PING #{name} :#{server.sid}")
      
-      elsif line =~ /^:([0-9]{1}[A-Z0-0]{2}) SJOIN (\d+) (#\w*) (\+.*) :(.*)$/
+      elsif line =~ /^:([0-9]{1}[A-Z0-9]{2}) SJOIN (\d+) (#\w*) (\+.*) :(.*)$/
         if @channels.has_key?($3)
           users, ops, voiced = parse_users($5)
           
