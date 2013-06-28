@@ -69,6 +69,15 @@ class Control < RServ::Plugin
       rescue => e
         msg(c, "Error unloading plugin #{$1}: #{e}")
       end
+    elsif command =~ /^reload (\w+)$/i
+      begin
+        RServ::Plugin.unload($1)
+        msg(c, "Plugin #{$1} unloaded successfully.")
+        RServ::Plugin.load($1.downcase) #filenames should be lowercase
+        msg(c, "Plugin #{$1} loaded successfully.")
+      rescue => e
+        msg(c, "Error reloading plugin #{$1}: #{e}")
+      end
     end
   end
   
