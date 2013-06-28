@@ -21,7 +21,7 @@
 class Control < RServ::Plugin
   
   def initialize
-    @control = RServ::IRC::PsuedoClient.new("RServ", "rserv", "rserv.interlinked.me", "RServ Services", "SZ", ["#rserv", "#services"])
+    @control = RServ::IRC::PsuedoClient.new("RServ", "rserv", "#{Configru.link.name}", "RServ Services", "SZ", ["#rserv", "#services"])
         
     $event.add(self, :on_input, "link::input")
   end
