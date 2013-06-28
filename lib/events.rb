@@ -78,6 +78,7 @@ module RServ
           
         objects.each do |p|
           if p.respond_to?("cmd_#{cmd}")
+            $log.debug("Calling #{p.method("cmd_#{cmd}")} for #{event}.")
             Thread.new { p.method("cmd_#{cmd}").call(*args) }
           end
         end
