@@ -235,7 +235,7 @@ module RServ::Protocols
         $log.info "Certificate fingerprint for #{@users[$1]}: #{$2}"
         $event.send("user::certfp", @users[$1], $2)
                 
-      elsif line =~ /^:(\w{9}) JOIN (\d+) (#\w*) (\+.*)$/
+      elsif line =~ /^:(\w{9}) JOIN (\d+) (#.*) (\+.*)$/
         chan = @channels[$3]
         chan.join($3)
         
@@ -249,7 +249,7 @@ module RServ::Protocols
         $log.info("#{@users[$1]} joined #{chan}.")
         @channels[$3] = chan 
         
-      elsif line =~ /^:(\w{9}) KICK (#\w*) (\w{9}) :(.*)$/
+      elsif line =~ /^:(\w{9}) KICK (#.*) (\w{9}) :(.*)$/
         #check if it is relevant
         if $3[0..2] == Configru.link.serverid
           RServ::IRC::Command.new("kick", [$2, $3, $4], $1)
@@ -266,11 +266,11 @@ module RServ::Protocols
           RServ::IRC::Command.new("kick", [$2, $3, $4], $1)
         end
         
-      elsif line =~ /^:(\w{9}) TOPIC (#\w*) :(.*)$/
+      elsif line =~ /^:(\w{9}) TOPIC (#.*) :(.*)$/
         @channels[$2].topic = $3
         $log.info("New topic for #{@channels[$2]} set by #{@users[$1]}: #{$3}")
         
-      elsif line =~ /^:(\w{9}) PART (#\w*)/
+      elsif line =~ /^:(\w{9}) PART (#.*)/
         chan = @channels[$2]
         chan.part($1)
         $log.info("#{@users[$1]} parted #{chan}.")
@@ -313,7 +313,7 @@ module RServ::Protocols
         $event.send("server::sid", server)
         send(":#{sid} PING #{name} :#{server.sid}")
      
-      elsif line =~ /^:(\w{3}) SJOIN (\d+) (#\w*) (\+.*) :(.*)$/
+      elsif line =~ /^:(\w{3}) SJOIN (\d+) (#.*) (\+.*) :(.*)$/
         if @channels.has_key?($3)
           users, ops, voiced = parse_users($5)
           
