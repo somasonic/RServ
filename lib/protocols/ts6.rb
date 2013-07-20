@@ -193,14 +193,14 @@ module RServ::Protocols
       name = Configru.link.name
       
       if line =~ /^:(\w{9}) AWAY$/
-        $event.send("user::away", @users[$1])
+        $event.send("user::unaway", @users[$1])
         $log.info "User #{$1} (#{@users[$1]}) is no longer away."
         @users[$1].away = false
         
       elsif line =~ /^:(\w{9}) AWAY :(.*)$/
         $log.info "User #{$1} (#{@users[$1].nick}) is away (#{$2})."
         @users[$1].away = true      
-        $event.send("user::unaway", @users[$1])
+        $event.send("user::away", @users[$1])
         
       elsif line =~ /^:(\w{9}) NICK (\S+) :(\d+)$/
         $log.info "Nick change for #{$1}: #{@users[$1]} -> #{$2}"
