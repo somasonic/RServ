@@ -211,6 +211,7 @@ module RServ::Protocols
       
       elsif line =~ /^:(\w{9}) QUIT :(.*)$/
         $log.info "User #{@users[$1].nick} quit (#{$2})."
+        olduser = @users[$1]
         @users.delete $1
         
         # remove user from any channels they were in
@@ -218,7 +219,7 @@ module RServ::Protocols
           |name, chan|
           chan.part($1)
         end
-        RServ::IRC::Command.new("quit", [$1], $2)
+        RServ::IRC::Command.new("quit", [olduser], $2)
         
       elsif line =~ /^:(\w{9}) ENCAP \S{1,3} REALHOST (.*)$/
         @users[$1].realhost = $2
@@ -270,7 +271,7 @@ module RServ::Protocols
         @channels[$2].topic = $3
         $log.info("New topic for #{@channels[$2]} set by #{@users[$1]}: #{$3}")
         
-      elsif line =~ /^:(\w{9}) PART (#.*)/
+      elsif line =~ /^:(\w{9}) PART (#\S*)/
         chan = @channels[$2]
         chan.part($1)
         $log.info("#{@users[$1]} parted #{chan}.")
