@@ -246,7 +246,7 @@ module RServ::Protocols
           $log.info "New TS for #{chan}: #{chan.ts}. New modes: #{chan.mode}."
         end
 
-        RServ::IRC::Command.new("join", [$2], $1)
+        RServ::IRC::Command.new("join", [$3], $1)
         $log.info("#{@users[$1]} joined #{chan}.")
         @channels[$3] = chan 
         
