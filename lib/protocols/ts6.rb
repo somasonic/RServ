@@ -156,7 +156,7 @@ module RServ::Protocols
           $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
           @servers[server.sid] = server
           
-        elsif line =~ /^:([0-9]{1}[A-Z0-9]{2}) SJOIN (\d+) (#\w*) (\+.*) :(.*)$/
+        elsif line =~ /^:([0-9]{1}[A-Z0-9]{2}) SJOIN (\d+) (#.*) (\+.*) :(.*)$/
           if @channels.has_key?($3)
             users, ops, voiced = parse_users($5)
             
