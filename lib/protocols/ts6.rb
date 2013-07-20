@@ -205,9 +205,9 @@ module RServ::Protocols
       elsif line =~ /^:(\w{9}) NICK (\S+) :(\d+)$/
         $log.info "Nick change for #{$1}: #{@users[$1]} -> #{$2}"
         
-        old_nick = @users[$1]
+        old_nick = @users[$1].to_s
         @users[$1].nick = $2
-        RServ::IRC::Command.new("nick", [$2], $1)
+        RServ::IRC::Command.new("nick", [old_nick, $2], $1)
       
       elsif line =~ /^:(\w{9}) QUIT :(.*)$/
         $log.info "User #{@users[$1].nick} quit (#{$2})."
