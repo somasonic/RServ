@@ -78,6 +78,8 @@ class Control < RServ::Plugin
       rescue => e
         msg(c, "Error reloading plugin #{$1}: #{e}")
       end
+    elsif command =~ /^vhost (\S+) (\S+)\s*$/i
+      send(":#{$protocol.sid} CHGHOST #{$1} #{$2}")
     end
   end
   
