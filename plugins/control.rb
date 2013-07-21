@@ -80,6 +80,7 @@ class Control < RServ::Plugin
       end
     elsif command =~ /^vhost (\S+) (\S+)\s*$/i
       send(":#{$protocol.sid} CHGHOST #{$1} #{$2}")
+      msg(c, "Vhost applied.")
     end
   end
   
