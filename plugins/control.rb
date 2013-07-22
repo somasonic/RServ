@@ -37,7 +37,7 @@ class Control < RServ::Plugin
       c = $2
       user = $protocol.get_uid($1)
       if user.oper?
-        command(c, user, $4)
+        command(c, user, $3)
       else
         msg(c, "Sorry, you are not an IRC operator.")
       end
@@ -46,7 +46,7 @@ class Control < RServ::Plugin
       c = $2
       user = $protocol.get_uid($1)
       if user.oper?
-        command(c, user, $4)
+        command(c, user, $3)
       else
         msg(c, "Sorry, you are not an IRC operator.")
       end
