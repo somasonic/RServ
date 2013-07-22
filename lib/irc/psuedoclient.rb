@@ -83,6 +83,7 @@ module RServ::IRC
         |chan|
         $protocol.channels[chan].part(@uid)
       end
+      $event.unregister(self)
     end
     
     def part(channel, msg = "Leaving channel..")
