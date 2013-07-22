@@ -21,7 +21,7 @@
 class Control < RServ::Plugin
   
   def initialize
-    @control = RServ::IRC::PsuedoClient.new("RServ", "rserv", "#{Configru.link.name}", "RServ Services", "SZ", ["#rserv", "#services"])
+    @control = RServ::IRC::PsuedoClient.new("RServ", "rserv", "#{Configru.link.name}", "RServ Services", "SZ", ["#rserv", "#services", "#opers"])
         
     $event.add(self, :on_input, "link::input")
   end
@@ -80,7 +80,13 @@ class Control < RServ::Plugin
       end
     elsif command =~ /^vhost (\S+) (\S+)\s*$/i
       send(":#{$protocol.sid} CHGHOST #{$1} #{$2}")
-      msg(c, "Vhost applied.")
+      msg(c, "Virtual host set on user. Please note this is not persistant.")
+    elsif command =~ /^snote (.+)$/i
+      send(":#{$protocol.sid} ENCAP * SNOTE s :#{$1}")
+    elsif command =~ /^join (#\S+)\s*$/i
+      @control.join($1)
+    elsif command =~ /^part (#\S+)\s*$/i
+      @control.part($1)
     end
   end
   
