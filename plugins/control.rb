@@ -22,6 +22,7 @@ class Control < RServ::Plugin
   
   def initialize
     @control = RServ::IRC::PsuedoClient.new("RServ", "rserv", "#{Configru.link.name}", "RServ Services", "SZ", ["#rserv", "#services", "#opers"])
+    @prefix = "@" #change to make the bot respond to different prefixes. make it nil to not use.
         
     $event.add(self, :on_input, "link::input")
   end
@@ -31,9 +32,17 @@ class Control < RServ::Plugin
   end
   
   def on_input(line)
-    if line =~ /:(\w{9}) PRIVMSG (#\w+) :(\w+)\S{0,1} (.*)$/i
+    if line =~ /:(\w{9}) PRIVMSG (#\S+) :#{@control.nick}\S{0,1} (.+)$/i
       return unless @control.channels.include?($2)
-      return unless $3.downcase == @control.nick.downcase
+      c = $2
+      user = $protocol.get_uid($1)
+      if user.oper?
+        command(c, user, $4)
+      else
+        msg(c, "Sorry, you are not an IRC operator.")
+      end
+    elsif line =~ /:(\w{9}) PRIVMSG (#\S+) :#{@prefix}(.+)$/i
+      return unless @control.channels.include?($2)
       c = $2
       user = $protocol.get_uid($1)
       if user.oper?
