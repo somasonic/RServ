@@ -23,6 +23,7 @@ class Control < RServ::Plugin
   def initialize
     @control = RServ::IRC::PsuedoClient.new("RServ", "rserv", "#{Configru.link.name}", "RServ Services", "SZ", ["#rserv", "#services", "#opers"])
     @prefix = "@" #change to make the bot respond to different prefixes. make it nil to not use.
+    @starttime = Time.now.to_i
         
     $event.add(self, :on_input, "link::input")
   end
@@ -64,6 +65,11 @@ class Control < RServ::Plugin
         msg(c, "!| #{e}")
         msg(c, "!| #{e.backtrace.join("\n")}")
       end
+    elsif command =~ /^uptime\s*$/i
+      elapsed = Time.now.to_i - @starttime
+      days = elapsed/86400
+      hours = elapsed/3600
+      msg(c, "Up #{days} days (#{hours} hours)")      
     elsif command =~ /^load (\w+)$/i
       begin
         RServ::Plugin.load($1)
