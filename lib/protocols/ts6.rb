@@ -218,6 +218,9 @@ module RServ::Protocols
         @channels.each do
           |name, chan|
           chan.part($1)
+          if chan.users.size == 0
+            @channels.delete(name) unless chan.permanent?
+          end
         end
         RServ::IRC::Command.new("quit", [olduser], $2)
         
@@ -259,7 +262,7 @@ module RServ::Protocols
           chan = @channels[$2]
           chan.part($3)
         
-          if chan.users.size > 0
+          if chan.users.size > 0 or chan.permanent?
             @channels[$2] = chan
           else
             @channels.delete($2)
@@ -276,7 +279,7 @@ module RServ::Protocols
         chan.part($1)
         $log.info("#{@users[$1]} parted #{chan}.")
         
-        if chan.users.size > 0
+        if chan.users.size > 0 or chan.permanent?
           @channels[$2] = chan
         else
           @channels.delete($2)

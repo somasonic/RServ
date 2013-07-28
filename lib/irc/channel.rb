@@ -44,6 +44,10 @@ module RServ::IRC
       @ts.to_i
     end
     
+    def permanent?
+      @mode.include?("P")
+    end
+    
     def has_op?(user)
       @ops.include?(user)
     end
