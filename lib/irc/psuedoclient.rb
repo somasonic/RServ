@@ -28,7 +28,7 @@ module RServ::IRC
     attr_reader :nick, :user, :host, :modes, :uid, :gecos, :channels
     attr_accessor :whois_str
   
-    def initialize(nick, user, host, gecos, modes, channels = Array.new)
+    def initialize(nick, user, host, gecos = "IRC Services", modes = "S", channels = Array.new)
       @@instances << self
       
       @nick = nick
