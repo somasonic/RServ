@@ -58,7 +58,7 @@ module RServ::Protocols
     
     def get_user(nick)
       result = nil
-      @users.each {|u| result = u if u.nick.downcase == nick.downcase }
+      @users.each_value {|u| result = u if u.nick.downcase == nick.downcase }
       result
     end
     
