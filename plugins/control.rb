@@ -59,9 +59,7 @@ class Control < RServ::Plugin
       begin
         result = eval($1)
         msg(c, "=> #{result.to_s}")
-      rescue => e
-        msg(c, "!| #{e}")
-        msg(c, "=> #{$1}")
+      rescue Exception => e
         msg(c, "!| #{e}")
         msg(c, "!| #{e.backtrace.join("\n")}")
       end
