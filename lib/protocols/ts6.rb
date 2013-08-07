@@ -56,6 +56,12 @@ module RServ::Protocols
       @servers[sid]
     end
     
+    def get_user(nick)
+      result = nil
+      @users.each {|u| result = u if u.nick.downcase == nick.downcase }
+      result
+    end
+    
     def send_numeric(target, numeric, text)
       send(":#{@sid} #{numeric.to_s} #{target} #{text}")
     end
