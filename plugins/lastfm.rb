@@ -163,12 +163,20 @@ class LastFM < RServ::Plugin
     end
     
     if command =~ /^!?np (#\S*)\s*$/i
-      unless @users['channels'].map{|c|c.downcase}.include?($1.downcase)
+      unless @data['channels'].map{|c|c.downcase}.include?($1.downcase)
         msg(user, "That channel is not enabled for LastFM. Please ask an operator (/stats p) to enable it.")
         return
       end
       reply = now_playing(user)
       msg($1, reply)
+    elsif command =~ /^!l(ove|)np\s*(#\S*|)\s*$/i
+      unless @users.has_key?(user.account) and @auth.has_key?(@users[user.account])
+        msg(user, "You must first link and authorise your LastFM account to use this command.")
+        return
+      end
+      @control.notice(user, love(user))
+      chan = $2 if @data["channels"].map{|c|c.downcase}.include?($2)
+      msg(chan, now_playing(user))
     elsif command =~ /^!?np\s*$/i
       reply = now_playing(user)
       msg(user, reply)
@@ -177,13 +185,13 @@ class LastFM < RServ::Plugin
     elsif command =~ /^!?enable (#\S+)\s*$/i
       return unless user.oper?
       @data['channels'].push $1
-      save(@users, "data/lastfm-users")
+      save(@data, "data/lastfm-data")
       msg(user, "enabled channel #{$1}")
       @control.join($1)
     elsif command =~ /^!?disable (#\S+)\s*$/i
       return unless user.oper?
       @data['channels'].delete $1
-      save(@users, "data/lastfm-users")
+      save(@data, "data/lastfm-data")
       msg(user, "leaving channel #{$1}")
       @control.part($1)
     elsif command =~ /^!?(cp|compare) (\S+)\s*$/i
