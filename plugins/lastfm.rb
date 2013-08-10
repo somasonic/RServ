@@ -93,7 +93,7 @@ class LastFM < RServ::Plugin
         msg(user, "You must first link and authorise your LastFM account to use this command.")
         return
       end
-      @bot.notice(user, love(user))
+      @control.notice(user, love(user))
       msg(chan, now_playing(user))
     elsif command =~ /^!url (\S+)\s*$/i
       user = $1
