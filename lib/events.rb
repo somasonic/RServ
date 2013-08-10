@@ -62,8 +62,7 @@ module RServ
               $log.debug("Calling #{obj.method(meth)} for #{event}.")
               obj.method(meth).call(*args)
             rescue Exception => boom
-              $log.error("Failed to call #{obj}::#{meth} (with args: #{args.join(";")}) for #{event} #{boom.message}")
-              $log.error(boom.backtrace.join("\r\n"))
+              $log.error("Failed to call #{obj}::#{meth} (with args: #{args.join(";")}) for #{event} #{boom.message}\r\n" + boom.backtrace.join("\r\n"))
             end
           end
         end
