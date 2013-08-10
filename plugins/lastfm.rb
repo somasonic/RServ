@@ -95,6 +95,8 @@ class LastFM < RServ::Plugin
       end
       @control.notice(user, love(user))
       msg(chan, now_playing(user))
+    elsif command =~ /^!?tag (.+)$/i
+      msg(chan, add_tags(user, $2))
     elsif command =~ /^!url (\S+)\s*$/i
       user = $1
       $protocol.users.map {|uid, u| user = u if u.nick.downcase == $1.downcase or u.account == $1.downcase}
@@ -178,6 +180,8 @@ class LastFM < RServ::Plugin
       target = user.uid
       target = $2 if @data['channels'].map{|c|c.downcase}.include?($2.downcase)
       msg(target, now_playing(user))
+    elsif command =~ /^!?tag (.+)$/i
+      @control.notice(user, add_tags(user, $2))
     elsif command =~ /^!?np\s*$/i
       reply = now_playing(user)
       msg(user, reply)
@@ -220,7 +224,28 @@ class LastFM < RServ::Plugin
       end
     end
   end
- 
+  
+  def add_tags(user, tags)
+    unless @auth.has_key?(@users[user.account])
+      return "Error: you must link and authorise your LastFM account to use this. Please /msg LastFM HELP for more information."
+    end
+    
+    tags = tags.split(", ")
+    return "Error: you can only add a maximum of ten tags" if tags.size >= 10
+    
+    @lastfm.session = @auth[@users[user.account]] 
+    begin
+      track = @lastfm.user.get_recent_tracks(@users[user.account])[0]
+      artist = track["artist"]["content"]
+      track = track["name"]
+      @lastfm.track.add_tags(:artist => artist, :track => track, :tags => tags.join(","))
+    rescue Lastfm::ApiError => err
+      msg("#services", "Error code #{err.code} from LastFM on add_tags (user=#{user.nick},tags=#{tags.join(",")},artist=#{artist},track=#{track})") 
+      return "Error: could not perform the operation. Please try again later."
+    end
+    return "Added tags to \"#{track}\" by #{artist}."
+  end
+    
   def compare(user1, user2, nick1, nick2)
     begin
       result = @lastfm.tasteometer.compare(:type1 => "user", :type2 => "user", :value1 => user1, :value2 => user2, :limit => 10)
