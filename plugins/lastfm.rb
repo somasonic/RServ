@@ -79,24 +79,28 @@ class LastFM < RServ::Plugin
   end
  
   def command(chan, user, command)
+    unless @data['channels'].map{|c|c.downcase}.include?(chan.to_s.downcase)
+      msg(user, "That channel is not enabled for LastFM. Please ask an operator (/stats p) to enable it.")
+      return
+    end
+    
     if command =~ /^!np\s*$/i
-      unless @data['channels'].map{|c|c.downcase}.include?(chan.to_s.downcase)
-        msg(user, "That channel is not enabled for LastFM. Please ask an operator (/stats p) to enable it.")
-        return
-      end
       user = user.nick unless @users.has_key?(user.account)
       reply = now_playing(user)
       msg(chan, reply)
+    elsif command =~ /^!l(ove|)np\s*$/i
+      unless @users.has_key?(user.account) and @auth.has_key?(@users[user.account])
+        msg(user, "You must first link and authorise your LastFM account to use this command.")
+        return
+      end
+      @bot.notice(user, love(user))
+      msg(chan, now_playing(user))
     elsif command =~ /^!url (\S+)\s*$/i
       user = $1
       $protocol.users.map {|uid, u| user = u if u.nick.downcase == $1.downcase or u.account == $1.downcase}
       user = @users[user.account] if user.class == RServ::IRC::User and @users.has_key?(user.account)
       msg(chan, "URL for #{$1} (#{user}): http://last.fm/user/#{user}")
     elsif command =~ /^!np (\S+)\s*$/i
-      unless @data['channels'].map{|c|c.downcase}.include?(chan.to_s.downcase)
-        msg(user, "That channel is not enabled for LastFM. Please ask an operator (/stats p) to enable it.")
-        return
-      end
       user = $1
       $protocol.users.map {|uid, u| user = u if u.nick.downcase == $1.downcase or u.account == $1.downcase}
       reply = now_playing(user)
