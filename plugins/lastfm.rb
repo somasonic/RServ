@@ -243,7 +243,7 @@ class LastFM < RServ::Plugin
       msg("#services", "Error code #{err.code} from LastFM on add_tags (user=#{user.nick},tags=#{tags.join(",")},artist=#{artist},track=#{track})") 
       return "Error: could not perform the operation. Please try again later."
     end
-    return "Added tags to \"#{track}\" by #{artist}."
+    return "Added #{tags.size} tags to \"#{track}\" by #{artist}."
   end
     
   def compare(user1, user2, nick1, nick2)
