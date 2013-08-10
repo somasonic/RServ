@@ -98,9 +98,7 @@ class LastFM < RServ::Plugin
     elsif command =~ /^!tag (.+)$/i
       msg(chan, add_tags(user, $1))
     elsif command =~ /^!otag (\S+) (.+)$/i
-      other_user = $protocol.get_user($1)
-      other_user = $1 if other_user.nil?
-      msg(chan, add_tags_other(user, other_user, $2))
+      msg(chan, add_tags_other(user, $1, $2))
     elsif command =~ /^!url (\S+)\s*$/i
       user = $1
       $protocol.users.map {|uid, u| user = u if u.nick.downcase == $1.downcase or u.account == $1.downcase}
