@@ -232,7 +232,7 @@ class LastFM < RServ::Plugin
       return "Error: you must link and authorise your LastFM account to use this. Please /msg LastFM HELP for more information."
     end
     
-    other_user = @users[other_user.account] if @users.has_key?(@users[other_user.account])
+    other_user = @users[other_user.account] if @users.has_key?(@users[other_user.account]) and @users.class == RServ::IRC::User
     
     tags = tags.split(", ")
     return "Error: you can only add a maximum of ten tags" if tags.size >= 10
