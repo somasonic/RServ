@@ -169,14 +169,15 @@ class LastFM < RServ::Plugin
       end
       reply = now_playing(user)
       msg($1, reply)
-    elsif command =~ /^!l(ove|)np\s*(#\S*|)\s*$/i
-      unless @users.has_key?(user.account) and @auth.has_key?(@users[user.account])
-        msg(user, "You must first link and authorise your LastFM account to use this command.")
+    elsif command =~ /^!?l(ove|)np\s*(#\S*|)\s*$/i
+      unless @auth.has_key?(@users[user.account])
+        msg(user, "You must first authorise your LastFM account to use this command.")
         return
       end
       @control.notice(user, love(user))
-      chan = $2 if @data["channels"].map{|c|c.downcase}.include?($2)
-      msg(chan, now_playing(user))
+      target = user.uid
+      target = $2 if @data['channels'].map{|c|c.downcase}.include?($2.downcase)
+      msg(target, now_playing(user))
     elsif command =~ /^!?np\s*$/i
       reply = now_playing(user)
       msg(user, reply)
