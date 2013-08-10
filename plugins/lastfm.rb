@@ -95,8 +95,8 @@ class LastFM < RServ::Plugin
       end
       @control.notice(user, love(user))
       msg(chan, now_playing(user))
-    elsif command =~ /^!?tag (.+)$/i
-      msg(chan, add_tags(user, $2))
+    elsif command =~ /^!tag (.+)$/i
+      msg(chan, add_tags(user, $1))
     elsif command =~ /^!url (\S+)\s*$/i
       user = $1
       $protocol.users.map {|uid, u| user = u if u.nick.downcase == $1.downcase or u.account == $1.downcase}
@@ -181,7 +181,7 @@ class LastFM < RServ::Plugin
       target = $2 if @data['channels'].map{|c|c.downcase}.include?($2.downcase)
       msg(target, now_playing(user))
     elsif command =~ /^!?tag (.+)$/i
-      @control.notice(user, add_tags(user, $2))
+      @control.notice(user, add_tags(user, $1))
     elsif command =~ /^!?np\s*$/i
       reply = now_playing(user)
       msg(user, reply)
