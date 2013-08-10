@@ -97,6 +97,10 @@ class LastFM < RServ::Plugin
       msg(chan, now_playing(user))
     elsif command =~ /^!tag (.+)$/i
       msg(chan, add_tags(user, $1))
+    elsif command =~ /^!otag (\S+) (.+)$/i
+      other_user = $protocol.get_user($1)
+      other_user = $1 if other_user.nil?
+      msg(chan, add_tags_other(user, other_user, $2))
     elsif command =~ /^!url (\S+)\s*$/i
       user = $1
       $protocol.users.map {|uid, u| user = u if u.nick.downcase == $1.downcase or u.account == $1.downcase}
@@ -223,6 +227,29 @@ class LastFM < RServ::Plugin
         msg(user, "Error: you must authorise your LastFM account to use this command.")
       end
     end
+  end
+  
+  def add_tags_other(user, other_user, tags)
+    unless @auth.has_key?(@users[user.account])
+      return "Error: you must link and authorise your LastFM account to use this. Please /msg LastFM HELP for more information."
+    end
+    
+    other_user = @users[other_user.account] if @users.has_key?(@users[other_user.account])
+    
+    tags = tags.split(", ")
+    return "Error: you can only add a maximum of ten tags" if tags.size >= 10
+    
+    @lastfm.session = @auth[@users[user.account]] 
+    begin
+      track = @lastfm.user.get_recent_tracks(other_user)[0]
+      artist = track["artist"]["content"]
+      track = track["name"]
+      @lastfm.track.add_tags(:artist => artist, :track => track, :tags => tags.join(","))
+    rescue Lastfm::ApiError => err
+      msg("#services", "Error code #{err.code} from LastFM on add_tags (user=#{user.nick},tags=#{tags.join(",")},artist=#{artist},track=#{track})") 
+      return "Error: could not perform the operation. Please try again later."
+    end
+    return "Added #{tags.size} tags to \"#{track}\" by #{artist}."
   end
   
   def add_tags(user, tags)
