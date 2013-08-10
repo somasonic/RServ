@@ -153,14 +153,6 @@ class LastFM < RServ::Plugin
       save(@users, "data/lastfm-users")
     end
     
-    if command =~ /^!?set (\S+) (\S+)\s*^/i
-      return unless user.oper?
-      @data['api_key'] = $1
-      @data['api_secret'] = $2
-      msg(user, "Please reload LastFM plugin.")
-      save(@data, "data/lastfm-data")
-    end
-    
     unless @users.has_key?(user.account)
       msg(user, "You must first link your LastFM account to use this command. Please try /msg #{@control.nick} LINK [lastfm username]")
       return
@@ -176,7 +168,7 @@ class LastFM < RServ::Plugin
     elsif command =~ /^!?np\s*$/i
       reply = now_playing(user)
       msg(user, reply)
-    elsif command =~ /^!?authoi(z|s)e\s*$/i
+    elsif command =~ /^!?authori(z|s)e\s*$/i
       msg(user, authorise(@users[user.account]))
     elsif command =~ /^!?enable (#\S+)\s*$/i
       return unless user.oper?
@@ -240,28 +232,26 @@ class LastFM < RServ::Plugin
   def authorise(lastfm_username)
     if @auth.has_key?("_#{lastfm_username}")
       begin
-        @auth[lastfm_username] = @lastfm.auth.get_session(@auth["_#{lastfm_username}"])
+        @auth[lastfm_username] = @lastfm.auth.get_session(:token => @auth["_#{lastfm_username}"])["key"]
       rescue Lastfm::ApiError => err
-        msg("#services", "Error code #{err.code} from LastFM on authorise\
-            [token=#{@auth["_#{lastfm_username}"]}, username=#{lastfm_username}]")
+        msg("#services", "Error code #{err.code} from LastFM on authorise [token=#{@auth["_#{lastfm_username}"]}, username=#{lastfm_username}]")
         @auth.delete("_#{lastfm_username}")
+        save(@auth, "/data/lastfm-auth")
         return "Error: could not authenticate with LastFM. Please try again, or try later."
       end
       @auth.delete("_#{lastfm_username}")
+      save(@auth, "/data/lastfm-auth")
       return "Authorised successfully!"
     else
       token = @lastfm.auth.get_token
       @auth["_#{lastfm_username}"] = token
-      return "Please visit http://last.fm/api/auth/?api_key=#{@data["api_key"]}&token=#{token}\
-              and verify our permission to access your account, and then run /msg LASTFM\
-              AUTHORISE again."
+      return "Please visit http://last.fm/api/auth/?api_key=#{@data["api_key"]}&token=#{token} and verify our permission to access your account, and then run /msg LASTFM AUTHORISE again."
     end
   end
   
   def love(user, unlove = false)
     unless @auth.has_key?(@users[user.account])
-      return "Error: you must link and authorise your LastFM account to \
-              use this. Please /msg LastFM HELP for more information."
+      return "Error: you must link and authorise your LastFM account to use this. Please /msg LastFM HELP for more information."
     end
     @lastfm.session = @auth[@users[user.account]] 
     begin
@@ -274,9 +264,7 @@ class LastFM < RServ::Plugin
         @lastfm.track.love(:artist => artist, :track => track)
       end
     rescue Lastfm::ApiError => err
-      msg("#services", "Error code #{err.code} from LastFM on love \ 
-      (unlove=#{unlove}) [user=#{user.nick}, account=#{user.account}, \
-      artist=#{artist}, track=#{track}]")
+      msg("#services", "Error code #{err.code} from LastFM on love (unlove=#{unlove}) [user=#{user.nick}, account=#{user.account}, artist=#{artist}, track=#{track}]")
       return "Error: could not perform the operation. Please try again later."
     end
     if unlove
