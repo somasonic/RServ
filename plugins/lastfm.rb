@@ -153,6 +153,14 @@ class LastFM < RServ::Plugin
       save(@users, "data/lastfm-users")
     end
     
+    if command =~ /^!?set (\S+) (\S+)\s*^/i
+      return unless user.oper?
+      @data['api_key'] = $1
+      @data['api_secret'] = $2
+      msg(user, "Please reload LastFM plugin.")
+      save(@data, "data/lastfm-data")
+    end
+    
     unless @users.has_key?(user.account)
       msg(user, "You must first link your LastFM account to use this command. Please try /msg #{@control.nick} LINK [lastfm username]")
       return
@@ -182,12 +190,6 @@ class LastFM < RServ::Plugin
       save(@users, "data/lastfm-users")
       msg(user, "leaving channel #{$1}")
       @control.part($1)
-    elsif command =~ /^!?set (\S+) (\S+)\s*^/i
-      return unless user.oper?
-      @data['api_key'] = $1
-      @data['api_secret'] = $2
-      msg(user, "Please reload LastFM plugin.")
-      save(@data, "data/lastfm-data")
     elsif command =~ /^!?(cp|compare) (\S+)\s*$/i
       user1, nick1 = @users[user.account], user.nick
       user2, nick2 = $2, $2
