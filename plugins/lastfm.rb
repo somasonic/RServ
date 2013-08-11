@@ -413,6 +413,7 @@ class LastFM < RServ::Plugin
       if userloved == 1 then lovedstr = " a loved track" else lovedstr = "" end
       if nowplaying == "true" then playing_str = "is now playing" else playing_str = "last played" end
       if album == nil then albumstr = "" else albumstr = ", from the album #{album}" end
+      tag_str = "It has not been tagged."
       tag_str = "Tags: #{tags.join(", ")}." unless tags.empty?
       
       reply = "#{usernick} (#{useraccount}) #{playing_str}#{lovedstr} \"#{title}\" by #{artist}#{albumstr} for the #{userplaycount.ordinalize} time. This track has been played #{playcount} times by #{listeners} listeners. #{tag_str}"
