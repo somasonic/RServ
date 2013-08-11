@@ -312,16 +312,16 @@ class LastFM < RServ::Plugin
       rescue Lastfm::ApiError => err
         msg("#services", "Error code #{err.code} from LastFM on authorise [token=#{@auth["_#{lastfm_username}"]}, username=#{lastfm_username}]")
         @auth.delete("_#{lastfm_username}")
-        save(@auth, "/data/lastfm-auth")
+        save(@auth, "data/lastfm-auth")
         return "Error: could not authenticate with LastFM. Please try again, or try later."
       rescue => err
         msg("#services", "Unexpected error when trying to authorise [user=#{lastfm_username}]")
         @auth.delete("_#{lastfm_username}")
-        save(@auth, "/data/lastfm-auth")
+        save(@auth, "data/lastfm-auth")
         return "Error: Last.FM won't authorise us now. Please try again later."
       end
       @auth.delete("_#{lastfm_username}")
-      save(@auth, "/data/lastfm-auth")
+      save(@auth, "data/lastfm-auth")
       return "Authorised successfully!"
     else
       token = @lastfm.auth.get_token
