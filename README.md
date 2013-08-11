@@ -5,13 +5,14 @@ Project
 -------
 This is RServ, an as-of-yet incomplete attempt at a plugin-based, event driven lightweight IRC services framework written in Ruby. It is not intended to be NickServ or do any traditional services functions, but rather provide a framework on which Ruby plugins could quickly be developed to use the full power of a psuedoservice, without the fuss.
 
-Protocols are modular, at the moment TS6 (Charybdis) is functional.
+Protocols are modular, at the moment TS6 (Charybdis) is functional but not production ready.
 
 Dependancies
 ------------
 
 * Ruby (2.0 compatible)
 * configru https://github.com/programble/configru
+* ruby-lastfm (lastfm plugin)
 
 IRC
 ---
