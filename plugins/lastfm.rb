@@ -140,6 +140,16 @@ class LastFM < RServ::Plugin
       else
         msg(user, "Error: you must authorise your LastFM account to use this command.")
       end
+    elsif command =~ /^!(un|)love (\S+)\s*/i
+      if @auth.has_key?(@users[user.account])
+        if $1 == "un"
+          @control.notice(user, love_other(user, $1, true))
+        else
+          @control.notice(user, love_other(user, $1))
+        end
+      else
+        msg(user, "Error: you must authorise your LastFM account to use this command.")
+      end
     end
   end
  
@@ -304,6 +314,11 @@ class LastFM < RServ::Plugin
         @auth.delete("_#{lastfm_username}")
         save(@auth, "/data/lastfm-auth")
         return "Error: could not authenticate with LastFM. Please try again, or try later."
+      rescue => err
+        msg("#services", "Unexpected error when trying to authorise [user=#{lastfm_username}]")
+        @auth.delete("_#{lastfm_username}")
+        save(@auth, "/data/lastfm-auth")
+        return "Error: Last.FM won't authorise us now. Please try again later."
       end
       @auth.delete("_#{lastfm_username}")
       save(@auth, "/data/lastfm-auth")
@@ -339,7 +354,38 @@ class LastFM < RServ::Plugin
       return "Loved \"#{track}\" by #{artist}."
     end
   end
+  
+  def love_other(user, other_user, unlove = false)
+    unless @auth.has_key?(@users[user.account])
+      return "Error: you must link and authorise your LastFM account to use this. Please /msg LastFM HELP for more information."
+    end
       
+    irc_user = $protocol.get_user(other_user)
+    unless irc_user.nil?
+      other_user = @users[irc_user.account] if @users.has_key?(irc_user.account)
+    end
+    
+    @lastfm.session = @auth[@users[user.account]] 
+    begin
+      track = @lastfm.user.get_recent_tracks(other_user)[0]
+      artist = track["artist"]["content"]
+      track = track["name"]
+      if unlove
+        @lastfm.track.unlove(:artist => artist, :track => track)
+      else
+        @lastfm.track.love(:artist => artist, :track => track)
+      end
+    rescue Lastfm::ApiError => err
+      msg("#services", "Error code #{err.code} from LastFM on love (unlove=#{unlove}) [user=#{user.nick}, account=#{user.account}, artist=#{artist}, track=#{track}]")
+      return "Error: could not perform the operation. Please try again later."
+    end
+    if unlove
+      return "Unloved \"#{track}\" by #{artist}."
+    else
+      return "Loved \"#{track}\" by #{artist}."
+    end
+  end
+  
   def now_playing(user)
     if user.class == RServ::IRC::User
       usernick = user.nick
