@@ -376,7 +376,7 @@ class LastFM < RServ::Plugin
         @lastfm.track.love(:artist => artist, :track => track)
       end
     rescue Lastfm::ApiError => err
-      msg("#services", "Error code #{err.code} from LastFM on love (unlove=#{unlove}) [user=#{user.nick}, account=#{user.account}, artist=#{artist}, track=#{track}]")
+      msg("#services", "Error code #{err.code} from LastFM on love (unlove=#{unlove}) [other_user=#{other_user}, user=#{user.nick}, account=#{user.account}, artist=#{artist}, track=#{track}]")
       return "Error: could not perform the operation. Please try again later."
     end
     if unlove
