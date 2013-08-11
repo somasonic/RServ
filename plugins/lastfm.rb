@@ -143,9 +143,9 @@ class LastFM < RServ::Plugin
     elsif command =~ /^!(un|)love (\S+)\s*/i
       if @auth.has_key?(@users[user.account])
         if $1 == "un"
-          @control.notice(user, love_other(user, $1, true))
+          @control.notice(user, love_other(user, $2, true))
         else
-          @control.notice(user, love_other(user, $1))
+          @control.notice(user, love_other(user, $2))
         end
       else
         msg(user, "Error: you must authorise your LastFM account to use this command.")
