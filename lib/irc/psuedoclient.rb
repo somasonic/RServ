@@ -102,6 +102,10 @@ module RServ::IRC
       send(":#{@uid} PRIVMSG #{target} :#{msg}")
     end
     
+    def action(target, msg)
+      send(":#{@uid} PRIVMSG #{target} :\x01ACTION #{msg}\x01")
+    end
+    
     def notice(target, msg)
       send(":#{@uid} NOTICE #{target} :#{msg}")
     end
