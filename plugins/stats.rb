@@ -30,6 +30,8 @@ class Stats < RServ::Plugin
       @data["channels"] = Array.new
       save(@data, "data/stats")
     end
+
+    @data.each {|k,v| v.default = 0 if k[0] == "#" }
     
     $event.add(self, :on_input, "link::input")
     $event.add(self, :on_burst, "server::connected")
