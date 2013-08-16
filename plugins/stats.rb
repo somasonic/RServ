@@ -18,6 +18,8 @@
 # DEALINGS IN THE SOFTWARE.
 ##
  
+require 'json'
+
 class Stats < RServ::Plugin
  
   def initialize
