@@ -40,7 +40,6 @@ class Stats < RServ::Plugin
   end
  
   def on_burst
-    @data['channels'] = Array.new unless @data.has_key?("channels")
     @data['channels'].each { |c| @control.join(c, false) }
   end
  
