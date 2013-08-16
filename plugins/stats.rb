@@ -65,8 +65,11 @@ class Stats < RServ::Plugin
     if command =~ /^!stats\s*/i
       print_stats(channel, user)
     else
-      user = user.account unless user.account.nil?
-      @data[channel][user] += 1
+      if user.account.nil?
+        @data[channel][user.nick] += 1
+      else
+        @data[channel][user.account] += 1
+      end
       Thread.new { save(@data, "data/stats") }
     end
   end
