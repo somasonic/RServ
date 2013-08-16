@@ -79,11 +79,11 @@ class Stats < RServ::Plugin
   
   def print_stats(channel, user)
     stats = @data[channel].sort_by {|k,v| v}.reverse
-    msg(user, "Top users for #{channel}:")
+    notice(user, "Top users for #{channel}:")
     position = 1
     stats.each do
       |player, count|
-      msg(user, "##{position}: #{player} - #{count} lines")
+      notice(user, "##{position}: #{player} - #{count} lines")
       position += 1
       break if position > 10
     end
@@ -122,5 +122,9 @@ class Stats < RServ::Plugin
    
   def msg(t, msg)
     @control.privmsg(t, msg)
+  end
+
+  def notice(t, msg)
+    @control.notice(t, msg)
   end
 end
