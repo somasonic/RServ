@@ -79,8 +79,8 @@ class Stats < RServ::Plugin
     msg(user, "Top users for #{channel}:")
     position = 1
     stats.each do
-      |user, count|
-      msg(user, "##{number}: #{user} - #{count} lines")
+      |player, count|
+      msg(user, "##{position}: #{player} - #{count} lines")
       position += 1
       break if position > 10
     end
