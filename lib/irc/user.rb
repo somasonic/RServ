@@ -23,12 +23,13 @@ module RServ::IRC
   class User
     
     attr_reader :sid, :uid, :hops, :away, :away_reason
-    attr_accessor :nick, :mode, :username, :hostname, :ip, :gecos, :account, :realhost, :certfp
+    attr_accessor :nick, :mode, :username, :hostname, :ip, :gecos, :account, :realhost, :certfp, :ts
   
-    def initialize(nick, uid, hops, mode, username, hostname, ip, gecos)
+    def initialize(nick, uid, hops, mode, username, hostname, ip, gecos, ts)
       @nick, @uid, @hops, @mode = nick, uid, hops, mode
       @username, @hostname, @ip, @gecos = username, hostname, ip, gecos
-      
+      @ts = ts
+
       @account, @realhost = nil, nil
       
       @away = false 
@@ -49,7 +50,7 @@ module RServ::IRC
     def hostmask
       "#{@nick}!#{@username}@#{@hostname}"
     end
-    
+ 
     def away=(away = true)
       raise TypeError, 'Away status must be boolean' unless away == true or away == false
       @away = away
