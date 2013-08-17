@@ -152,8 +152,8 @@ module RServ::Protocols
             $log.info "Server connection established to #{$2} (#{$1})!"
           end
           
-        elsif line =~ /^:(\w{3}) UID (\S+) (\d{1,2}) (\d{10}) \+([a-zA-Z]*) (\S+) (\S+) (\S+) ([0-9]\w{2}[A-Z][A-Z0-9]{5}) :(.*)$/
-          user = RServ::IRC::User.new($2, $9, $3, $5, $6, $7, $8, $10)
+        elsif line =~ /^:(\w{3}) UID (\S+) (\d{1,2}) (\d+) \+([a-zA-Z]*) (\S+) (\S+) (\S+) ([0-9]\w{2}[A-Z][A-Z0-9]{5}) :(.*)$/
+          user = RServ::IRC::User.new($2, $9, $3, $5, $6, $7, $8, $10, $4)
           @users[user.uid] = user
           $log.info "New user #{user.uid} on #{user.sid}. Host: #{user.nick}!#{user.username}@#{user.hostname} (#{user.ip}) | Modes: +#{user.mode}"
           
@@ -161,7 +161,11 @@ module RServ::Protocols
           server = RServ::IRC::Server.new($4, $2, $3, $5)
           $log.info "New server: #{server.hostname} (#{server.sid}) [#{server.gecos}]"
           @servers[server.sid] = server
-          
+
+        elsif line =~ /^:([0-9]{1}[A-Z0-9]{2}) NICK (\S+) :(\d+)$/
+          @users[$2].ts = $3
+          $log.info "New timestamp for user #{@users[$2]} on #{$1}: #{$3}"
+
         elsif line =~ /^:([0-9]{1}[A-Z0-9]{2}) SJOIN (\d+) (#.*) (\+.*) :(.*)$/
           if @channels.has_key?($3)
             users, ops, voiced = parse_users($5)
