@@ -105,6 +105,8 @@ class Stats < RServ::Plugin
       @control.part($1)
       save(@data, "data/stats")
       msg(user, "Disabled #{$1}")
+    elsif command =~ /^ignore list\s*$/i
+      msg(user, "Users ignored: #{@data["ignore"].join(", ")}.")
     elsif command =~ /^ignore (\S+)\s*$/i
       @data["ignore"] << $1.downcase
       msg(user, "Now ignoring nickname #{$1}")
@@ -113,8 +115,6 @@ class Stats < RServ::Plugin
       @data["ignore"].delete($1.downcase)
       msg(user, "#{$1} removed from ignore list")
       save(@data, "data/stats")
-    elsif command =~ /^ignore list\s*$/i
-      msg(user, "Users ignored: #{@data["ignore"].join(", ")}.")
     end
   end
  
