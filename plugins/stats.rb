@@ -30,6 +30,7 @@ class Stats < RServ::Plugin
     rescue
       @data = Hash.new
       @data["channels"] = Array.new
+      @data["ignore"] = Array.new
       save(@data, "data/stats")
     end
 
@@ -83,6 +84,7 @@ class Stats < RServ::Plugin
     position = 1
     stats.each do
       |player, count|
+      next if @data["ignore"].include?(player.downcase)
       notice(user, "##{position}: #{player} - #{count} lines")
       position += 1
       break if position > 10
@@ -103,6 +105,16 @@ class Stats < RServ::Plugin
       @control.part($1)
       save(@data, "data/stats")
       msg(user, "Disabled #{$1}")
+    elsif command =~ /^ignore (\S+)\s*$/i
+      @data["ignore"] << $1.downcase
+      msg(user, "Now ignoring nickname #{$1}")
+      save(@data, "data/stats")
+    elsif command =~ /^unignore (\S+)\s*$/i
+      @data["ignore"].delete($1.downcase)
+      msg(user, "#{$1} removed from ignore list")
+      save(@data, "data/stats")
+    elsif command =~ /^ignore list\s*$/i
+      msg(user, "Users ignored: #{@data["ignore"].join(", ")}.")
     end
   end
  
