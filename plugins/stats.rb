@@ -66,7 +66,7 @@ class Stats < RServ::Plugin
   
   def command(channel, user, command)
     return unless @control.channels.include?(channel)
-    if command =~ /^!stats\s*/i
+    if command =~ /^!(stats|top10)\s*/i
       print_stats(channel, user)
     else
       if user.account.nil?
