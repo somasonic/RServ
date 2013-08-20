@@ -7,7 +7,7 @@ This is RServ, an as-of-yet incomplete attempt at a plugin-based, event driven l
 
 Protocols are modular, at the moment TS6 (Charybdis) is functional but not production ready.
 
-Dependancies
+Dependencies
 ------------
 
 * Ruby (2.0 compatible)
