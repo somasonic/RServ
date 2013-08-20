@@ -21,6 +21,9 @@
 
 $:.unshift File.dirname(__FILE__)
 
+require 'rubygems'
+require 'bundler/setup'
+
 require 'logger'
 require 'configru' # https://github.com/programble/configru
 
