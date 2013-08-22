@@ -144,6 +144,14 @@ class Sporks < RServ::Plugin
       end
     elsif command =~ /^!karma (\S+)\s*$/
       @control.privmsg(chan, "Karma for #{$1}: #{@karma[$1.downcase]}")
+    elsif command =~ /^;set (\S+) (.+)\s*/i
+      @strings[$1] = $2.strip
+      save(@strings, "data/strings")
+      msg(chan, "#{$1} => #{$2}")
+    elsif command =~ /^;(\S+)\s*/i
+      if @strings.has_key?($1)
+        msg(chan, "#{$1} => #{@strings[$1]}")
+      end
     elsif command =~ /(\S)+\+\+/ or command =~ /(\S)+--/
       karma_process(command, user)
     end
@@ -191,7 +199,7 @@ class Sporks < RServ::Plugin
         changed = 1
       end
     end
-    save_karma
+    save(@karma, "data/karma")
   end
   
   def ordered_karma
