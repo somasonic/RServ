@@ -150,7 +150,12 @@ class Sporks < RServ::Plugin
       msg(chan, "#{$1} => #{$2}")
     elsif command =~ /^;(\S+)\s*/i
       if @strings.has_key?($1)
-        msg(chan, "#{$1} => #{@strings[$1]}")
+        value = @strings[$1]
+        if value[0] == "$"
+          msg(chan, value[1..-1])
+        else
+          msg(chan, "#{$1} => #{@strings[$1]}")
+        end
       end
     elsif command =~ /(\S)+\+\+/ or command =~ /(\S)+--/
       karma_process(command, user)
