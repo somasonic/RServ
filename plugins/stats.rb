@@ -66,8 +66,10 @@ class Stats < RServ::Plugin
   
   def command(channel, user, command)
     return unless @control.channels.include?(channel)
-    if command =~ /^!(stats|top10)\s*/i
-      print_stats(channel, user)
+    if command =~ /^!top(\d+)\s*/i
+      num = $1.to_i
+      num = 10 if num < 5 or num > 25
+      print_stats(channel, user, num)
     else
       if user.account.nil?
         @data[channel][user.nick] += 1
@@ -78,7 +80,7 @@ class Stats < RServ::Plugin
     end
   end
   
-  def print_stats(channel, user)
+  def print_stats(channel, user, max_pos = 10)
     stats = @data[channel].sort_by {|k,v| v}.reverse
     notice(user, "Top users for #{channel}:")
     position = 1
@@ -87,7 +89,7 @@ class Stats < RServ::Plugin
       next if @data["ignore"].include?(player.downcase)
       notice(user, "##{position}: #{player} - #{count} lines")
       position += 1
-      break if position > 10
+      break if position > max_pos
     end
   end
   
