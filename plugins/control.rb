@@ -93,7 +93,7 @@ class Control < RServ::Plugin
       end
     elsif command =~ /^vhost (\S+) (\S+)\s*$/i
       send(":#{$protocol.sid} CHGHOST #{$1} #{$2}")
-      msg(c, "Virtual host set on user. Please note this is not persistant.")
+      msg(c, "Virtual host set on user. Please note this is not persistent.")
     elsif command =~ /^snote (.+)$/i
       send(":#{$protocol.sid} ENCAP * SNOTE s :#{$1}")
     elsif command =~ /^join (#\S+)\s*$/i
