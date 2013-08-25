@@ -56,6 +56,10 @@ class Control < RServ::Plugin
   
   def command(c, user, command)
     if command =~ /^eval (.*)$/i
+      unless user.mode.include?("a")
+        msg(c, "Sorry, you are not an IRC operator of sufficient rank.:)
+        return
+      end
       begin
         result = eval($1)
         msg(c, "=> #{result.to_s}")
@@ -67,7 +71,7 @@ class Control < RServ::Plugin
       elapsed = Time.now.to_i - @starttime
       days = elapsed/86400
       hours = elapsed/3600
-      msg(c, "Up #{days} days (#{hours} hours)")      
+      msg(c, "Up #{days} days (#{hours} hours)")
     elsif command =~ /^load (\w+)$/i
       begin
         RServ::Plugin.load($1)
