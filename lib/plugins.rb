@@ -52,6 +52,10 @@ module RServ
       end
     end
     
+    def self.unload_all
+      @instances.each_key {|k| self.unload(k) }
+    end
+    
     def self.unload(c)      
       if @instances.has_key?(c)
         klass = @instances[c]
