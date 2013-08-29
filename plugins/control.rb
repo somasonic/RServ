@@ -72,12 +72,9 @@ class Control < RServ::Plugin
         msg(c, "Sorry, you are not an IRC operator of sufficient rank.")
         return
       end
-      begin
-        RServ::Plugin.unload_all()
-        exit()
-      rescue
-        exit()
-      end
+      msg(c, "Exiting...")
+      $log.fatal "Received @shutdown from #{user.hostmask}."
+      RServ::Plugin.unload_all_and_quit()
     elsif command =~ /^uptime\s*$/i
       elapsed = Time.now.to_i - @starttime
       days = elapsed/86400

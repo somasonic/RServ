@@ -52,8 +52,9 @@ module RServ
       end
     end
     
-    def self.unload_all
+    def self.unload_all_and_quit
       @instances.each_key {|k| self.unload(k) }
+      exit()
     end
     
     def self.unload(c)      
