@@ -54,6 +54,7 @@ module RServ
     
     def self.unload_all_and_quit
       @instances.each_key {|k| self.unload(k) }
+      $event.send("shutdown")
       exit()
     end
     

@@ -36,6 +36,7 @@ module RServ
 
       # Events
       $event.add(self, :on_link_start, "link::start")
+      $event.add(self, :on_shutdown, "shutdown")
 
       start if do_start
     end
@@ -67,6 +68,10 @@ module RServ
         @connected = false
         $event.unregister(self)
       end
+    end
+    
+    def on_shutdown
+      @socket.close
     end
 
     def send(text)

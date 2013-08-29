@@ -72,7 +72,7 @@ class Control < RServ::Plugin
         msg(c, "Sorry, you are not an IRC operator of sufficient rank.")
         return
       end
-      msg(c, "Exiting...")
+      send(":#{$protocol.sid} ENCAP * SNOTE s :Received shutdown from #{user.hostmask}. Exiting..")
       $log.fatal "Received @shutdown from #{user.hostmask}."
       RServ::Plugin.unload_all_and_quit()
     elsif command =~ /^uptime\s*$/i
