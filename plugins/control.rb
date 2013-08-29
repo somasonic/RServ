@@ -67,6 +67,17 @@ class Control < RServ::Plugin
         msg(c, "!| #{e}")
         msg(c, "!| #{e.backtrace.join("\n")}")
       end
+    elsif command =~ /^shutdown\s*$/i
+      unless user.mode.include?("a")
+        msg(c, "Sorry, you are not an IRC operator of sufficient rank.")
+        return
+      end
+      begin
+        RServ::Plugin.unload_all()
+        exit()
+      rescue
+        exit()
+      end
     elsif command =~ /^uptime\s*$/i
       elapsed = Time.now.to_i - @starttime
       days = elapsed/86400
