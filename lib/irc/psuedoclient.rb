@@ -68,7 +68,7 @@ module RServ::IRC
 #     @nick = newnick
 #   end
     
-    def join_channels(op = true)
+    def join_channels(op = false)
       return if @channels.size == 0
       @channels.each do
         |channel|
