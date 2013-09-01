@@ -80,21 +80,21 @@ class Control < RServ::Plugin
       days = elapsed/86400
       hours = elapsed/3600
       msg(c, "Up #{days} days (#{hours} hours)")
-    elsif command =~ /^load (\w+)$/i
+    elsif command =~ /^load (\w+)\s*$/i
       begin
         RServ::Plugin.load($1)
         msg(c, "Plugin #{$1} loaded successfully.")
       rescue LoadError => e
         msg(c, "Error loading plugin #{$1}: #{e}")
       end
-    elsif command =~ /^unload (\w+)$/i
+    elsif command =~ /^unload (\w+)\s*$/i
       begin
         RServ::Plugin.unload($1)
         msg(c, "Plugin #{$1} unloaded successfully.")
       rescue => e
         msg(c, "Error unloading plugin #{$1}: #{e}")
       end
-    elsif command =~ /^reload (\w+)$/i
+    elsif command =~ /^reload (\w+)\s*$/i
       begin
         RServ::Plugin.unload($1)
         msg(c, "Plugin #{$1} unloaded successfully.")
@@ -106,7 +106,7 @@ class Control < RServ::Plugin
     elsif command =~ /^vhost (\S+) (\S+)\s*$/i
       send(":#{$protocol.sid} CHGHOST #{$1} #{$2}")
       msg(c, "Virtual host set on user. Please note this is not persistent.")
-    elsif command =~ /^snote (.+)$/i
+    elsif command =~ /^snote (.+)\s*$/i
       send(":#{$protocol.sid} ENCAP * SNOTE s :#{$1}")
     elsif command =~ /^join (#\S+)\s*$/i
       @control.join($1)
