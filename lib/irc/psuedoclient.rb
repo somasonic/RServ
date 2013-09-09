@@ -18,6 +18,8 @@
 # DEALINGS IN THE SOFTWARE.
 ##
 
+require 'lib/irc/colours'
+
 module RServ::IRC
   
   class PsuedoClient
