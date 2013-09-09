@@ -62,10 +62,10 @@ class Control < RServ::Plugin
       end
       begin
         result = eval($1)
-        msg(c, "=> #{result.to_s}")
+        msg(c, "#{BOLD}#{GREEN} =>#{COLOR} #{result.to_s}")
       rescue Exception => e
-        msg(c, "!| #{e}")
-        msg(c, "!| #{e.backtrace.join("\n")}")
+        msg(c, "#{BOLD}#{RED}!|#{COLOR} #{e}")
+        msg(c, "#{BOLD}#{RED}!|#{COLOR} #{e.backtrace.join("\n")}")
       end
     elsif command =~ /^shutdown\s*$/i
       unless user.mode.include?("a")
