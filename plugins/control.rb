@@ -62,7 +62,7 @@ class Control < RServ::Plugin
       end
       begin
         result = eval($1)
-        msg(c, "#{BOLD}#{GREEN} =>#{COLOR} #{result.to_s}")
+        msg(c, "#{BOLD}#{GREEN}=>#{COLOR} #{result.to_s}")
       rescue Exception => e
         msg(c, "#{BOLD}#{RED}!|#{COLOR} #{e}")
         msg(c, "#{BOLD}#{RED}!|#{COLOR} #{e.backtrace.join("\n")}")
