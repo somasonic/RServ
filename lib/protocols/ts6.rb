@@ -248,7 +248,7 @@ module RServ::Protocols
                 
       elsif line =~ /^:(\w{9}) JOIN (\d+) (#.*) (\+.*)$/
         chan = @channels[$3]
-        chan.join($3)
+        chan.join($1)
         
         if $2.to_i < chan.ts
           chan.ts = $2.to_i
