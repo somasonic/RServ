@@ -27,10 +27,26 @@ class LastFM < RServ::Plugin
   def initialize
     @control = RServ::IRC::PsuedoClient.new("LastFM", "music", "rserv.interlinked.me", "LastFM Services", "S")
  
-    @users = load("data/lastfm-users")
-    @data = load("data/lastfm-data")
-    @auth = load("data/lastfm-auth")
+    begin
+      @users = load("data/lastfm-users")
+    rescue 
+      @users = Hash.new
+    end
+ 
+    begin
+      @data = load("data/lastfm-data")
+    rescue 
+      @data = Hash.new
+      @data['api_key'] = "changeme"
+      @data['api_secret'] = "changeme"
+    end
     
+    begin
+      @auth = load("data/lastfm-auth")
+    rescue 
+      @auth = Hash.new
+    end
+
     @lastfm = Lastfm.new(@data['api_key'], @data['api_secret'])
  
     $event.add(self, :on_input, "link::input")
