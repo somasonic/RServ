@@ -294,9 +294,12 @@ module RServ::Protocols
         RServ::IRC::Command.new("part", [$2], $1)
         
       elsif line =~ /^:(\w{9}) KILL (\w{9}) :(.*)$/
-        $log.info "User #{@users[$2].nick} killed (#{@users[$1].nick} [#{$3}]})."
+        if $2[0..2] == Configru.link.serverid
+          RServ::IRC::Command.new("kill", [$2, $3], $1)
+          return
+        end
         RServ::IRC::Command.new("kill", [@users[$2], $3], $1)
-        return if $2[0..2] == Configru.link.serverid
+        $log.info "User #{@users[$2].nick} killed (#{@users[$1].nick} [#{$3}]})."
         @users.delete $2
         
         # remove user from any channels they were in
