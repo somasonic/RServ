@@ -20,6 +20,7 @@
 # not of much use to anyone
 
 require 'openssl'
+require 'timeout' 
 
 class OperBot < RServ::Plugin
   def initialize
@@ -68,8 +69,13 @@ class OperBot < RServ::Plugin
 
   def main_os_loop
     loop do
-      Thread.new { connection = @server.accept; handle_connection(connection) }
-      sleep 0.4
+      Timeout::timeout(5) do
+        Thread.new do
+          connection = @server.accept
+          handle_connection(connection) 
+        end
+        sleep 0.2
+      end
     end
   end
 
@@ -91,6 +97,7 @@ class OperBot < RServ::Plugin
             account = $1
             conn.puts "OK"
           else
+            conn.puts "ERROR: NOT AUTHENTICATED"
             conn.close
           end
         end
