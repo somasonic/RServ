@@ -30,7 +30,7 @@ module RServ::IRC
       @username, @hostname, @ip, @gecos = username, hostname, ip, gecos
       @ts = ts
 
-      @account, @realhost = nil, nil
+      @account, @realhost = nil, hostname
       
       @away = false 
       
@@ -48,6 +48,10 @@ module RServ::IRC
     end
     
     def hostmask
+      "#{@nick}!#{@username}@#{@realhost}"
+    end
+
+    def pub_hostmask
       "#{@nick}!#{@username}@#{@hostname}"
     end
  

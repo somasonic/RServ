@@ -138,7 +138,7 @@ module RServ::IRC
     # on_ and cmd_ methods
     
     def cmd_kill(c)
-      if c.params[0] == @uid
+      if c.params[0].uid == @uid
         $log.info "PsuedoClient #{@nick} killed (#{$protocol.get_uid(c.origin)}). Reconnecting."
         on_burst
         join_channels
