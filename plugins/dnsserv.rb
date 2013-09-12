@@ -35,6 +35,10 @@ class DNSServ < RServ::Plugin
       save(@data, 'data/dns')
     end
 
+    DNSimple::Client.username   = @data["username"]
+    DNSimple::Client.password   = @data["password"]
+    DNSimple::Client.http_proxy = {}
+
     $event.add(self, :on_input, "link::input")
   end
 
@@ -83,6 +87,7 @@ class DNSServ < RServ::Plugin
     end
     @data["servers"][name] = [false, ipv4, ipv6]
     save(@data, 'data/dns')
+    return "Server #{name} added successfully."
   end
   
   def del_server(name)
@@ -99,8 +104,9 @@ class DNSServ < RServ::Plugin
   def print_status(target)
     @data["servers"].each do
       |name, data|
-      data[2] == "nil" if data[2] == nil
-      @control.privmsg(target, "#{name}: #{data[1]} / #{data[2]} (pooled: #{data[0].to_s})")
+      ipv6 = data[2]
+      ipv6 = "no ipv6" if ipv6 == nil
+      @control.privmsg(target, "#{name}: #{data[1]} / #{ipv6} (pooled: #{data[0].to_s})")
     end
   end
   
@@ -112,7 +118,27 @@ class DNSServ < RServ::Plugin
   end
   
   def do_sync(target)
-    @control.privmsg(target, "unimplemented")
+    domain = DNSimple::Domain.find("interlinked.me")
+    servers = @data["servers"]
+
+    DNSimple::Record.all(domain).each do
+      |record|
+      if record.name == "irc" or record.name == "ipv4" or record.name == "ipv6"
+        record.delete()
+      end
+    end
+    
+    servers.each do
+      |name, data|
+      pooled, ipv4, ipv6 = data
+      next unless pooled 
+      DNSimple::Record.create(domain, "irc", "A", ipv4, {:ttl => 60})
+      DNSimple::Record.create(domain, "ipv4", "A", ipv4, {:ttl => 60})
+      next if ipv6 == nil
+      DNSimple::Record.create(domain, "irc", "AAAA", ipv6, {:ttl => 60})
+      DNSimple::Record.create(domain, "ipv6", "AAAA", ipv6, {:ttl => 60})
+    end
+    @control.privmsg(target, "Sync completed without error.")
   end
   
   def depool(name)
