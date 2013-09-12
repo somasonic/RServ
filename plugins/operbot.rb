@@ -55,7 +55,7 @@ class OperBot < RServ::Plugin
   def on_input(line)
     line.chomp!
     if line =~ /^:(\w{9}) PRIVMSG #services :(.+)\s*$/i
-      @control.privmsg("#opers", "#{BOLD}#{RED}[HostServ]#{BOLD}#{COLOR} #{$2}") if $protocol.get_uid($1).nick == "HostServ"
+      @control.privmsg("#opers", "#{BOLD}#{YELLOW}[HostServ]#{BOLD}#{COLOR} #{$2}") if $protocol.get_uid($1).nick == "HostServ"
       @control.privmsg("#opers", "#{BOLD}#{DARKRED}[OperServ]#{BOLD}#{COLOR} #{$2}") if $protocol.get_uid($1).nick == "OperServ"
       @control.privmsg("#opers", "#{BOLD}#{LIGHTCYAN}[HelpServ]#{BOLD}#{COLOR} #{$2}") if $protocol.get_uid($1).nick == "HelpServ"
       @control.privmsg("#opers", "#{BOLD}#{BLUE}[InfoServ]#{BOLD}#{COLOR} #{$2}") if $protocol.get_uid($1).nick == "InfoServ"
@@ -64,18 +64,29 @@ class OperBot < RServ::Plugin
       @control.privmsg("#opers", "#{BOLD}#{GREEN}[Global]#{BOLD}#{COLOR} #{$2}") if $protocol.get_uid($1).nick == "Global"
     end
   end
-  
+
+  def cmd_kill(c)
+    murdered = c.params[0]
+    if c.origin.size < 9
+      murderer = c.origin
+    else
+      murderer = $protocol.get_uid(c.origin).nick
+    end
+    reason = c.params[1]
+    @control.privmsg("#opers", "#{BOLD}#{DARKRED}[KILL]#{BOLD}#{COLOR} [#{murdered.ip}] #{murdered.hostmask} killed by #{murderer}.")
+  end
+
   private
 
   def main_os_loop
     loop do
-      Timeout::timeout(5) do
-        Thread.new do
+      Thread.new do
+        Timeout::timeout(3) do
           connection = @server.accept
           handle_connection(connection) 
         end
-        sleep 0.2
       end
+      sleep 1
     end
   end
 
