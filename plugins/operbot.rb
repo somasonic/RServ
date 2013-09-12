@@ -80,9 +80,9 @@ class OperBot < RServ::Plugin
 
   def main_os_loop
     loop do
+      connection = @server.accept
       Thread.new do
-        Timeout::timeout(3) do
-          connection = @server.accept
+        Timeout::timeout(5) do
           handle_connection(connection) 
         end
       end
@@ -100,6 +100,7 @@ class OperBot < RServ::Plugin
           @control.privmsg("#opers", "#{BOLD}#{CYAN}[OperSync]#{BOLD}#{COLOR} #{account} SYNC #{$1}")
           conn.puts "OK"
           conn.close
+          return
         end
       else
         if line =~ /^AUTHENTICATE (\S+) (\S+)\s*/i
@@ -110,6 +111,7 @@ class OperBot < RServ::Plugin
           else
             conn.puts "ERROR: NOT AUTHENTICATED"
             conn.close
+            return
           end
         end
       end
