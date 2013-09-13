@@ -101,15 +101,26 @@ class DNSServ < RServ::Plugin
     end
   end
   
-  def print_status(target)
+   def print_status(target)
+    @control.privmsg(target, "-" * 98)
+    @control.privmsg(target, "  |" + " Server".ljust(15) + " | Pooled".ljust(9) + " | IPv4".ljust(19) + " | IPv6".ljust(39) + " | Users".ljust(10) + "|")
+    @control.privmsg(target, "-" * 98)
+    totalusers = 0
     @data["servers"].each do
       |name, data|
-      ipv6 = data[2]
-      ipv6 = "no ipv6" if ipv6 == nil
-      @control.privmsg(target, "#{name}: #{data[1]} / #{ipv6} (pooled: #{data[0].to_s})")
+      users = 0
+      server = $protocol.servers.select {|k,v| v.shortname == name}.values[0]
+      $protocol.users.each {|k,v| users += 1 if k[0..2] == server.sid} unless server.nil?
+      totalusers += users
+      pooledstr = "yes" if data[0]
+      pooledstr = "no" unless data[0]
+      @control.privmsg(target, "  | " + name.ljust(14) + " | #{pooledstr}".ljust(9) + " | #{data[1]}".ljust(19) + " | #{data[2]}".ljust(40) + "| #{users}".ljust(9) + "|")
     end
+    @control.privmsg(target, "-" * 98)
+    @control.privmsg(target, "  |" + " Total:".ljust(83) + "| #{totalusers}".ljust(9) + "|")
+    @control.privmsg(target, "-" * 98)
   end
-  
+ 
   def pool(name)
     name.downcase!
     @data["servers"][name][0] = true
