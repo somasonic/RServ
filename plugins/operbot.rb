@@ -59,8 +59,6 @@ class OperBot < RServ::Plugin
       @control.privmsg("#opers", "#{BOLD}#{DARKRED}[OperServ]#{BOLD}#{COLOR} #{$2}") if $protocol.get_uid($1).nick == "OperServ"
       @control.privmsg("#opers", "#{BOLD}#{LIGHTCYAN}[HelpServ]#{BOLD}#{COLOR} #{$2}") if $protocol.get_uid($1).nick == "HelpServ"
       @control.privmsg("#opers", "#{BOLD}#{BLUE}[InfoServ]#{BOLD}#{COLOR} #{$2}") if $protocol.get_uid($1).nick == "InfoServ"
-      @control.privmsg("#opers", "#{BOLD}#{VIOLET}[ChanServ]#{BOLD}#{COLOR} #{$2}") if $protocol.get_uid($1).nick == "ChanServ"
-      @control.privmsg("#opers", "#{BOLD}#{LIGHTVIOLET}[NickServ]#{BOLD}#{COLOR} #{$2}") if $protocol.get_uid($1).nick == "NickServ"
       @control.privmsg("#opers", "#{BOLD}#{GREEN}[Global]#{BOLD}#{COLOR} #{$2}") if $protocol.get_uid($1).nick == "Global"
     end
   end
