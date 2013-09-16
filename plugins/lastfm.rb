@@ -455,9 +455,14 @@ class LastFM < RServ::Plugin
       if album == nil then albumstr = "" else albumstr = ", from the album #{album}" end
       tag_str = "It has not been tagged."
       tag_str = "Tags: #{tags.join(", ")}." unless tags.empty?
-      useraccount = "hidden" if @data['hidden'].include?(useraccount)
       
-      reply = "#{usernick} (#{useraccount}) #{playing_str}#{lovedstr} \"#{title}\" by #{artist}#{albumstr}, for the #{userplaycount.ordinalize} time. This track has been played #{playcount} times by #{listeners} listeners. #{tag_str}"
+      if @data['hidden'].include?(useraccount)
+        useraccount = ""
+      else
+        useraccount = "(#{useraccount}) "
+      end
+      
+      reply = "#{usernick} #{useraccount}#{playing_str}#{lovedstr} \"#{title}\" by #{artist}#{albumstr}, for the #{userplaycount.ordinalize} time. This track has been played #{playcount} times by #{listeners} listeners. #{tag_str}"
     rescue Lastfm::ApiError => err
       msg(user, "Error: could not get recent tracks.")
       msg("#services", "Error code #{err.code} from LastFM on now_playing. Message: \"#{err.message}\"")
