@@ -93,7 +93,7 @@ module RServ::IRC
       send(":#{@uid} PART #{channel} :#{msg}")
     end
     
-    def join(channel, op = true)
+    def join(channel, op = false)
       send(":#{@uid} JOIN #{Time.now.to_i} #{channel} +") 
       tmode(channel, "+o #{@uid}") if op
       @channels << channel
