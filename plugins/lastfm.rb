@@ -119,6 +119,10 @@ class LastFM < RServ::Plugin
       user = $1
       $protocol.users.map {|uid, u| user = u if u.nick.downcase == $1.downcase or u.account == $1.downcase}
       user = @users[user.account] if user.class == RServ::IRC::User and @users.has_key?(user.account)
+      if @data['hidden'].include?(user)
+        msg(chan, "#{$1} has hidden their user data.")
+        return
+      end
       msg(chan, "URL for #{$1} (#{user}): http://last.fm/user/#{user}")
     elsif command =~ /^!np (\S+)\s*$/i
       user = $1
@@ -215,6 +219,24 @@ class LastFM < RServ::Plugin
       msg(user, reply)
     elsif command =~ /^!?authori(z|s)e\s*$/i
       msg(user, authorise(@users[user.account]))
+    elsif command =~ /^!?set hidden (\w+)\s*$/i
+      if $1.downcase == "on"
+        if @data.has_key?('hidden')
+          @data['hidden'] << @users[user.account]
+        else
+          @data['hidden'] = Array.new
+          @data['hidden'] << @users[user.account]
+        end
+      elsif $1.downcase == "off"
+        if @data.has_key?('hidden')
+          @data['hidden'].delete(@users[user.account])
+        end
+      else
+        msg(user, "Error: hidden can only be on or off.")
+        return
+      end
+      save(@data, "data/lastfm-data")
+      msg(user, "Hidden is now: #{$1.downcase}.")
     elsif command =~ /^!?enable (#\S+)\s*$/i
       return unless user.oper?
       @data['channels'].push $1
@@ -312,6 +334,8 @@ class LastFM < RServ::Plugin
     score = result["score"].to_f * 100
     score = score.to_s[0..4] + "%"
     result["artists"]["artist"].each{|a| artists << a["name"]} unless result["artists"]["matches"] == "0" or result["artists"]["matches"] == "1"
+    user1 = "hidden" if @data['hidden'].include?(user1)
+    user2 = "hidden" if @data['hidden'].include?(user2)
     if result["artists"]["matches"] == "1"
       return "#{nick1} (#{user1}) and #{nick2} (#{user2}) and musically #{score} compatible. They have only one common artist: #{result["artists"]["artist"]["name"]}."
     elsif artists.size > 0
@@ -431,6 +455,7 @@ class LastFM < RServ::Plugin
       if album == nil then albumstr = "" else albumstr = ", from the album #{album}" end
       tag_str = "It has not been tagged."
       tag_str = "Tags: #{tags.join(", ")}." unless tags.empty?
+      useraccount = "hidden" if @data['hidden'].include?(useraccount)
       
       reply = "#{usernick} (#{useraccount}) #{playing_str}#{lovedstr} \"#{title}\" by #{artist}#{albumstr}, for the #{userplaycount.ordinalize} time. This track has been played #{playcount} times by #{listeners} listeners. #{tag_str}"
     rescue Lastfm::ApiError => err
