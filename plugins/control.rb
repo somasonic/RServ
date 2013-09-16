@@ -21,7 +21,7 @@
 class Control < RServ::Plugin
   
   def initialize
-    @control = RServ::IRC::PsuedoClient.new("RServ", "rserv", "#{Configru.link.name}", "RServ Services", "SZ", ["#rserv", "#services", "#opers"])
+    @control = RServ::IRC::PsuedoClient.new("RServ", "rserv", Configru.link.name, "RServ Services", "SZ", ["#rserv", "#services", "#opers"])
     @prefix = "@" #change to make the bot respond to different prefixes. make it nil to not use.
     @starttime = Time.now.to_i
         
