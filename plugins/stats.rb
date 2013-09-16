@@ -68,7 +68,7 @@ class Stats < RServ::Plugin
     return unless @control.channels.include?(channel)
     if command =~ /^!top(\d+)\s*/i
       num = $1.to_i
-      num = 10 if num < 5 or num > 25
+      num = 10 if num > 30
       print_stats(channel, user, num)
     else
       if user.account.nil?
