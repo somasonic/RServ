@@ -52,11 +52,11 @@ class Stats < RServ::Plugin
   end
  
   def on_input(line)
-    if line =~ /:(\w{9}) PRIVMSG (#\S*) :(.*)$/i
+    if line =~ /^:(\w{9}) PRIVMSG (#\S*) :(.*)$/i
       return unless @control.channels.include?($2)
       user = $protocol.get_uid($1)
       command($2, user, $3)
-    elsif line =~ /:(\w{9}) PRIVMSG (#{@control.nick}|#{@control.uid}) :(.*)$/i
+    elsif line =~ /^:(\w{9}) PRIVMSG (#{@control.nick}|#{@control.uid}) :(.*)$/i
       user = $protocol.get_uid($1)
       private_command(user, $3)
     end
@@ -66,7 +66,7 @@ class Stats < RServ::Plugin
   
   def command(channel, user, command)
     return unless @control.channels.include?(channel)
-    if command =~ /^!top(\d+)\s*/i
+    if command =~ /^!top(\d+)\s*$/i
       num = $1.to_i
       num = 10 if num > 30
       print_stats(channel, user, num)

@@ -68,11 +68,11 @@ class LastFM < RServ::Plugin
   end
  
   def on_input(line)
-    if line =~ /:(\w{9}) PRIVMSG (#\S*) :(.*)$/i
+    if line =~ /^:(\w{9}) PRIVMSG (#\S*) :(.*)$/i
       return unless @control.channels.include?($2)
       user = $protocol.get_uid($1)
       command($2, user, $3)
-    elsif line =~ /:(\w{9}) PRIVMSG (#{@control.nick}|#{@control.uid}) :(.*)$/i
+    elsif line =~ /^:(\w{9}) PRIVMSG (#{@control.nick}|#{@control.uid}) :(.*)$/i
       user = $protocol.get_uid($1)
       private_command(user, $3)
     end
