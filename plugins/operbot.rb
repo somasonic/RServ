@@ -94,14 +94,14 @@ class OperBot < RServ::Plugin
     while (line = conn.gets)
       line = line.chomp
       if authorised
-        if line =~ /^POSTDATA (.+)/i
+        if line =~ /^POSTDATA (.+)\s*$/i
           @control.privmsg("#opers", "#{BOLD}#{CYAN}[OperSync]#{BOLD}#{COLOR} #{account} SYNC #{$1}")
           conn.puts "OK"
           conn.close
           return
         end
       else
-        if line =~ /^AUTHENTICATE (\S+) (\S+)\s*/i
+        if line =~ /^AUTHENTICATE (\S+) (\S+)\s*$/i
           if @users[$1] == $2
             authorised = true
             account = $1

@@ -1,4 +1,4 @@
-#
+
 # Copyright (C) 2013 Andrew Northall
 #
 # MIT License
@@ -54,7 +54,7 @@ class Sporks < RServ::Plugin
   end
       
   def on_input(line)
-    if line =~ /:(\w{9}) PRIVMSG (#\S*) :(.*)$/i
+    if line =~ /^:(\w{9}) PRIVMSG (#\S*) :(.*)$/i
       return unless @control.channels.include?($2)
       user = $protocol.get_uid($1)
       command($2, user, $3)
@@ -82,9 +82,9 @@ class Sporks < RServ::Plugin
       page = $1
       return if page =~ /sroracle/i
       @control.privmsg(chan, "[[#{page}]]: https://wiki.interlinked.me/page/#{page}")
-    elsif command =~ /^!rules\s*/i
+    elsif command =~ /^!rules\s*$/i
       @control.privmsg(chan, "Network rules: https://wiki.interlinked.me/page/Network_Rules || Channel rules: https://wiki.interlinked.me/page/Sporks/rules || Summary: Don't be a dick!")
-    elsif command =~ /^!wiki\s*/i
+    elsif command =~ /^!wiki\s*$/i
       @control.privmsg(chan, "https://wiki.interlinked.me/ - please register to edit :)")
     elsif command =~ /^!(hosts?|r?dns) (\S+)\s*$/i
       addr = $2
@@ -144,11 +144,11 @@ class Sporks < RServ::Plugin
       end
     elsif command =~ /^!karma (\S+)\s*$/
       @control.privmsg(chan, "Karma for #{$1}: #{@karma[$1.downcase]}")
-    elsif command =~ /^;set (\S+) (.+)\s*/i
+    elsif command =~ /^;set (\S+) (.+)\s*$/i
       @strings[$1] = $2.strip
       save(@strings, "data/strings")
       msg(chan, "#{$1} => #{$2}")
-    elsif command =~ /^;(\S+)\s*/i
+    elsif command =~ /^;(\S+)\s*$/i
       if @strings.has_key?($1)
         value = @strings[$1]
         if value[0] == "$"

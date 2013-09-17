@@ -33,7 +33,7 @@ class Control < RServ::Plugin
   end
   
   def on_input(line)
-    if line =~ /:(\w{9}) PRIVMSG (#\S+) :#{@control.nick}\S{0,1} (.+)$/i
+    if line =~ /^:(\w{9}) PRIVMSG (#\S+) :#{@control.nick}\S{0,1} (.+)$/i
       return unless @control.channels.include?($2)
       c = $2
       user = $protocol.get_uid($1)
@@ -42,7 +42,7 @@ class Control < RServ::Plugin
       else
         msg(c, "Sorry, you are not an IRC operator.")
       end
-    elsif line =~ /:(\w{9}) PRIVMSG (#\S+) :#{@prefix}(.+)$/i
+    elsif line =~ /^:(\w{9}) PRIVMSG (#\S+) :#{@prefix}(.+)$/i
       return unless @control.channels.include?($2)
       c = $2
       user = $protocol.get_uid($1)
