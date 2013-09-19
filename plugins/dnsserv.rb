@@ -102,9 +102,7 @@ class DNSServ < RServ::Plugin
   end
   
    def print_status(target)
-    @control.privmsg(target, "-" * 98)
-    @control.privmsg(target, "  |" + " Server".ljust(15) + " | Pooled".ljust(9) + " | IPv4".ljust(19) + " | IPv6".ljust(39) + " | Users".ljust(10) + "|")
-    @control.privmsg(target, "-" * 98)
+    @control.privmsg(target, "#{BOLD} Server".ljust(16) + "Pooled".ljust(9) + "IPv4".ljust(19) + "IPv6".ljust(40) + "Users")
     totalusers = 0
     @data["servers"].each do
       |name, data|
@@ -114,11 +112,9 @@ class DNSServ < RServ::Plugin
       totalusers += users
       pooledstr = "yes" if data[0]
       pooledstr = "no" unless data[0]
-      @control.privmsg(target, "  | " + name.ljust(14) + " | #{pooledstr}".ljust(9) + " | #{data[1]}".ljust(19) + " | #{data[2]}".ljust(40) + "| #{users}".ljust(9) + "|")
+      @control.privmsg(target, " " + name.ljust(14) + pooledstr.ljust(9) + data[1].ljust(19) + data[2].to_s.ljust(40) + users.to_s)
     end
-    @control.privmsg(target, "-" * 98)
-    @control.privmsg(target, "  |" + " Total:".ljust(83) + "| #{totalusers}".ljust(9) + "|")
-    @control.privmsg(target, "-" * 98)
+    @control.privmsg(target, " #{BOLD}Total".ljust(84) + totalusers.to_s)
   end
  
   def pool(name)
