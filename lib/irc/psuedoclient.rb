@@ -27,7 +27,7 @@ module RServ::IRC
     @@base_id = 1
     @@instances = Array.new
     
-    attr_reader :nick, :user, :host, :modes, :uid, :gecos, :channels
+    attr_reader :nick, :user, :host, :modes, :uid, :gecos, :channels, :ts
     attr_accessor :whois_str
   
     def initialize(nick, user, host, gecos = "IRC Services", modes = "S", channels = Array.new)
@@ -38,6 +38,7 @@ module RServ::IRC
       @host = host
       @modes = modes
       @gecos = gecos
+      @ts = Time.now.to_i
       
       @whois_str = "is a Network Service"
       
@@ -65,10 +66,12 @@ module RServ::IRC
     
     # irc methods
     
-#   TODO nick changing 
-#   def nick=(newnick)
-#     @nick = newnick
-#   end
+    def nick=(newnick)
+      # TODO collision checking
+      @ts = Time.now.to_i
+      send(":#{@uid} NICK #{newnick} #{@ts}")
+      @nick = newnick
+    end
     
     def join_channels(op = false)
       return if @channels.size == 0
