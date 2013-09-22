@@ -60,9 +60,10 @@ class Control < RServ::Plugin
         msg(c, "Sorry, you are not an IRC operator of sufficient rank.")
         return
       end
+      code = $1.strip
       Thread.new do
         begin
-          result = eval($1)
+          result = eval(code)
           msg(c, "#{BOLD}#{GREEN}=>#{COLOR} #{result.to_s}")
         rescue Exception => e
           msg(c, "#{BOLD}#{RED}!|#{COLOR} #{e}")
