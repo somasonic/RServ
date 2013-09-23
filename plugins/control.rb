@@ -37,20 +37,12 @@ class Control < RServ::Plugin
       return unless @control.channels.include?($2)
       c = $2
       user = $protocol.get_uid($1)
-      if user.oper?
-        command(c, user, $3)
-      else
-        msg(c, "Sorry, you are not an IRC operator.")
-      end
+      command(c, user, $3) if user.oper?
     elsif line =~ /^:(\w{9}) PRIVMSG (#\S+) :#{@prefix}(.+)$/i
       return unless @control.channels.include?($2)
       c = $2
       user = $protocol.get_uid($1)
-      if user.oper?
-        command(c, user, $3)
-      else
-        msg(c, "Sorry, you are not an IRC operator.")
-      end
+      command(c, user, $3) if user.oper?
     end
   end    
   
