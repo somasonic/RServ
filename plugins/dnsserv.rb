@@ -112,7 +112,7 @@ class DNSServ < RServ::Plugin
       totalusers += users
       pooledstr = "yes" if data[0]
       pooledstr = "no" unless data[0]
-      @control.privmsg(target, " " + name.ljust(14) + pooledstr.ljust(9) + data[1].ljust(19) + data[2].to_s.ljust(40) + users.to_s)
+      @control.privmsg(target, " " + name.ljust(14) + pooledstr.ljust(10) + data[1].ljust(19) + data[2].to_s.ljust(40) + users.to_s)
     end
     @control.privmsg(target, " #{BOLD}Total".ljust(84) + totalusers.to_s)
   end
