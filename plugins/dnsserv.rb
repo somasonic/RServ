@@ -110,9 +110,9 @@ class DNSServ < RServ::Plugin
       server = $protocol.servers.select {|k,v| v.shortname == name}.values[0]
       $protocol.users.each {|k,v| users += 1 if k[0..2] == server.sid} unless server.nil?
       totalusers += users
-      pooledstr = "yes" if data[0]
-      pooledstr = "no" unless data[0]
-      @control.privmsg(target, " " + name.ljust(14) + pooledstr.ljust(10) + data[1].ljust(19) + data[2].to_s.ljust(40) + users.to_s)
+      pooledstr = "#{GREEN}yes#{COLOR}\x0f" if data[0]
+      pooledstr = "#{RED}no#{COLOR}\x0f" unless data[0]
+      @control.privmsg(target, " " + name.ljust(14) + pooledstr.ljust(14) + data[1].ljust(19) + data[2].to_s.ljust(40) + users.to_s)
     end
     @control.privmsg(target, " #{BOLD}Total".ljust(84) + totalusers.to_s)
   end
