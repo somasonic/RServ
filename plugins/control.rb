@@ -48,10 +48,6 @@ class Control < RServ::Plugin
   
   def command(c, user, command)
     if command =~ /^eval (.*)$/i
-      unless user.mode.include?("a")
-        msg(c, "Sorry, you are not an IRC operator of sufficient rank.")
-        return
-      end
       code = $1.strip
       Thread.new do
         begin
