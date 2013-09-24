@@ -35,7 +35,7 @@ module RServ::IRC
       
       @nick = nick
       @user = user
-      @host = host
+      @host = host.gsub(/\s+/, "")
       @modes = modes
       @gecos = gecos
       @ts = Time.now.to_i
