@@ -19,22 +19,11 @@
 # network specific plugin for interlinked
 # not of much use to anyone
 
-require 'openssl'
-require 'timeout' 
-
 class OperBot < RServ::Plugin
   def initialize
     @control = RServ::IRC::PsuedoClient.new("OperBot", "operbot", "rserv.interlinked.me", "IRC Operator Services", "oS", ["#opers", "#services"])
     @control.whois_str = "is an IRC operator service."
 
-    server = TCPServer.new(61600)
-    context = OpenSSL::SSL::SSLContext.new
-    context.cert = OpenSSL::X509::Certificate.new(File.open("data/os.crt"))
-    context.key = OpenSSL::PKey::RSA.new(File.open("data/os.key"))
-    @server = OpenSSL::SSL::SSLServer.new(server, context)
-
-    $log.info "OperSync notification listener listening on port 61600."
-    
     begin
       @users = load('data/opersync-users')
     rescue
@@ -42,14 +31,11 @@ class OperBot < RServ::Plugin
       save(@users, 'data/opersync-users')
     end
     
-    Thread.new { main_os_loop() }
-
     $event.add(self, :on_input, "link::input")
   end
 
   def on_unload
     @control.quit
-    @server.close
   end
   
   def on_input(line)
@@ -76,46 +62,6 @@ class OperBot < RServ::Plugin
 
   private
 
-  def main_os_loop
-    loop do
-      connection = @server.accept
-      Thread.new do
-        Timeout::timeout(5) do
-          handle_connection(connection) 
-        end
-      end
-      sleep 1
-    end
-  end
-
-  def handle_connection(conn)
-    authorised = false
-    account = nil
-    while (line = conn.gets)
-      line = line.chomp
-      if authorised
-        if line =~ /^POSTDATA (.+)\s*$/i
-          @control.privmsg("#opers", "#{BOLD}#{CYAN}[OperSync]#{BOLD}#{COLOR} #{account} SYNC #{$1}")
-          conn.puts "OK"
-          conn.close
-          return
-        end
-      else
-        if line =~ /^AUTHENTICATE (\S+) (\S+)\s*$/i
-          if @users[$1] == $2
-            authorised = true
-            account = $1
-            conn.puts "OK"
-          else
-            conn.puts "ERROR: NOT AUTHENTICATED"
-            conn.close
-            return
-          end
-        end
-      end
-    end
-  end
-  
   def load(file)
     f = File.open(file, 'r')
     data = JSON.load(f)
