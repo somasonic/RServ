@@ -24,13 +24,6 @@ class OperBot < RServ::Plugin
     @control = RServ::IRC::PsuedoClient.new("OperBot", "operbot", "rserv.interlinked.me", "IRC Operator Services", "oS", ["#opers", "#services"])
     @control.whois_str = "is an IRC operator service."
 
-    begin
-      @users = load('data/opersync-users')
-    rescue
-      @users = Hash.new
-      save(@users, 'data/opersync-users')
-    end
-    
     $event.add(self, :on_input, "link::input")
   end
 
@@ -58,21 +51,5 @@ class OperBot < RServ::Plugin
     end
     reason = c.params[1]
     @control.privmsg("#opers", "#{BOLD}#{DARKRED}[KILL]#{BOLD}#{COLOR} [#{murdered.ip}] #{murdered.hostmask} killed by #{murderer}.")
-  end
-
-  private
-
-  def load(file)
-    f = File.open(file, 'r')
-    data = JSON.load(f)
-    f.close
-    data
-  end
-
-  def save(data, file)
-    f = File.open(file, 'w')
-    JSON.dump(data, f)
-    f.flush
-    f.close
   end
 end
