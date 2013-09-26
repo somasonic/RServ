@@ -27,9 +27,10 @@ require 'json'
 class Sporks < RServ::Plugin
   
   def initialize
-    @control = RServ::IRC::PsuedoClient.new("Sporks", "sporks", "rserv.interlinked.me", "Utensil Services", "S", ["#Sporks", "#opers"])
+    @control = RServ::IRC::PsuedoClient.new("Sporks", "sporks", "rserv.interlinked.me", "Utensil Services", "S", ["#Sporks", "#opers", "#realtalk"])
     
     @user = nil
+    @lastlog = Hash.new
     
     begin
       @karma = load("data/karma")
@@ -58,6 +59,8 @@ class Sporks < RServ::Plugin
       return unless @control.channels.include?($2)
       user = $protocol.get_uid($1)
       command($2, user, $3)
+      @lastlog[$2] ||= Hash.new
+      @lastlog[$2][$1] = $3
     end
   end
   
@@ -157,6 +160,16 @@ class Sporks < RServ::Plugin
           msg(chan, "#{$1} => #{@strings[$1]}")
         end
       end
+    elsif command =~ /^s\/(.+)\/?$/i
+      one = $1.split("/")[0..-2].join("/")
+      two = $1.split("/")[-1]
+      msg(chan, "#{user.nick} meant \"#{@lastlog[chan][user.uid].gsub(one, two)}\".")
+    elsif command =~ /^(\S+)(:|\?) s\/(.+)\/?$/i
+      suser = $protocol.get_user($1)
+      return if user.nil?
+      one = $3.split("/")[0..-2].join("/")
+      two = $3.split("/")[-1]
+      msg(chan, "#{user.nick} thinks #{suser.nick} meant \"#{@lastlog[chan][suser.uid].gsub(one, two)}\".")
     elsif command =~ /(\S)+\+\+/ or command =~ /(\S)+--/
       karma_process(command, user)
     end
