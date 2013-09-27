@@ -39,16 +39,20 @@ module RServ
     def self.load(f)
       begin
         f = "plugins/#{f.downcase}.rb" unless f =~ /\.rb$/
+        @loaded ||= {}
+        raise "Already loaded" if @loaded.values.include?(f)
         $log.info "Attempting to load plugin #{f}."
         Kernel.load(f)
         fn = File.basename(f, '.rb')
         klass = @children.find { |e| e.name.downcase == fn }
         @instances[klass.to_s] = klass.new
         @instances[klass.to_s].on_connect if $protocol.established and @instances[klass.to_s].respond_to?("on_connect")
+        @loaded[klass.to_s] = f
         $log.info "Loaded plugin #{f}."
+        return true
       rescue => e
         $log.error "Error loading plugin #{f}. Error: #{e}\n#{e.backtrace.join("\n")}"
-        raise LoadError
+        raise e
       end
     end
     
@@ -62,13 +66,15 @@ module RServ
       if @instances.has_key?(c)
         klass = @instances[c]
       else
-        return
+        return false
       end
       klass.on_unload if klass.respond_to?("on_unload")
       $event.unregister(klass)
       @children.delete_if {|name| name.to_s == klass.class.to_s}
       @instances.delete klass.class.to_s
+      @loaded.delete klass.class.to_s
       Object.send :remove_const, klass.class.to_s
+      return true
     end
 
     def self.list
