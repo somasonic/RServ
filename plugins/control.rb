@@ -113,6 +113,12 @@ class Control < RServ::Plugin
       @control.join($1)
     elsif command =~ /^part (#\S+)\s*$/i
       @control.part($1)
+    elsif command =~ /^mode (\S+) (\S+)\s?(\S+)?\s*$/i
+      if $3
+        @control.tmode($1, "#{$2} #{$3}")
+      else
+        @control.tmode($1, $2)
+      end 
     end
   end
   
