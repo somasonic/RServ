@@ -14,3 +14,9 @@ channels:
   - opers
 plugins:
   - none  
+control:
+  name: RServ
+  user: rserv
+  host: link #Setting this to "link" will make it the same as link.name above. Otherwise it will make it the given value.
+  gecos: Ruby Services
+  prefix: '@' #Command prefix
