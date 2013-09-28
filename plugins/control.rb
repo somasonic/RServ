@@ -21,8 +21,12 @@
 class Control < RServ::Plugin
   
   def initialize
-    @control = RServ::IRC::PsuedoClient.new("RServ", "rserv", Configru.link.name, "RServ Services", "SZ", Configru.channels.map {|c| "##{c}"})
-    @prefix = "@" #change to make the bot respond to different prefixes. make it nil to not use.
+    host = Configru.control.host
+    if host == "link"
+      host = Configru.link.name
+    end
+    @control = RServ::IRC::PsuedoClient.new(Configru.control.name, Configru.control.user, host, Configru.control.gecos, "SZ", Configru.channels.map {|c| "##{c}"})
+    @prefix = Configru.control.prefix #change to make the bot respond to different prefixes. make it nil to not use.
     @starttime = Time.now.to_i
         
     $event.add(self, :on_input, "link::input")

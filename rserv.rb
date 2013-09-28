@@ -60,6 +60,13 @@ Configru.load('etc/rserv.yaml') do
   end
   option_array :channels, String, ['opers']
   option_array :plugins, String, ['none']
+  option_group :control do
+    option :name, String, 'RServ'
+    option :user, String, 'rserv'
+    option :host, String, 'link'
+    option :gecos, String, 'Ruby Services'
+    option :prefix, String, '@'
+  end
 end
 
 # Initialise event handler
