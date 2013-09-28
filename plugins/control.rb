@@ -50,10 +50,10 @@ class Control < RServ::Plugin
       Thread.new do
         begin
           result = eval(code)
-          msg(c, "#{BOLD}#{GREEN}=>#{COLOR} #{result.to_s}")
+          msg(c, "#{BOLD}#{GREEN}=>#{BOLD}#{COLOR} #{result.to_s}")
         rescue Exception => e
-          msg(c, "#{BOLD}#{RED}!|#{COLOR} #{e}")
-          msg(c, "#{BOLD}#{RED}!|#{COLOR} #{e.backtrace.join("\n")}")
+          msg(c, "#{BOLD}#{RED}!|#{BOLD}#{COLOR} #{e}")
+          msg(c, "#{BOLD}#{RED}!|#{BOLD}#{COLOR} #{e.backtrace.join("\n")}")
         end
       end
     elsif command =~ /^shutdown\s*$/i
