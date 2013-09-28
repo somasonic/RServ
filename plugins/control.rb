@@ -28,10 +28,6 @@ class Control < RServ::Plugin
     $event.add(self, :on_input, "link::input")
   end
   
-  def on_unload
-    @control.quit
-  end
-  
   def on_input(line)
     if line =~ /^:(\w{9}) PRIVMSG (#\S+) :#{@control.nick}\S{0,1} (.+)$/i
       return unless @control.channels.include?($2)
@@ -75,22 +71,36 @@ class Control < RServ::Plugin
       begin
         RServ::Plugin.load($1)
         msg(c, "Plugin #{$1} loaded successfully.")
-      rescue LoadError => e
+      rescue Exception => e
         msg(c, "Error loading plugin #{$1}: #{e}")
       end
     elsif command =~ /^unload (\w+)\s*$/i
       begin
-        RServ::Plugin.unload($1)
-        msg(c, "Plugin #{$1} unloaded successfully.")
+        if RServ::Plugin.unload($1)
+          msg(c, "Plugin #{$1} unloaded successfully.")
+        else
+          msg(c, "I know of no such plugin #{$1}.")
+        end
       rescue => e
         msg(c, "Error unloading plugin #{$1}: #{e}")
       end
     elsif command =~ /^reload (\w+)\s*$/i
       begin
-        RServ::Plugin.unload($1)
-        msg(c, "Plugin #{$1} unloaded successfully.")
-        RServ::Plugin.load($1.downcase) #filenames should be lowercase
-        msg(c, "Plugin #{$1} loaded successfully.")
+        unless RServ::Plugin.unload($1)
+          msg(c, "I know of no such plugin #{$1}.")
+          return
+        end
+        if $1 == self.class.to_s
+          Thread.new do
+            sleep 0.1
+            @control.quit
+            RServ::Plugin.load(self.class.to_s)
+            send(":RServ PRIVMSG #{c} :Plugin #{self.class.to_s} reloaded successfully.")
+          end
+        else  
+          RServ::Plugin.load($1)
+          msg(c, "Plugin #{$1} reloaded successfully.")
+        end
       rescue => e
         msg(c, "Error reloading plugin #{$1}: #{e}")
       end
@@ -103,12 +113,8 @@ class Control < RServ::Plugin
       @control.join($1)
     elsif command =~ /^part (#\S+)\s*$/i
       @control.part($1)
-    elsif command =~ /^mode (\S+) (\S+)\s?(\S+)?\s*$/i
-      if $3
-        @control.tmode($1, "#{$2} #{$3}")
-      else
-        @control.tmode($1, $2)
-      end 
+    elsif command =~ /^mode (#\S*) (.+)\s*$/i
+      @control.tmode($1, $2)
     end
   end
   
