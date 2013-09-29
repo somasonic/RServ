@@ -95,11 +95,6 @@ class LastFM < RServ::Plugin
   end
  
   def command(chan, user, command)
-    unless @data['channels'].map{|c|c.downcase}.include?(chan.to_s.downcase)
-      msg(user, "That channel is not enabled for LastFM. Please ask an operator (/stats p) to enable it.")
-      return
-    end
-    
     if command =~ /^!np\s*$/i
       user = user.nick unless @users.has_key?(user.account)
       reply = now_playing(user, chan)
