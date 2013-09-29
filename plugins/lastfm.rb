@@ -333,10 +333,18 @@ class LastFM < RServ::Plugin
     artists = Array.new
     score = result["score"].to_f * 100
 
-    case score
-      when < 20 then "#{RED}#{score.to_s[0..4] + "%"}#{COLOR}"
-      when > 20 and < 65 then "#{YELLOW}#{score.to_s[0..4] + "%"}#{COLOR}"
-      when > 65 then "#{GREEN}#{score.to_s[0..4] + "%"}#{COLOR}"
+    if score < 20
+      score = "#{RED}#{score.to_s[0..4] + "%"}#{COLOR}"
+    elsif score > 20 and score < 55
+      score = "#{ORANGE}#{score.to_s[0..4] + "%"}#{COLOR}"
+    elsif score > 55 and score < 75
+      score = "#{YELLOW}#{score.to_s[0..4] + "%"}#{COLOR}"
+    elsif score > 75 and score < 85
+      score = "#{LIGHTGREEN}#{score.to_s[0..4] + "%"}#{COLOR}"
+    elsif score > 85
+      score = "#{BOLD}#{GREEN}#{score.to_s[0..4] + "%"}#{COLOR}#{BOLD}"
+    else
+      score = score.to_s[0..4] + "%"
     end
 
     result["artists"]["artist"].each{|a| artists << a["name"]} unless result["artists"]["matches"] == "0" or result["artists"]["matches"] == "1"
@@ -347,7 +355,7 @@ class LastFM < RServ::Plugin
     elsif artists.size > 0
       return "#{BOLD}#{nick1}#{BOLD} #{BOLD}(#{user1})#{BOLD} and #{BOLD}#{nick2}#{BOLD} #{BOLD}(#{user2})#{BOLD} are musically #{score} compatible. #{BOLD}Common artists include:#{BOLD} #{artists.join(", ")}."
     else
-      return "#{nick1} (#{user1}) and #{nick2} (#{user2}) are musically #{score} compatible. #{BOLD}They have no artists in common!#{BOLD}"
+      return "#{BOLD}#{nick1}#{BOLD} #{BOLD}(#{user1})#{BOLD} and #{BOLD}#{nick2}#{BOLD} #{BOLD}(#{user2})#{BOLD} are musically #{score} compatible. #{BOLD}They have no artists in common!#{BOLD}"
     end
   end
   
