@@ -332,16 +332,22 @@ class LastFM < RServ::Plugin
     end
     artists = Array.new
     score = result["score"].to_f * 100
-    score = score.to_s[0..4] + "%"
+
+    case score
+      when < 20 then "#{RED}#{score.to_s[0..4] + "%"}#{COLOR}"
+      when > 20 and < 65 then "#{YELLOW}#{score.to_s[0..4] + "%"}#{COLOR}"
+      when > 65 then "#{GREEN}#{score.to_s[0..4] + "%"}#{COLOR}"
+    end
+
     result["artists"]["artist"].each{|a| artists << a["name"]} unless result["artists"]["matches"] == "0" or result["artists"]["matches"] == "1"
     user1 = "hidden" if @data['hidden'].include?(user1)
     user2 = "hidden" if @data['hidden'].include?(user2)
     if result["artists"]["matches"] == "1"
-      return "#{nick1} (#{user1}) and #{nick2} (#{user2}) and musically #{score} compatible. They have only one common artist: #{result["artists"]["artist"]["name"]}."
+      return "#{BOLD}#{nick1}#{BOLD} #{BOLD}(#{user1})#{BOLD} and #{BOLD}#{nick2}#{BOLD} #{BOLD}(#{user2})#{BOLD} and musically #{score} compatible. #{BOLD}They have only one common artist:#{BOLD} #{result["artists"]["artist"]["name"]}."
     elsif artists.size > 0
-      return "#{nick1} (#{user1}) and #{nick2} (#{user2}) are musically #{score} compatible. Common artists include: #{artists.join(", ")}."
+      return "#{BOLD}#{nick1}#{BOLD} #{BOLD}(#{user1})#{BOLD} and #{BOLD}#{nick2}#{BOLD} #{BOLD}(#{user2})#{BOLD} are musically #{score} compatible. #{BOLD}Common artists include:#{BOLD} #{artists.join(", ")}."
     else
-      return "#{nick1} (#{user1}) and #{nick2} (#{user2}) are musically #{score} compatible. They have no artists in common!"
+      return "#{nick1} (#{user1}) and #{nick2} (#{user2}) are musically #{score} compatible. #{BOLD}They have no artists in common!#{BOLD}"
     end
   end
   
