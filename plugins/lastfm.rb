@@ -102,7 +102,7 @@ class LastFM < RServ::Plugin
     
     if command =~ /^!np\s*$/i
       user = user.nick unless @users.has_key?(user.account)
-      reply = now_playing(user)
+      reply = now_playing(user, chan)
       msg(chan, reply)
     elsif command =~ /^!l(ove|)np\s*$/i
       unless @users.has_key?(user.account) and @auth.has_key?(@users[user.account])
@@ -110,7 +110,7 @@ class LastFM < RServ::Plugin
         return
       end
       @control.notice(user, love(user))
-      msg(chan, now_playing(user))
+      msg(chan, now_playing(user, chan))
     elsif command =~ /^!tag (.+)$/i
       msg(chan, add_tags(user, $1))
     elsif command =~ /^!otag (\S+) (.+)$/i
@@ -127,7 +127,7 @@ class LastFM < RServ::Plugin
     elsif command =~ /^!np (\S+)\s*$/i
       user = $1
       $protocol.users.map {|uid, u| user = u if u.nick.downcase == $1.downcase or u.account == $1.downcase}
-      reply = now_playing(user)
+      reply = now_playing(user, chan)
       msg(chan, reply)
     elsif command =~ /^!(cp|compare) (\S+)\s*$/i
       if user.account == nil
@@ -201,7 +201,7 @@ class LastFM < RServ::Plugin
         msg(user, "That channel is not enabled for LastFM. Please ask an operator (/stats p) to enable it.")
         return
       end
-      reply = now_playing(user)
+      reply = now_playing(user, user)
       msg($1, reply)
     elsif command =~ /^!?l(ove|)np\s*(#\S*|)\s*$/i
       unless @auth.has_key?(@users[user.account])
@@ -211,11 +211,11 @@ class LastFM < RServ::Plugin
       @control.notice(user, love(user))
       target = user.uid
       target = $2 if @data['channels'].map{|c|c.downcase}.include?($2.downcase)
-      msg(target, now_playing(user))
+      msg(target, now_playing(user, user))
     elsif command =~ /^!?tag (.+)$/i
       @control.notice(user, add_tags(user, $1))
     elsif command =~ /^!?np\s*$/i
-      reply = now_playing(user)
+      reply = now_playing(user, user)
       msg(user, reply)
     elsif command =~ /^!?authori(z|s)e\s*$/i
       msg(user, authorise(@users[user.account]))
@@ -426,7 +426,7 @@ class LastFM < RServ::Plugin
     end
   end
   
-  def now_playing(user)
+  def now_playing(user, error_to)
     if user.class == RServ::IRC::User
       usernick = user.nick
       useraccount = user.account
@@ -450,16 +450,18 @@ class LastFM < RServ::Plugin
       tags = Array.new
       info["toptags"]["tag"].map{|t| tags << t["name"]} unless info["toptags"].empty?
       
-      if userloved == 1 then lovedstr = " a loved track" else lovedstr = "" end
+      if userloved == 1 then lovedstr = " a #{RED}loved#{COLOR} track" else lovedstr = "" end
       if nowplaying == "true" then playing_str = "is now playing" else playing_str = "last played" end
-      if album == nil then albumstr = "" else albumstr = ", from the album #{album}" end
+      if album == nil then albumstr = "" else albumstr = ", from the album #{YELLOW}#{album}#{COLOR}" end
       tag_str = "It has not been tagged."
-      tag_str = "Tags: #{tags.join(", ")}." unless tags.empty?
+      tag_str = "#{BOLD}Tags:#{BOLD} #{tags.join(", ")}." unless tags.empty?
 
-      reply = "#{usernick} #{"(#{useraccount}) " unless @data['hidden'].include? useraccount}#{playing_str}#{lovedstr} \"#{title}\" by #{artist}#{albumstr}, for the #{userplaycount.ordinalize} time. This track has been played #{playcount} times by #{listeners} listeners. #{tag_str}"
+      reply = "#{BOLD}#{usernick}#{BOLD} #{"#{BOLD}(#{useraccount})#{BOLD} " unless @data['hidden'].include? useraccount}#{playing_str}#{lovedstr} #{BLUE}\"#{title}\"#{COLOR} by #{BLUE}#{artist}#{COLOR}#{albumstr}, for the #{userplaycount.ordinalize} time. This track has been played #{playcount} times by #{listeners} listeners. #{tag_str}"
     rescue Lastfm::ApiError => err
-      msg(user, "Error: could not get recent tracks.")
       msg("#services", "Error code #{err.code} from LastFM on now_playing. Message: \"#{err.message}\"")
+      msg(error_to, "Error: could not get recent tracks for #{user}.")
+    rescue => err
+      msg(error_to, "Error: could not get recent tracks for #{user}.")
     end
   end
  
