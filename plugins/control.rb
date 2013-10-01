@@ -65,6 +65,16 @@ class Control < RServ::Plugin
           end
         end
       end
+    elsif command =~ /^seval (.*)$/i
+      code = $1.strip
+      Thread.new do
+        begin
+          eval(code)
+          msg(c, "#{BOLD}#{GREEN}Done.#{BOLD}#{COLOR}")
+        rescue
+          msg(c, "#{BOLD}#{RED}Error.#{BOLD}#{COLOR}")
+        end
+      end
     elsif command =~ /^shutdown\s*$/i
       unless user.mode.include?("a")
         msg(c, "Sorry, you are not an IRC operator of sufficient rank.")
