@@ -45,15 +45,24 @@ class Control < RServ::Plugin
   end    
   
   def command(c, user, command)
-    if command =~ /^eval (.*)$/i
-      code = $1.strip
+    if command =~ /^(s?)eval (.*)$/i
+      code = $2.strip
+      if $1 == "s" then silent = true else silent = false end
       Thread.new do
         begin
           result = eval(code)
-          msg(c, "#{BOLD}#{GREEN}=>#{BOLD}#{COLOR} #{result.to_s}")
+          if silent
+            msg(c, "#{BOLD}#{GREEN}=>#{BOLD}#{COLOR} completed without exception")
+          else
+            msg(c, "#{BOLD}#{GREEN}=>#{BOLD}#{COLOR} #{result.to_s}")
+          end
         rescue Exception => e
-          msg(c, "#{BOLD}#{RED}!|#{BOLD}#{COLOR} #{e}")
-          msg(c, "#{BOLD}#{RED}!|#{BOLD}#{COLOR} #{e.backtrace.join("\n")}")
+          if silent
+            msg(c, "#{BOLD}#{RED}!|#{BOLD}#{COLOR} #{e.class.to_s} raised")
+          else
+            msg(c, "#{BOLD}#{RED}!|#{BOLD}#{COLOR} #{e}")
+            msg(c, "#{BOLD}#{RED}!|#{BOLD}#{COLOR} #{e.backtrace.join("\n")}")
+          end
         end
       end
     elsif command =~ /^shutdown\s*$/i
