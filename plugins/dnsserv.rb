@@ -72,7 +72,7 @@ class DNSServ < RServ::Plugin
     elsif command =~ /^status$/i
       print_status(reply_target)
     elsif command =~ /^sync$/i
-      do_sync(reply_target)
+      Thread.new { do_sync(reply_target) }
     elsif command =~ /^pool (\w+)$/i
       @control.privmsg(reply_target, pool($1))
     elsif command =~ /^depool (\w+)$/i
@@ -125,16 +125,18 @@ class DNSServ < RServ::Plugin
   end
   
   def do_sync(target)
-    @control.privmsg(target, "Syncing..")
-    domain = DNSimple::Domain.find("interlinked.me")
     servers = @data["servers"]
-    if servers.empty?
+    one_pooled = false
+    servers.each {|k,v| one_pooled = true if v[0] == true}
+    unless one_pooled
       @control.privmsg(target, "Error: you cannot sync with no servers pooled.")
       return
     end
+    @control.privmsg(target, "Syncing..")
+   
+    domain = DNSimple::Domain.find("interlinked.me")
     
     kept = Array.new
-
     DNSimple::Record.all(domain).each do
       |record|
       if record.name == "irc" or record.name == "ipv4" or record.name == "ipv6"
@@ -146,7 +148,6 @@ class DNSServ < RServ::Plugin
             if record.content == ipv4 or record.content == ipv6
               keep = true
               kept << record.content
-              @control.privmsg(target, "Not deleting #{record.name} => #{record.content} because it is pooled under #{key}.")
             end
           end
         end
@@ -159,12 +160,10 @@ class DNSServ < RServ::Plugin
       pooled, ipv4, ipv6 = data
       next unless pooled
       next if kept.include?(ipv4)
-      @control.privmsg(target, "Creating irc and ipv4 for #{ipv4} under #{name}.")
       DNSimple::Record.create(domain, "irc", "A", ipv4, {:ttl => 60})
       DNSimple::Record.create(domain, "ipv4", "A", ipv4, {:ttl => 60})
       next if ipv6 == nil
       next if kept.include?(ipv6)
-      @control.privmsg(target, "Creating irc and ipv6 for #{ipv6} under #{name}.")
       DNSimple::Record.create(domain, "irc", "AAAA", ipv6, {:ttl => 60})
       DNSimple::Record.create(domain, "ipv6", "AAAA", ipv6, {:ttl => 60})
     end
