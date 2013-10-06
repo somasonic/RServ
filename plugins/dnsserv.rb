@@ -125,6 +125,7 @@ class DNSServ < RServ::Plugin
   end
   
   def do_sync(target)
+    @control.privmsg(target, "Syncing..")
     domain = DNSimple::Domain.find("interlinked.me")
     servers = @data["servers"]
     if servers.empty?
