@@ -465,7 +465,7 @@ class LastFM < RServ::Plugin
       tag_str = "It has not been tagged."
       tag_str = "#{BOLD}Tags:#{BOLD} #{tags.join(", ")}." unless tags.empty?
 
-      reply = "#{BOLD}#{usernick}#{BOLD} #{"#{BOLD}(#{useraccount})#{BOLD} " unless @data['hidden'].include? useraccount}#{playing_str}#{lovedstr} #{BLUE}\"#{title}\"#{COLOR} by #{BLUE}#{artist}#{COLOR}#{albumstr}, for the #{userplaycount.ordinalize} time. This track has been played #{playcount} times by #{listeners} listeners. #{tag_str}"
+      reply = "#{BOLD}#{usernick}#{BOLD} #{"#{BOLD}(#{useraccount})#{BOLD} " unless @data['hidden'].include? useraccount}#{playing_str}#{lovedstr} \"#{BLUE}#{title}#{COLOR}\" by #{BLUE}#{artist}#{COLOR}#{albumstr}, for the #{userplaycount.ordinalize} time. This track has been played #{playcount} times by #{listeners} listeners. #{tag_str}"
     rescue => err
       msg(error_to, "Error: could not get recent tracks for #{user}.")
     end
