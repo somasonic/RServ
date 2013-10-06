@@ -127,21 +127,43 @@ class DNSServ < RServ::Plugin
   def do_sync(target)
     domain = DNSimple::Domain.find("interlinked.me")
     servers = @data["servers"]
+    if servers.empty?
+      @control.privmsg(target, "Error: you cannot sync with no servers pooled.")
+      return
+    end
+    
+    kept = Array.new
 
     DNSimple::Record.all(domain).each do
       |record|
       if record.name == "irc" or record.name == "ipv4" or record.name == "ipv6"
-        record.delete()
+        keep = false
+        servers.each do
+          |key, server|
+          pooled, ipv4, ipv6 = server
+          if pooled
+            if record.content == ipv4 or record.content == ipv6
+              keep = true
+              kept << record.content
+              @control.privmsg(target, "Not deleting #{record.name} => #{record.content} because it is pooled under #{key}.")
+            end
+          end
+        end
+        record.delete() unless keep
       end
     end
     
     servers.each do
       |name, data|
       pooled, ipv4, ipv6 = data
-      next unless pooled 
+      next unless pooled
+      next if kept.include?(ipv4)
+      @control.privmsg(target, "Creating irc and ipv4 for #{ipv4} under #{name}.")
       DNSimple::Record.create(domain, "irc", "A", ipv4, {:ttl => 60})
       DNSimple::Record.create(domain, "ipv4", "A", ipv4, {:ttl => 60})
       next if ipv6 == nil
+      next if kept.include?(ipv6)
+      @control.privmsg(target, "Creating irc and ipv6 for #{ipv6} under #{name}.")
       DNSimple::Record.create(domain, "irc", "AAAA", ipv6, {:ttl => 60})
       DNSimple::Record.create(domain, "ipv6", "AAAA", ipv6, {:ttl => 60})
     end
