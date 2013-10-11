@@ -73,10 +73,10 @@ class DNSServ < RServ::Plugin
       print_status(reply_target)
     elsif command =~ /^sync$/i
       Thread.new { do_sync(reply_target) }
-    elsif command =~ /^pool (\w+)$/i
-      @control.privmsg(reply_target, pool($1))
-    elsif command =~ /^depool (\w+)$/i
-      @control.privmsg(reply_target, depool($1))
+    elsif command =~ /^pool (.+)\s*$/i
+      $1.strip.spilt(" ").each { |s| @control.privmsg(reply_target, pool(s)) }
+    elsif command =~ /^depool (.+)\s*$/i
+      $1.strip.spilt(" ").each { |s| @control.privmsg(reply_target, depool(s)) }
     end
   end
   
