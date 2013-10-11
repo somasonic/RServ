@@ -121,7 +121,7 @@ class DNSServ < RServ::Plugin
     name.downcase!
     @data["servers"][name][0] = true
     save(@data, 'data/dns')
-    return "Server pooled successfully."
+    return "Server #{name} pooled successfully."
   end
   
   def do_sync(target)
@@ -174,7 +174,7 @@ class DNSServ < RServ::Plugin
     name.downcase!
     @data["servers"][name][0] = false
     save(@data, 'data/dns')
-    return "Server depooled successfully."
+    return "Server #{name} depooled successfully."
   end
   
   def load(file)
