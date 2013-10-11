@@ -174,7 +174,7 @@ class DNSServ < RServ::Plugin
     name.downcase!
     @data["servers"][name][0] = false
     save(@data, 'data/dns')
-    return "Server #{name}depooled successfully."
+    return "Server #{name} depooled successfully."
   end
   
   def load(file)
