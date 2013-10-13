@@ -85,6 +85,8 @@ class Sporks < RServ::Plugin
       page = $1
       return if page =~ /sroracle/i
       @control.privmsg(chan, "[[#{page}]]: https://wiki.interlinked.me/page/#{page}")
+    elsif command =~ /^!trigger\s*/i
+      @control.privmsg(chan, "#{RED}#{BOLD} --- TRIGGER WARNING --- DO NOT READ IF YOU ARE EASILY OFFENDED OR CANNOT TAKE A JOKE ---#{RED}#{BOLD}")
     elsif command =~ /^!rules\s*$/i
       @control.privmsg(chan, "Network rules: https://wiki.interlinked.me/page/Network_Rules || Channel rules: https://wiki.interlinked.me/page/Sporks/rules || Summary: Don't be a dick!")
     elsif command =~ /^!wiki\s*$/i
