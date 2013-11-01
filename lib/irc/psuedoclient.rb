@@ -22,7 +22,7 @@ require 'lib/irc/colours'
 
 module RServ::IRC
   
-  class PsuedoClient
+  class PseudoClient
     
     @@base_id = 1
     @@instances = Array.new
@@ -142,7 +142,7 @@ module RServ::IRC
     
     def cmd_kill(c)
       if c.params[0] == @uid
-        $log.info "PsuedoClient #{@nick} killed (#{$protocol.get_uid(c.origin)}). Reconnecting."
+        $log.info "PseudoClient #{@nick} killed (#{$protocol.get_uid(c.origin)}). Reconnecting."
         on_burst
         join_channels
       end

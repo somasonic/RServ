@@ -25,7 +25,7 @@ require 'active_support/core_ext/integer/inflections'
 class LastFM < RServ::Plugin
  
   def initialize
-    @control = RServ::IRC::PsuedoClient.new("LastFM", "music", Configru.link.name, "LastFM Services", "S")
+    @control = RServ::IRC::PseudoClient.new("LastFM", "music", Configru.link.name, "LastFM Services", "S")
  
     begin
       @users = load("data/lastfm-users")

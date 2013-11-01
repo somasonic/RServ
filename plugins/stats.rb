@@ -23,7 +23,7 @@ require 'json'
 class Stats < RServ::Plugin
  
   def initialize
-    @control = RServ::IRC::PsuedoClient.new("Stats", "stats", Configru.link.name, "Statistics Services", "S")
+    @control = RServ::IRC::PseudoClient.new("Stats", "stats", Configru.link.name, "Statistics Services", "S")
  
     begin
       @data = load("data/stats")

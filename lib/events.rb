@@ -70,7 +70,7 @@ module RServ
       if event =~ /^cmd::(.*)$/
         cmd = $1
         plugins = Plugin.list
-        clients = IRC::PsuedoClient.list
+        clients = IRC::PseudoClient.list
         
         objects = plugins + clients
           

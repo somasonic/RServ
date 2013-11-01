@@ -23,7 +23,7 @@ class Control < RServ::Plugin
   def initialize
     host = Configru.control.host
     host = Configru.link.name if host == "link"
-    @control = RServ::IRC::PsuedoClient.new(Configru.control.name, Configru.control.user, host, Configru.control.gecos, "SZ", Configru.channels.map {|c| "##{c}"})
+    @control = RServ::IRC::PseudoClient.new(Configru.control.name, Configru.control.user, host, Configru.control.gecos, "SZ", Configru.channels.map {|c| "##{c}"})
     @prefix = Configru.control.prefix
     @starttime = Time.now.to_i
         

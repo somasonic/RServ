@@ -21,7 +21,7 @@
 
 class OperBot < RServ::Plugin
   def initialize
-    @control = RServ::IRC::PsuedoClient.new("OperBot", "operbot", "rserv.interlinked.me", "IRC Operator Services", "oS", ["#opers", "#services"])
+    @control = RServ::IRC::PseudoClient.new("OperBot", "operbot", "rserv.interlinked.me", "IRC Operator Services", "oS", ["#opers", "#services"])
     @control.whois_str = "is an IRC operator service."
 
     $event.add(self, :on_input, "link::input")

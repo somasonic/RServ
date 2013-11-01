@@ -23,7 +23,7 @@ require 'dnsimple'
 
 class DNSServ < RServ::Plugin
   def initialize
-    @control = RServ::IRC::PsuedoClient.new("DNSServ", "dnsserv", "rserv.interlinked.me", "DNS Services", "S", ["#opers", "#services"])
+    @control = RServ::IRC::PseudoClient.new("DNSServ", "dnsserv", "rserv.interlinked.me", "DNS Services", "S", ["#opers", "#services"])
     
     begin
       @data = load('data/dns')

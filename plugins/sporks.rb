@@ -27,7 +27,7 @@ require 'json'
 class Sporks < RServ::Plugin
   
   def initialize
-    @control = RServ::IRC::PsuedoClient.new("Sporks", "sporks", "rserv.interlinked.me", "Utensil Services", "S", ["#Sporks", "#opers", "#realtalk"])
+    @control = RServ::IRC::PseudoClient.new("Sporks", "sporks", "rserv.interlinked.me", "Utensil Services", "S", ["#Sporks", "#opers", "#realtalk"])
     
     $event.add(self, :on_input, "link::input")
   end
