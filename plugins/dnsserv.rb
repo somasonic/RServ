@@ -21,6 +21,8 @@
 
 require 'dnsimple'
 
+REGIONS = ['na', 'eu', 'af', 'ap', 'sa']
+
 class DNSServ < RServ::Plugin
   def initialize
     @control = RServ::IRC::PseudoClient.new("DNSServ", "dnsserv", "rserv.interlinked.me", "DNS Services", "S", ["#opers", "#services"])
