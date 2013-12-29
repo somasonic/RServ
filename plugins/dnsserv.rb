@@ -66,9 +66,9 @@ class DNSServ < RServ::Plugin
   
   def dns_cmd(user, reply_target, command)
     if command =~ /^server add (\w+) (\w+) (\d+\.\d+\.\d+\.\d+)$/i
-      @control.privmsg(reply_target, add_server($1, $2))
-    elsif command =~ /^server add (\w+) (\w+) (\d+\.\d+\.\d+\.\d+) (\S+)$/i
       @control.privmsg(reply_target, add_server($1, $2, $3))
+    elsif command =~ /^server add (\w+) (\w+) (\d+\.\d+\.\d+\.\d+) (\S+)$/i
+      @control.privmsg(reply_target, add_server($1, $2, $3, $4))
     elsif command =~ /^server (del|delete|rem|remove) (\w+)$/i
       @control.privmsg(reply_target, del_server($2))
     elsif command =~ /^status$/i
