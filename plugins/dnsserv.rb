@@ -108,7 +108,7 @@ class DNSServ < RServ::Plugin
   end
   
    def print_status(target)
-    @control.privmsg(target, "#{BOLD} Server".ljust(16) + "Pooled".ljust(9) + "Region".ljust(10) + "IPv4".ljust(19) + "IPv6".ljust(40) + "Users")
+    @control.privmsg(target, "#{BOLD} Server".ljust(16) + "Region".ljust(10) + "Pooled".ljust(9) + "IPv4".ljust(19) + "IPv6".ljust(40) + "Users")
     totalusers = 0
     @data["servers"].each do
       |name, data|
