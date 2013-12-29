@@ -63,9 +63,9 @@ class DNSServ < RServ::Plugin
   private
   
   def dns_cmd(user, reply_target, command)
-    if command =~ /^server add (\w+) (\d+\.\d+\.\d+\.\d+)$/i
+    if command =~ /^server add (\w+) (\w+) (\d+\.\d+\.\d+\.\d+)$/i
       @control.privmsg(reply_target, add_server($1, $2))
-    elsif command =~ /^server add (\w+) (\d+\.\d+\.\d+\.\d+) (\S+)$/i
+    elsif command =~ /^server add (\w+) (\w+) (\d+\.\d+\.\d+\.\d+) (\S+)$/i
       @control.privmsg(reply_target, add_server($1, $2, $3))
     elsif command =~ /^server (del|delete|rem|remove) (\w+)$/i
       @control.privmsg(reply_target, del_server($2))
@@ -80,12 +80,16 @@ class DNSServ < RServ::Plugin
     end
   end
   
-  def add_server(name, ipv4, ipv6 = nil)
+  def add_server(name, region, ipv4, ipv6 = nil)
     name.downcase!
     if @data["servers"].has_key?(name)
       return "Error: server already exists."
     end
-    @data["servers"][name] = [false, ipv4, ipv6]
+    region.downcase!
+    unless REGIONS.include? region
+      return "Error: Invalid region. Regions: #{REGIONS.join(", ")}."
+    end
+    @data["servers"][name] = [false, region, ipv4, ipv6]
     save(@data, 'data/dns')
     return "Server #{name} added successfully."
   end
@@ -102,7 +106,7 @@ class DNSServ < RServ::Plugin
   end
   
    def print_status(target)
-    @control.privmsg(target, "#{BOLD} Server".ljust(16) + "Pooled".ljust(9) + "IPv4".ljust(19) + "IPv6".ljust(40) + "Users")
+    @control.privmsg(target, "#{BOLD} Server".ljust(16) + "Pooled".ljust(9) + "Region".ljust(10) + "IPv4".ljust(19) + "IPv6".ljust(40) + "Users")
     totalusers = 0
     @data["servers"].each do
       |name, data|
@@ -112,9 +116,9 @@ class DNSServ < RServ::Plugin
       totalusers += users
       pooledstr = "#{GREEN}yes#{COLOR}\x0f" if data[0]
       pooledstr = "#{RED}no#{COLOR}\x0f" unless data[0]
-      @control.privmsg(target, " " + name.ljust(14) + pooledstr.ljust(14) + data[1].ljust(19) + data[2].to_s.ljust(40) + users.to_s)
+      @control.privmsg(target, " " + name.ljust(14) + data[1].ljust(10) + pooledstr.ljust(14) + data[2].ljust(19) + data[3].to_s.ljust(40) + users.to_s)
     end
-    @control.privmsg(target, " #{BOLD}Total".ljust(84) + totalusers.to_s)
+    @control.privmsg(target, " #{BOLD}Total".ljust(94) + totalusers.to_s)
   end
  
   def pool(name)
