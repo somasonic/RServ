@@ -142,10 +142,6 @@ class DNSServ < RServ::Plugin
    
     domain = DNSimple::Domain.find("interlinked.me")
     
-    changed = 0
-    
-    region_kept = Hash.new(Array.new)
-    
     region_pool = Hash.new(Array.new)
     
     servers.each do |server, data|
@@ -155,9 +151,11 @@ class DNSServ < RServ::Plugin
       region_pool[region] << ipv6 if pooled
     end
     
+    changed = 0
     kept = Array.new
-    DNSimple::Record.all(domain).each do
-      |record|
+    region_kept = Hash.new(Array.new)
+    
+    DNSimple::Record.all(domain).each do |record|
       if record.name == "irc" or record.name == "ipv4" or record.name == "ipv6" \
          or REGIONS.include?(record.name.downcase)
         keep = false
@@ -216,7 +214,6 @@ class DNSServ < RServ::Plugin
         end
       end
     end
-        
         
     @control.privmsg(target, "Sync completed without error. Modified records: #{changed}.")
   end
