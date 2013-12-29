@@ -142,6 +142,8 @@ class DNSServ < RServ::Plugin
    
     domain = DNSimple::Domain.find("interlinked.me")
     
+    changed = 0
+    
     kept = Array.new
     DNSimple::Record.all(domain).each do
       |record|
@@ -158,6 +160,7 @@ class DNSServ < RServ::Plugin
           end
         end
         record.delete() unless keep
+        changed += 1
       end
     end
     
@@ -168,12 +171,14 @@ class DNSServ < RServ::Plugin
       next if kept.include?(ipv4)
       DNSimple::Record.create(domain, "irc", "A", ipv4, {:ttl => 60})
       DNSimple::Record.create(domain, "ipv4", "A", ipv4, {:ttl => 60})
+      changed += 2
       next if ipv6 == nil
       next if kept.include?(ipv6)
       DNSimple::Record.create(domain, "irc", "AAAA", ipv6, {:ttl => 60})
       DNSimple::Record.create(domain, "ipv6", "AAAA", ipv6, {:ttl => 60})
+      changed += 2
     end
-    @control.privmsg(target, "Sync completed without error.")
+    @control.privmsg(target, "Sync completed without error. Modified records: #{changed}.")
   end
   
   def depool(name)
