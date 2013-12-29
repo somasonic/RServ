@@ -147,7 +147,7 @@ class DNSServ < RServ::Plugin
         keep = false
         servers.each do
           |key, server|
-          pooled, ipv4, ipv6 = server
+          pooled, region, ipv4, ipv6 = server
           if pooled
             if record.content == ipv4 or record.content == ipv6
               keep = true
@@ -161,7 +161,7 @@ class DNSServ < RServ::Plugin
     
     servers.each do
       |name, data|
-      pooled, ipv4, ipv6 = data
+      pooled, region, ipv4, ipv6 = data
       next unless pooled
       next if kept.include?(ipv4)
       DNSimple::Record.create(domain, "irc", "A", ipv4, {:ttl => 60})
