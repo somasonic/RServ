@@ -26,7 +26,7 @@ REGIONS = ['na', 'eu', 'af', 'ap', 'sa']
 class DNSServ < RServ::Plugin
   def initialize
     @control = RServ::IRC::PseudoClient.new("DNSServ", "dnsserv", "rserv.interlinked.me", "DNS Services", "S", ["#opers", "#services"])
-    
+
     begin
       @data = load('data/dns')
     rescue
@@ -48,7 +48,7 @@ class DNSServ < RServ::Plugin
     @control.quit
     save(@data, 'data/dns')
   end
-  
+
   def on_input(line)
     line.chomp!
     if line =~ /^:(\w{9}) PRIVMSG #opers :(DNSServ:?,? |!)(.+)\s*$/i
@@ -63,7 +63,7 @@ class DNSServ < RServ::Plugin
   end
 
   private
-  
+
   def dns_cmd(user, reply_target, command)
     if command =~ /^server add (\w+) (\w+) (\d+\.\d+\.\d+\.\d+)$/i
       @control.privmsg(reply_target, add_server($1, $2, $3))
@@ -81,7 +81,7 @@ class DNSServ < RServ::Plugin
       $1.strip.split(" ").each { |s| @control.privmsg(reply_target, depool(s)) }
     end
   end
-  
+
   def add_server(name, region, ipv4, ipv6 = nil)
     name.downcase!
     if @data["servers"].has_key?(name)
@@ -95,7 +95,7 @@ class DNSServ < RServ::Plugin
     save(@data, 'data/dns')
     return "Server #{name} added successfully."
   end
-  
+
   def del_server(name)
     name.downcase!
     if @data["servers"].has_key?(name)
@@ -106,7 +106,7 @@ class DNSServ < RServ::Plugin
       return "Error: #{name} does not exist."
     end
   end
-  
+
    def print_status(target)
     @control.privmsg(target, "#{BOLD} Server".ljust(16) + "Region".ljust(10) + "Pooled".ljust(9) + "IPv4".ljust(19) + "IPv6".ljust(40) + "Users")
     totalusers = 0
@@ -122,14 +122,14 @@ class DNSServ < RServ::Plugin
     end
     @control.privmsg(target, " #{BOLD}Total".ljust(94) + totalusers.to_s)
   end
- 
+
   def pool(name)
     name.downcase!
     @data["servers"][name][0] = true
     save(@data, 'data/dns')
     return "Server #{name} pooled successfully."
   end
-  
+
   def do_sync(target)
     servers = @data["servers"]
     one_pooled = false
@@ -139,22 +139,25 @@ class DNSServ < RServ::Plugin
       return
     end
     @control.privmsg(target, "Syncing..")
-   
+
     domain = DNSimple::Domain.find("interlinked.me")
-    
-    region_pool = Hash.new(Array.new)
-    
+
+    region_pool = Hash.new
+    REGIONS.each { |r| region_pool[r] = [] }
+
     servers.each do |server, data|
       pooled, region, ipv4, ipv6 = data
-      region_pool[region] << ipv4 if pooled
-      next if ipv6.nil?
-      region_pool[region] << ipv6 if pooled
+      if pooled
+        region_pool[region] << ipv4
+        region_pool[region] << ipv6 unless ipv6.nil?
+      end
     end
-    
+
     changed = 0
     kept = Array.new
-    region_kept = Hash.new(Array.new)
-    
+    region_kept = Hash.new
+    REGIONS.each { |r| region_kept[r] = [] }
+
     DNSimple::Record.all(domain).each do |record|
       if record.name == "irc" or record.name == "ipv4" or record.name == "ipv6" \
          or REGIONS.include?(record.name.downcase)
@@ -182,49 +185,50 @@ class DNSServ < RServ::Plugin
         end
       end
     end
-        
+
     servers.each do
       |name, data|
       pooled, region, ipv4, ipv6 = data
       next unless pooled
-      next if kept.include?(ipv4)
-      DNSimple::Record.create(domain, "irc", "A", ipv4, {:ttl => 60})
-      DNSimple::Record.create(domain, "ipv4", "A", ipv4, {:ttl => 60})
-      changed += 2
       unless region_kept[region].include? ipv4
         DNSimple::Record.create(domain, region, "A", ipv4, {:ttl => 60})
         changed += 1
       end
+      next if kept.include?(ipv4)
+      DNSimple::Record.create(domain, "irc", "A", ipv4, {:ttl => 60})
+      DNSimple::Record.create(domain, "ipv4", "A", ipv4, {:ttl => 60})
+      changed += 2
       next if ipv6 == nil
+      unless region_kept[region].include? ipv6
+        DNSimple::Record.create(domain, region, "AAAA", ipv6, {:ttl => 60})
+        changed += 1
+      end
       next if kept.include?(ipv6)
       DNSimple::Record.create(domain, "irc", "AAAA", ipv6, {:ttl => 60})
       DNSimple::Record.create(domain, "ipv6", "AAAA", ipv6, {:ttl => 60})
       changed += 2
-      unless region_kept[region].include? ipv6
-        DNSimple::Record.create(domain, region, "A", ipv6, {:ttl => 60})
-        changed += 1
-      end
     end
-    
+
     REGIONS.each do |r|
-      if regions[r].empty?
+      puts "#{r} empty: #{region_pool[r].empty?} [#{region_pool[r].join(",")}]"
+      if region_pool[r].empty?
         unless region_kept[r].include? "irc.interlinked.me"
           DNSimple::Record.create(domain, r, "CNAME", "irc.interlinked.me", {:ttl => 60})
           changed += 1
         end
       end
     end
-        
+
     @control.privmsg(target, "Sync completed without error. Modified records: #{changed}.")
   end
-  
+
   def depool(name)
     name.downcase!
     @data["servers"][name][0] = false
     save(@data, 'data/dns')
     return "Server #{name} depooled successfully."
   end
-  
+
   def load(file)
     f = File.open(file, 'r')
     data = JSON.load(f)
