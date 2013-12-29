@@ -159,8 +159,10 @@ class DNSServ < RServ::Plugin
             end
           end
         end
-        record.delete() unless keep
-        changed += 1
+        unless keep
+          record.delete()
+          changed += 1
+        end
       end
     end
     
