@@ -144,18 +144,37 @@ class DNSServ < RServ::Plugin
     
     changed = 0
     
+    region_kept = Hash.new(Array.new)
+    
+    region_pool = Hash.new(Array.new)
+    
+    servers.each do |server, data|
+      pooled, region, ipv4, ipv6 = data
+      region_pool[region] << ipv4 if pooled
+      next if ipv6.nil?
+      region_pool[region] << ipv6 if pooled
+    end
+    
     kept = Array.new
     DNSimple::Record.all(domain).each do
       |record|
-      if record.name == "irc" or record.name == "ipv4" or record.name == "ipv6"
+      if record.name == "irc" or record.name == "ipv4" or record.name == "ipv6" \
+         or REGIONS.include?(record.name.downcase)
         keep = false
-        servers.each do
-          |key, server|
-          pooled, region, ipv4, ipv6 = server
-          if pooled
-            if record.content == ipv4 or record.content == ipv6
-              keep = true
-              kept << record.content
+        if REGIONS.include?(record.name.downcase)
+          if region_pool[record.name.downcase].include?(record.content)
+            keep = true
+            region_kept[record.name.downcase] << record.content
+          end
+        else
+          servers.each do
+            |key, server|
+            pooled, region, ipv4, ipv6 = server
+            if pooled
+              if record.content == ipv4 or record.content == ipv6
+                keep = true
+                kept << record.content
+              end
             end
           end
         end
@@ -165,7 +184,7 @@ class DNSServ < RServ::Plugin
         end
       end
     end
-    
+        
     servers.each do
       |name, data|
       pooled, region, ipv4, ipv6 = data
@@ -174,12 +193,31 @@ class DNSServ < RServ::Plugin
       DNSimple::Record.create(domain, "irc", "A", ipv4, {:ttl => 60})
       DNSimple::Record.create(domain, "ipv4", "A", ipv4, {:ttl => 60})
       changed += 2
+      unless region_kept[region].include? ipv4
+        DNSimple::Record.create(domain, region, "A", ipv4, {:ttl => 60})
+        changed += 1
+      end
       next if ipv6 == nil
       next if kept.include?(ipv6)
       DNSimple::Record.create(domain, "irc", "AAAA", ipv6, {:ttl => 60})
       DNSimple::Record.create(domain, "ipv6", "AAAA", ipv6, {:ttl => 60})
       changed += 2
+      unless region_kept[region].include? ipv6
+        DNSimple::Record.create(domain, region, "A", ipv6, {:ttl => 60})
+        changed += 1
+      end
     end
+    
+    REGIONS.each do |r|
+      if regions[r].empty?
+        unless region_kept[r].include? "irc.interlinked.me"
+          DNSimple::Record.create(domain, r, "CNAME", "irc.interlinked.me", {:ttl => 60})
+          changed += 1
+        end
+      end
+    end
+        
+        
     @control.privmsg(target, "Sync completed without error. Modified records: #{changed}.")
   end
   
