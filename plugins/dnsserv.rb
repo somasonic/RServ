@@ -160,12 +160,12 @@ class DNSServ < RServ::Plugin
 
     DNSimple::Record.all(domain).each do |record|
       if record.name == "irc" or record.name == "ipv4" or record.name == "ipv6" \
-         or REGIONS.include?(record.name.downcase)
+         or REGIONS.include?("irc.#{record.name.downcase}")
         keep = false
-        if REGIONS.include?(record.name.downcase)
-          if region_pool[record.name.downcase].include?(record.content)
+        if REGIONS.include?("irc.#{record.name.downcase}")
+          if region_pool[record.name.downcase.split("irc.")[1]].include?(record.content)
             keep = true
-            region_kept[record.name.downcase] << record.content
+            region_kept[record.name.downcase.split("irc.")[1]] << record.content
           end
         else
           servers.each do
@@ -191,7 +191,7 @@ class DNSServ < RServ::Plugin
       pooled, region, ipv4, ipv6 = data
       next unless pooled
       unless region_kept[region].include? ipv4
-        DNSimple::Record.create(domain, region, "A", ipv4, {:ttl => 60})
+        DNSimple::Record.create(domain, "irc.#{region}", "A", ipv4, {:ttl => 60})
         changed += 1
       end
       next if kept.include?(ipv4)
@@ -200,7 +200,7 @@ class DNSServ < RServ::Plugin
       changed += 2
       next if ipv6 == nil
       unless region_kept[region].include? ipv6
-        DNSimple::Record.create(domain, region, "AAAA", ipv6, {:ttl => 60})
+        DNSimple::Record.create(domain, "irc.#{region}", "AAAA", ipv6, {:ttl => 60})
         changed += 1
       end
       next if kept.include?(ipv6)
@@ -210,10 +210,9 @@ class DNSServ < RServ::Plugin
     end
 
     REGIONS.each do |r|
-      puts "#{r} empty: #{region_pool[r].empty?} [#{region_pool[r].join(",")}]"
       if region_pool[r].empty?
         unless region_kept[r].include? "irc.interlinked.me"
-          DNSimple::Record.create(domain, r, "CNAME", "irc.interlinked.me", {:ttl => 60})
+          DNSimple::Record.create(domain, "irc.#{r}", "CNAME", "irc.interlinked.me", {:ttl => 60})
           changed += 1
         end
       end
