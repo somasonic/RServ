@@ -183,6 +183,7 @@ class DNSServ < RServ::Plugin
         unless keep
           record.delete()
           changed += 1
+          puts "deleting (#{changed}) #{record.name} => #{record.content}"
         end
       end
     end
@@ -194,20 +195,24 @@ class DNSServ < RServ::Plugin
       unless region_kept[region].include? ipv4
         DNSimple::Record.create(domain, "irc.#{region}", "A", ipv4, {:ttl => 60})
         changed += 1
+        puts "creating (#{changed}) irc.#{region} => #{ipv4}"
       end
       next if kept.include?(ipv4)
       DNSimple::Record.create(domain, "irc", "A", ipv4, {:ttl => 60})
       DNSimple::Record.create(domain, "ipv4", "A", ipv4, {:ttl => 60})
       changed += 2
+      puts "added irc. and ipv4. (#{changed}) => #{ipv4}"
       next if ipv6 == nil
       unless region_kept[region].include? ipv6
         DNSimple::Record.create(domain, "irc.#{region}", "AAAA", ipv6, {:ttl => 60})
         changed += 1
+        puts "creating (#{changed}) irc.#{region} => #{ipv6}"
       end
       next if kept.include?(ipv6)
       DNSimple::Record.create(domain, "irc", "AAAA", ipv6, {:ttl => 60})
       DNSimple::Record.create(domain, "ipv6", "AAAA", ipv6, {:ttl => 60})
       changed += 2
+      puts "added irc. and ipv6. (#{changed}) => #{ipv6}"
     end
 
     REGIONS.each do |r|
@@ -215,6 +220,7 @@ class DNSServ < RServ::Plugin
         unless region_kept[r].include? "irc.interlinked.me"
           DNSimple::Record.create(domain, "irc.#{r}", "CNAME", "irc.interlinked.me", {:ttl => 60})
           changed += 1
+          puts "creating irc.#{r} CNAME (#{changed})"
         end
       end
     end
