@@ -159,13 +159,14 @@ class DNSServ < RServ::Plugin
     REGIONS.each { |r| region_kept[r] = [] }
 
     DNSimple::Record.all(domain).each do |record|
+      splitname = record.name.downcase.split("irc.")[1]
       if record.name == "irc" or record.name == "ipv4" or record.name == "ipv6" \
-         or REGIONS.include?("irc.#{record.name.downcase}")
+         or REGIONS.include? splitname
         keep = false
-        if REGIONS.include?("irc.#{record.name.downcase}")
-          if region_pool[record.name.downcase.split("irc.")[1]].include?(record.content)
+        if REGIONS.include? splitname
+          if region_pool[splitname].include?(record.content)
             keep = true
-            region_kept[record.name.downcase.split("irc.")[1]] << record.content
+            region_kept[splitname] << record.content
           end
         else
           servers.each do
