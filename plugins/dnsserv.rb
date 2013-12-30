@@ -164,6 +164,7 @@ class DNSServ < RServ::Plugin
          or REGIONS.include? splitname
         keep = false
         if REGIONS.include? splitname
+          puts "#{splitname}: #{record.content}"
           if region_pool[splitname].include?(record.content)
             keep = true
             region_kept[splitname] << record.content
