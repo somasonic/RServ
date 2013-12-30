@@ -171,6 +171,7 @@ class DNSServ < RServ::Plugin
           elsif record.content == "irc.interlinked.me"
             if region_pool[splitname].empty?
               keep = true
+              region_kept[splitname] << record.content
             end
           end
         else
